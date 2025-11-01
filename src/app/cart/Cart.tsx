@@ -2,9 +2,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import CartItemCard from "../components/CartItemCard";
 import ExtrasCard from "../components/ExtrasCard";
-// CHANGED: Import new BillBoxApproval instead of BillBox for approval workflow (new file)
+// CHANGED: Import new BillBoxApproval instead of BillBox for approval workflow
 import BillBoxApproval from "../components/BillBoxApproval";
-// NEW: Import OrderWaitingScreen component for showing wait time during vendor approval (new file)
 import OrderWaitingScreen from "../components/OrderWaitingScreen";
 import styles from "./styles/Cart.module.scss";
 import { FoodItem, CartItem } from "../cart/types";
@@ -193,7 +192,7 @@ export default function Cart() {
     };
 
     fetchUserAndCart();
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Add a new useEffect to refetch extras when cart changes
   useEffect(() => {
@@ -228,7 +227,6 @@ export default function Cart() {
     } else {
       setExtras([]);
     }
-     
   }, [cart, userData?._id]);
 
   const reFetchCart = async () => {
@@ -570,7 +568,7 @@ export default function Cart() {
             setCurrentOrderId(null);
             toast.success("Order accepted by vendor! Redirecting to your orders...");
             setTimeout(() => {
-              router.push("/activeorders");
+              router.push("/active-orders");
             }, 1500);
           }}
           onOrderDenied={(reason) => {

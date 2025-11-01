@@ -14,8 +14,6 @@ import { OrderList } from "./components/OrderList";
 import { PastOrdersList } from "./components/PastOrdersList";
 import { DeliveryOrdersList } from "./components/DeliveryOrdersList";
 import { VendorCartComponent } from "./components/VendorCart";
-// NEW: Import pending order requests component for vendor to accept/deny orders (new file)
-import { PendingOrderRequests } from "./components/PendingOrderRequests";
 import { DeliverySettings } from "./components/DeliverySettings";
 import VendorInvoices from "./components/VendorInvoices";
 import VendorGrievances from "./components/VendorGrievances";
@@ -425,23 +423,6 @@ export default function VendorDashboardPage() {
                   <p>Send and receive inventory from other vendors</p>
                 </div>
                 <InventoryTransfer vendorId={vendorId || ""} />
-              </>
-            );
-          }
-          if (name === "pending orders" || name.includes("pending orders") || name === "pending order" || name.includes("pending order")) {
-            return (
-              <>
-                <div className={styles.header}>
-                  <h1>Pending Order Requests</h1>
-                  <p>Review and respond to new order requests from customers</p>
-                </div>
-                <PendingOrderRequests 
-                  vendorId={vendorId || ""}
-                  onOrderProcessed={() => {
-                    // Refresh when order is processed
-                    console.log("Pending order processed");
-                  }}
-                />
               </>
             );
           }

@@ -18,7 +18,6 @@ import styles from "../styles/SideBar.module.scss";
 
 const allSegments = [
   { key: "dashboard", label: "Dashboard", icon: <AiOutlineDashboard />, featureKey: "dashboard" },
-  { key: "pending-orders", label: "Pending Orders", icon: <AiOutlineAppstore />, featureKey: "pending_order" }, // NEW: Pending order requests
   { key: "active-orders", label: "Active Order", icon: <AiOutlineAppstore />, featureKey: "active_order" },
   {
     key: "retail-inventory",

@@ -1,6 +1,6 @@
 // NEW FILE: Order waiting screen component - shows while waiting for vendor approval
 
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import styles from "./styles/OrderWaitingScreen.module.scss";
 
@@ -16,13 +16,12 @@ const OrderWaitingScreen: React.FC<OrderWaitingScreenProps> = ({
   onOrderDenied,
 }) => {
   const [waitTime, setWaitTime] = useState(0); // Wait time in seconds
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     const startTime = Date.now();
-
+    
     // Start polling for order status
-    const pollOrderStatus = async () => {
+    const pollOrderStatus = async (intervalId: NodeJS.Timeout) => {
       try {
         const response = await axios.get(
           `${process.env.NEXT_PUBLIC_BACKEND_URL}/order-approval/status/${orderId}`,
@@ -39,15 +38,11 @@ const OrderWaitingScreen: React.FC<OrderWaitingScreenProps> = ({
           // Check if order was accepted or denied
           if (status === "inProgress") {
             // Order accepted by vendor
-            if (intervalRef.current) {
-              clearInterval(intervalRef.current);
-            }
+            clearInterval(intervalId);
             onOrderAccepted();
           } else if (status === "denied") {
             // Order denied by vendor
-            if (intervalRef.current) {
-              clearInterval(intervalRef.current);
-            }
+            clearInterval(intervalId);
             onOrderDenied(response.data.denialReason || "Item not available");
           }
           // If still pendingVendorApproval, continue polling
@@ -58,15 +53,12 @@ const OrderWaitingScreen: React.FC<OrderWaitingScreenProps> = ({
     };
 
     // Poll immediately, then every 3 seconds
-    pollOrderStatus();
-    const interval = setInterval(pollOrderStatus, 3000);
-    intervalRef.current = interval;
+    const intervalId = setInterval(() => pollOrderStatus(intervalId), 3000);
+    pollOrderStatus(intervalId);
 
     // Cleanup on unmount
     return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
+      clearInterval(intervalId);
     };
   }, [orderId, onOrderAccepted, onOrderDenied]);
 
