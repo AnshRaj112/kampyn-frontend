@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -142,13 +142,51 @@ const Header: React.FC<HeaderProps> = ({
     }
   }, [menuOpen, isMobile]);
 
-  const handleNavigation = useCallback(
-    (path: string) => {
-      setMenuOpen(false);
-      router.push(path);
+  const handleLinkClick = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
+    // For regular links in the mobile menu: just close the menu on normal clicks.
+    // We don't touch modifier clicks so the browser/Next.js can handle them.
+    const isModifierClick = e.ctrlKey || e.metaKey || e.shiftKey || e.button === 1;
+
+    if (isModifierClick) {
+      return;
+    }
+
+    setMenuOpen(false);
+  }, []);
+
+  const handleCartClick = useCallback(
+    (e: React.MouseEvent<HTMLAnchorElement>) => {
+      const isModifierClick = e.ctrlKey || e.metaKey || e.button === 1;
+
+      if (isModifierClick) {
+        // Explicitly open /cart in a new tab when using Ctrl/Cmd/middle-click
+        e.preventDefault();
+        window.open("/cart", "_blank", "noopener,noreferrer");
+        return;
+      }
+
+      // Normal click: behave like other links (and close mobile menu if open)
+      if (isMobile) {
+        setMenuOpen(false);
+      }
     },
-    [router]
+    [isMobile]
   );
+
+  const handleDropdownLinkClick = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
+    // Allow Ctrl+Click (or Cmd+Click on Mac) to open in new tab
+    // Next.js Link handles this automatically, but we need to avoid closing dropdown
+    const isModifierClick = e.ctrlKey || e.metaKey || e.shiftKey || e.button === 1;
+    
+    if (isModifierClick) {
+      // Let the browser and Next.js Link handle modifier clicks naturally
+      // Don't close dropdown, don't prevent default
+      return;
+    }
+    
+    // Only close dropdown on regular left clicks
+    setShowDropdown(false);
+  }, []);
 
   return (
     <header className={`${styles.header} ${scrolling ? styles.scrolled : ""}`}>
@@ -194,42 +232,44 @@ const Header: React.FC<HeaderProps> = ({
                 transition={{ duration: 0.3, ease: "easeInOut" }}
               >
                 <div className={styles.menuBox}>
-                  <div
+                  <Link
+                    href="/search"
                     className={`${styles.navItem} ${
                       pathname === "/search" ? styles.activeNavItem : ""
                     }`}
-                    onClick={() => handleNavigation("/search")}
+                    onClick={handleLinkClick}
                   >
                     <IoMdSearch size={24} />
                     <span>Search</span>
-                  </div>
-                  <div
+                  </Link>
+                  <Link
+                    href="/help"
                     className={`${styles.navItem} ${
                       pathname === "/help" ? styles.activeNavItem : ""
                     }`}
-                    onClick={() => handleNavigation("/help")}
+                    onClick={handleLinkClick}
                   >
                     <IoHelp size={24} />
                     <span>Help</span>
-                  </div>
-                  <div
+                  </Link>
+                  <Link
+                    href={userFullName ? "/profile" : "/login"}
                     className={`${styles.navItem} ${
                       pathname === "/profile" || pathname === "/login"
                         ? styles.activeNavItem
                         : ""
                     }`}
-                    onClick={() =>
-                      handleNavigation(userFullName ? "/profile" : "/login")
-                    }
+                    onClick={handleLinkClick}
                   >
                     <IoPersonOutline size={24} />
                     <span>{userFullName || "Login"}</span>
-                  </div>
-                  <div
+                  </Link>
+                  <Link
+                    href="/cart"
                     className={`${styles.navItem} ${styles.cartItem} ${
                       pathname === "/cart" ? styles.activeNavItem : ""
                     }`}
-                    onClick={() => handleNavigation("/cart")}
+                    onClick={handleCartClick}
                   >
                     <div className={styles.cartIconWrapper}>
                       <PiShoppingCartSimpleBold size={24} />
@@ -238,7 +278,7 @@ const Header: React.FC<HeaderProps> = ({
                       )}
                     </div>
                     <span>Cart</span>
-                  </div>
+                  </Link>
                 </div>
               </motion.nav>
             )}
@@ -246,42 +286,41 @@ const Header: React.FC<HeaderProps> = ({
         ) : (
           <nav className={styles.navOptions}>
             <div className={styles.menuBox}>
-              <div
+              <Link
+                href="/search"
                 className={`${styles.navItem} ${
                   pathname === "/search" ? styles.activeNavItem : ""
                 }`}
-                onClick={() => handleNavigation("/search")}
               >
                 <IoMdSearch size={24} />
                 <span>Search</span>
-              </div>
-              <div
+              </Link>
+              <Link
+                href="/help"
                 className={`${styles.navItem} ${
                   pathname === "/help" ? styles.activeNavItem : ""
                 }`}
-                onClick={() => handleNavigation("/help")}
               >
                 <IoHelp size={24} />
                 <span>Help</span>
-              </div>
-              <div
+              </Link>
+              <Link
+                href={userFullName ? "/profile" : "/login"}
                 className={`${styles.navItem} ${
                   pathname === "/profile" || pathname === "/login"
                     ? styles.activeNavItem
                     : ""
                 }`}
-                onClick={() =>
-                  handleNavigation(userFullName ? "/profile" : "/login")
-                }
               >
                 <IoPersonOutline size={24} />
                 <span>{userFullName || "Login"}</span>
-              </div>
-              <div
+              </Link>
+              <Link
+                href="/cart"
                 className={`${styles.navItem} ${styles.cartItem} ${
                   pathname === "/cart" ? styles.activeNavItem : ""
                 }`}
-                onClick={() => handleNavigation("/cart")}
+                onClick={handleCartClick}
               >
                 <div className={styles.cartIconWrapper}>
                   <PiShoppingCartSimpleBold size={24} />
@@ -290,7 +329,7 @@ const Header: React.FC<HeaderProps> = ({
                   )}
                 </div>
                 <span>Cart</span>
-              </div>
+              </Link>
             </div>
           </nav>
         )
@@ -305,20 +344,20 @@ const Header: React.FC<HeaderProps> = ({
           >
             <div className={styles.menuBox}>
               {showGetApp && (
-                <div
+                <Link
+                  href="/home"
                   className={styles.navItem}
-                  onClick={() => handleNavigation("/home")}
+                  onClick={handleLinkClick}
                 >
                   <LuArrowUpRight size={24} />
                   <span>GET THE APP</span>
-                </div>
+                </Link>
               )}
               {showProfile && (
-                <div
+                <Link
+                  href={userFullName ? "/profile" : "/login"}
                   className={styles.navItem}
-                  onClick={() =>
-                    handleNavigation(userFullName ? "/profile" : "/login")
-                  }
+                  onClick={handleLinkClick}
                 >
                   {userFullName ? (
                     <FaUserCircle size={24} />
@@ -326,20 +365,17 @@ const Header: React.FC<HeaderProps> = ({
                     <IoPersonOutline size={24} />
                   )}
                   <span>{userFullName || "Login"}</span>
-                </div>
+                </Link>
               )}
             </div>
           </motion.nav>
         </AnimatePresence>
       ) : (
         <div className={styles.rightOptions}>
-          <div
-            className={styles.navItem}
-            onClick={() => handleNavigation("/home")}
-          >
+          <Link href="/home" className={styles.navItem}>
             <LuArrowUpRight size={18} />
             <span>GET THE APP</span>
-          </div>
+          </Link>
 
           {userFullName ? (
             <div className={styles.profileContainer} ref={dropdownRef}>
@@ -359,27 +395,30 @@ const Header: React.FC<HeaderProps> = ({
                     transition={{ duration: 0.3 }}
                   >
                     <div className={styles.dropdownMenu}>
-                      <div
+                      <Link
+                        href="/profile"
                         className={styles.navItem}
-                        onClick={() => handleNavigation("/profile")}
                         style={{ fontSize: "1rem" }}
+                        onClick={handleDropdownLinkClick}
                       >
                         <span style={{ fontSize: "1rem" }}>Profile</span>
-                      </div>
-                      <div
+                      </Link>
+                      <Link
+                        href="/activeorders"
                         className={styles.navItem}
-                        onClick={() => handleNavigation("/activeorders")}
                         style={{ fontSize: "1rem" }}
+                        onClick={handleDropdownLinkClick}
                       >
                         <span style={{ fontSize: "1rem" }}>Orders</span>
-                      </div>
-                      <div
+                      </Link>
+                      <Link
+                        href="/fav"
                         className={styles.navItem}
-                        onClick={() => handleNavigation("/fav")}
                         style={{ fontSize: "1rem" }}
+                        onClick={handleDropdownLinkClick}
                       >
                         <span style={{ fontSize: "1rem" }}>Favourites</span>
-                      </div>
+                      </Link>
                       <div
                         className={styles.navItem}
                         onClick={handleLogout}
@@ -393,13 +432,10 @@ const Header: React.FC<HeaderProps> = ({
               </AnimatePresence>
             </div>
           ) : (
-            <div
-              className={styles.navItem}
-              onClick={() => handleNavigation("/login")}
-            >
+            <Link href="/login" className={styles.navItem}>
               <IoPersonOutline size={24} />
               <span>Login</span>
-            </div>
+            </Link>
           )}
         </div>
       )}

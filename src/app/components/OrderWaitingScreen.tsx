@@ -27,7 +27,7 @@ const OrderWaitingScreen: React.FC<OrderWaitingScreenProps> = ({
 
   useEffect(() => {
     const startTime = Date.now();
-
+    
     // Start polling for order status
     const pollOrderStatus = async () => {
       try {
@@ -65,9 +65,9 @@ const OrderWaitingScreen: React.FC<OrderWaitingScreenProps> = ({
     };
 
     // Poll immediately, then every 3 seconds
+    const intervalId = setInterval(pollOrderStatus, 3000);
+    intervalRef.current = intervalId;
     pollOrderStatus();
-    const interval = setInterval(pollOrderStatus, 3000);
-    intervalRef.current = interval;
 
     // Cleanup on unmount
     return () => {
@@ -109,6 +109,11 @@ const OrderWaitingScreen: React.FC<OrderWaitingScreenProps> = ({
     }
   };
 
+  const handleAddMoreItems = async () => {
+    // Cancel the pending order so user can modify cart
+    await handleCancelOrder();
+  };
+
   const openCancelDialog = () => setShowCancelDialog(true);
   const closeCancelDialog = () => {
     if (!isCancelling) {
@@ -119,39 +124,6 @@ const OrderWaitingScreen: React.FC<OrderWaitingScreenProps> = ({
   const confirmCancelFromDialog = async () => {
     await handleCancelOrder();
     setShowCancelDialog(false);
-  };
-
-  const handleAddMoreItems = async () => {
-    if (isCancelling) return;
-    
-    setIsCancelling(true);
-    try {
-      // Cancel the pending order so it doesn't appear in vendor's pending list
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/order-approval/${orderId}/cancel`,
-        { userId },
-        { withCredentials: true }
-      );
-
-      if (response.data.success) {
-        // Stop polling
-        if (intervalRef.current) {
-          clearInterval(intervalRef.current);
-        }
-        onOrderCancelled();
-      } else {
-        toast.error(response.data.message || "Failed to cancel order");
-        setIsCancelling(false);
-      }
-    } catch (error) {
-      console.error("Error cancelling order:", error);
-      if (axios.isAxiosError(error)) {
-        toast.error(error.response?.data?.message || "Failed to cancel order");
-      } else {
-        toast.error("Failed to cancel order");
-      }
-      setIsCancelling(false);
-    }
   };
 
   const formatWaitTime = (seconds: number) => {
@@ -228,4 +200,3 @@ const OrderWaitingScreen: React.FC<OrderWaitingScreenProps> = ({
 };
 
 export default OrderWaitingScreen;
-

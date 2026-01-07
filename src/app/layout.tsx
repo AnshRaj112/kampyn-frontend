@@ -6,6 +6,7 @@ import { Analytics } from "@vercel/analytics/react";
 import { Metadata } from "next";
 import { SearchCartProvider } from './components/context/SearchCartContext';
 import ConditionalHeader from './components/ConditionalHeader';
+import Snowflakes from './components/Snowflakes';
 
 export const metadata: Metadata = {
   title: {
@@ -81,6 +82,7 @@ export default function RootLayout({
         <link rel="icon" type="image/x-icon" href="/favicon.ico" />
       </head> */}
       <body>
+        <Snowflakes />
         <GoogleOAuthProvider clientId={googleClientId}>
             <SearchCartProvider>
               <ConditionalHeader />

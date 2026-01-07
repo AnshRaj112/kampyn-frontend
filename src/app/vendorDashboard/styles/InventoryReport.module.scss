@@ -202,16 +202,18 @@
   position: fixed;
   top: 1.5rem;
   right: 2rem;
-  width: min(360px, calc(100% - 2rem));
+  width: min(420px, calc(100% - 2rem));
   background: #ffffff;
-  border-radius: 16px;
-  border-left: 4px solid #f97316;
+  border-radius: 20px;
+  border-left: 6px solid #f97316;
   box-shadow: 0 25px 50px rgba(15, 23, 42, 0.2);
-  padding: 1.25rem;
+  padding: 1.5rem;
   display: flex;
-  gap: 1rem;
+  gap: 1.25rem;
+  align-items: flex-start;
   z-index: 1200;
   animation: slideInBanner 0.25s ease forwards;
+  overflow: visible;
 }
 
 @keyframes slideInBanner {
@@ -227,66 +229,106 @@
 
 .notificationContent {
   flex: 1;
+  min-width: 0;
 }
 
 .notificationTitle {
-  margin: 0;
-  font-size: 0.9rem;
+  margin: 0 0 0.75rem 0;
+  font-size: 0.875rem;
   font-weight: 700;
-  color: #c2410c;
+  color: #ea580c;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .notificationMessage {
-  margin: 0.35rem 0;
-  font-size: 1.05rem;
-  font-weight: 600;
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
   color: #0f172a;
+  line-height: 1.5;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.orderLabel {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.orderNumber {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.customerName {
+  font-weight: 700;
+  font-size: 1rem;
 }
 
 .notificationMeta {
-  margin: 0;
-  font-size: 0.85rem;
-  color: #475569;
+  margin: 0.75rem 0 0 0;
+  font-size: 0.875rem;
+  color: #64748b;
+  font-weight: 400;
 }
 
 .notificationActions {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.75rem;
+  align-items: flex-end;
+  position: relative;
 }
 
 .viewButton {
-  background: linear-gradient(135deg, #f97316, #f59e0b);
+  background: #f97316;
   color: #fff;
   border: none;
-  border-radius: 999px;
-  padding: 0.5rem 1rem;
+  border-radius: 50%;
+  width: 100px;
+  height: 100px;
+  padding: 0;
   font-weight: 600;
+  font-size: 0.875rem;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 10px 20px rgba(249, 115, 22, 0.35);
+  box-shadow: 0 8px 16px rgba(249, 115, 22, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  line-height: 1.3;
+  position: relative;
+  right: -10px;
+  flex-shrink: 0;
+  white-space: normal;
+  word-wrap: break-word;
+  padding: 0.5rem;
 }
 
 .viewButton:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 15px 25px rgba(249, 115, 22, 0.45);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(249, 115, 22, 0.4);
 }
 
 .dismissButton {
   background: transparent;
-  border: 1px solid #cbd5f5;
+  border: 1px solid #e2e8f0;
   color: #1e293b;
-  border-radius: 999px;
-  padding: 0.45rem 1rem;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
   font-weight: 600;
+  font-size: 0.875rem;
   cursor: pointer;
   transition: background 0.2s ease, color 0.2s ease;
+  align-self: stretch;
 }
 
 .dismissButton:hover {
-  background: rgba(15, 23, 42, 0.04);
+  background: rgba(15, 23, 42, 0.05);
+  border-color: #cbd5e0;
 }
 
 @media (max-width: 768px) {
@@ -294,12 +336,20 @@
     left: 1rem;
     right: 1rem;
     width: auto;
-    flex-direction: column;
+    padding: 1.25rem;
+  }
+
+  .viewButton {
+    width: 80px;
+    height: 80px;
+    font-size: 0.75rem;
+    right: 0;
   }
 
   .notificationActions {
     flex-direction: row;
     justify-content: flex-end;
+    align-items: center;
   }
 }
 

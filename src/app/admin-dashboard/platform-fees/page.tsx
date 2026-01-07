@@ -32,7 +32,7 @@ const PlatformFeesPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [editingFees, setEditingFees] = useState<{ [key: string]: number }>({});
-  const [bulkFee, setBulkFee] = useState<number>(2);
+  const [bulkFee, setBulkFee] = useState<number>(0);
   const [showBulkUpdate, setShowBulkUpdate] = useState(false);
 
   // Fetch universities data
@@ -52,7 +52,8 @@ const PlatformFeesPage: React.FC = () => {
         // Initialize editing fees with current values
         const initialFees: { [key: string]: number } = {};
         data.data.forEach((uni: University) => {
-          initialFees[uni._id] = uni.platformFee || 2; // Default to ₹2
+          // Respect stored zero values; fall back to 0 only when unset
+          initialFees[uni._id] = uni.platformFee ?? 0;
         });
         setEditingFees(initialFees);
       } else {
@@ -317,7 +318,7 @@ const PlatformFeesPage: React.FC = () => {
                     type="number"
                     min="0"
                     step="0.01"
-                    value={editingFees[uni._id] || uni.platformFee || 2}
+                    value={editingFees[uni._id] ?? uni.platformFee ?? 0}
                     onChange={(e) => handleFeeChange(uni._id, e.target.value)}
                     placeholder="Enter platform fee"
                     className={styles.feeInput}
@@ -336,7 +337,7 @@ const PlatformFeesPage: React.FC = () => {
                   </Button>
                 </div>
                 <p className={styles.currentFee}>
-                  Current: ₹{uni.platformFee || 2} per order
+                  Current: ₹{uni.platformFee ?? 0} per order
                 </p>
               </div>
             </CardContent>

@@ -64,6 +64,8 @@ export default function VendorDashboardPage() {
   const notificationRetryRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pendingOrderPollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const lastAlertedOrderIdRef = useRef<string | null>(null);
+  const activeSegmentRef = useRef<string>(activeSegment);
+  const servicesRef = useRef<{ _id: string; name: string; feature: { _id: string; name: string } }[]>(services);
   const currencyFormatter = useMemo(
     () => new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" }),
     []
@@ -89,7 +91,12 @@ export default function VendorDashboardPage() {
 
   useEffect(() => {
     localStorage.setItem("activeSegment", activeSegment);
+    activeSegmentRef.current = activeSegment;
   }, [activeSegment]);
+
+  useEffect(() => {
+    servicesRef.current = services;
+  }, [services]);
 
   useEffect(() => {
     return () => {
@@ -174,6 +181,18 @@ export default function VendorDashboardPage() {
         if (data.orderId && data.orderId === lastAlertedOrderIdRef.current) {
           return;
         }
+        // Don't show notification if we're already on the pending orders section
+        const currentActiveSegment = activeSegmentRef.current;
+        const currentServices = servicesRef.current;
+        const currentService = currentServices.find((s) => s._id === currentActiveSegment);
+        const name = currentService?.name?.toLowerCase() || "";
+        const isOnPendingOrders = currentActiveSegment === "pending-orders" || 
+          name.includes("pending order") || name.includes("pending orders");
+        
+        if (isOnPendingOrders) {
+          return;
+        }
+        
         lastAlertedOrderIdRef.current = data.orderId || null;
         setPendingOrderAlert({
           orderId: data.orderId,
@@ -224,15 +243,25 @@ export default function VendorDashboardPage() {
         if (data?.success && Array.isArray(data.orders) && data.orders.length > 0) {
           const latest = data.orders[0];
           if (latest?.orderId && latest.orderId !== lastAlertedOrderIdRef.current) {
-            lastAlertedOrderIdRef.current = latest.orderId;
-            setPendingOrderAlert({
-              orderId: latest.orderId,
-              orderNumber: latest.orderNumber,
-              collectorName: latest.collectorName,
-              orderType: latest.orderType,
-              total: latest.total,
-              createdAt: latest.createdAt,
-            });
+            // Don't show notification if we're already on the pending orders section
+            const currentActiveSegment = activeSegmentRef.current;
+            const currentServices = servicesRef.current;
+            const currentService = currentServices.find((s) => s._id === currentActiveSegment);
+            const name = currentService?.name?.toLowerCase() || "";
+            const isOnPendingOrders = currentActiveSegment === "pending-orders" || 
+              name.includes("pending order") || name.includes("pending orders");
+            
+            if (!isOnPendingOrders) {
+              lastAlertedOrderIdRef.current = latest.orderId;
+              setPendingOrderAlert({
+                orderId: latest.orderId,
+                orderNumber: latest.orderNumber,
+                collectorName: latest.collectorName,
+                orderType: latest.orderType,
+                total: latest.total,
+                createdAt: latest.createdAt,
+              });
+            }
           }
         }
       } catch (err) {
@@ -293,6 +322,14 @@ export default function VendorDashboardPage() {
     const pendingService = services.find((s) => s.name?.toLowerCase().includes("pending order"));
     return pendingService?._id ?? null;
   }, [services]);
+
+  // Check if we're currently on the pending orders section
+  const isPendingOrdersSectionActive = useMemo(() => {
+    if (activeSegment === "pending-orders") return true;
+    const currentService = services.find((s) => s._id === activeSegment);
+    const name = currentService?.name?.toLowerCase() || "";
+    return name.includes("pending order") || name.includes("pending orders");
+  }, [activeSegment, services]);
 
   // Common onLoaded handler for components to update sidebar
   const handleOnLoaded = (vendorName: string, vendorId: string) => {
@@ -382,6 +419,13 @@ export default function VendorDashboardPage() {
     }
   }, [appliedDate, isInventoryReportsActive, vendorId, fetchReport]);
 
+  // Auto-dismiss notification when visiting pending orders section
+  useEffect(() => {
+    if (isPendingOrdersSectionActive && pendingOrderAlert) {
+      setPendingOrderAlert(null);
+    }
+  }, [isPendingOrdersSectionActive, pendingOrderAlert]);
+
   return (
     <div className={styles.container}>
       <Sidebar
@@ -393,13 +437,15 @@ export default function VendorDashboardPage() {
       />
 
       <main className={styles.main}>
-        {pendingOrderAlert && (
+        {pendingOrderAlert && !isPendingOrdersSectionActive && (
           <div className={styles.notificationBanner}>
             <div className={styles.notificationContent}>
               <p className={styles.notificationTitle}>New pending order</p>
-              <p className={styles.notificationMessage}>
-                Order #{pendingOrderAlert.orderNumber} from {pendingOrderAlert.collectorName}
-              </p>
+              <div className={styles.notificationMessage}>
+                <span className={styles.orderLabel}>Order</span>
+                <span className={styles.orderNumber}>#{pendingOrderAlert.orderNumber}</span>
+                <span className={styles.customerName}>from {pendingOrderAlert.collectorName}</span>
+              </div>
               <p className={styles.notificationMeta}>
                 {new Date(pendingOrderAlert.createdAt).toLocaleTimeString()} ·{" "}
                 {currencyFormatter.format(pendingOrderAlert.total || 0)}

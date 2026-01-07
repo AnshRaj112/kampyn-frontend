@@ -144,11 +144,6 @@ export function VendorManagement({ universityId }: Props) {
     }, 100);
   };
 
-  const handleOpenVendorMenuSorting = (vendorId: string) => {
-    // Navigate to menu sorting with vendor ID
-    router.push(`/food-ordering-uniDashboard?menuSorting=true&vendorId=${vendorId}`);
-  };
-
   useEffect(() => {
     fetchVendors();
   }, [fetchVendors]);
@@ -298,14 +293,6 @@ export function VendorManagement({ universityId }: Props) {
                         handleEditVendor(vendor);
                       }}
                     >Edit</button>
-                    <button
-                      className={`${styles.actionButton} ${styles.menuSortButton}`}
-                      onClick={e => {
-                        e.stopPropagation();
-                        handleOpenVendorMenuSorting(vendor._id);
-                      }}
-                      title="Manage menu sorting for this vendor"
-                    >Menu Sort</button>
                     <button
                       className={`${styles.actionButton} ${styles.deleteButton}`}
                       onClick={e => {

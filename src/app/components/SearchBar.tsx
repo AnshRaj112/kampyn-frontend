@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FaSearch } from "react-icons/fa";
 import { toast, ToastContainer } from 'react-toastify';
@@ -118,6 +118,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
   const searchParams = useSearchParams();
   const { searchCartItems, addToSearchCart } = useSearchCart();
   const [selectedItem, setSelectedItem] = useState<SearchResult | null>(null);
+  const lastSearchedQuery = useRef<string>("");
 
   // Check authentication status on component mount
   useEffect(() => {
@@ -140,6 +141,35 @@ const SearchBar: React.FC<SearchBarProps> = ({
   useEffect(() => {
     setQuery(searchParams.get("search") || "");
   }, [searchParams]);
+
+  // Trigger search when query is set from URL params (e.g., on page refresh)
+  useEffect(() => {
+    const searchQuery = searchParams.get("search") || "";
+    
+    // Skip if this is the same query we just searched (prevents duplicate searches)
+    if (searchQuery === lastSearchedQuery.current) {
+      return;
+    }
+    
+    if (searchQuery.trim()) {
+      // For vendor pages, search immediately
+      if (vendorId) {
+        lastSearchedQuery.current = searchQuery;
+        fetchSearchResults(searchQuery);
+      } 
+      // For normal search, wait until university is selected
+      else if (selectedUniversity || hideUniversityDropdown) {
+        lastSearchedQuery.current = searchQuery;
+        fetchSearchResults(searchQuery);
+      }
+    } else {
+      // Clear results if no search query
+      lastSearchedQuery.current = "";
+      setSearchResults([]);
+      setSuggestedItems([]);
+      if (onSearchResults) onSearchResults([]);
+    }
+  }, [searchParams, selectedUniversity, vendorId, hideUniversityDropdown]);
 
   // Load universities and user data
   useEffect(() => {
@@ -440,12 +470,14 @@ const SearchBar: React.FC<SearchBarProps> = ({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setQuery(value);
+    lastSearchedQuery.current = value;
     router.push(`?search=${value}`, undefined);
     fetchSearchResults(value);
   };
 
   const handleSelectSuggestion = async (foodName: string) => {
     setQuery(foodName);
+    lastSearchedQuery.current = foodName;
     router.push(`?search=${foodName}`, undefined);
     fetchSearchResults(foodName);
 
@@ -604,6 +636,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
 
   const handleClearSearch = () => {
     setQuery("");
+    lastSearchedQuery.current = "";
     setSearchResults([]);
     setSuggestedItems([]);
     router.push("?", undefined);

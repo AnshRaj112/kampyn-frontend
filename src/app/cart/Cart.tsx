@@ -2,8 +2,9 @@ import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import CartItemCard from "../components/CartItemCard";
 import ExtrasCard from "../components/ExtrasCard";
-// CHANGED: Import new BillBoxApproval instead of BillBox for approval workflow (new file)
+// Import both BillBoxApproval (for vendors with pending order service) and BillBox (for others)
 import BillBoxApproval from "../components/BillBoxApproval";
+import BillBox from "../components/BillBox";
 // NEW: Import OrderWaitingScreen component for showing wait time during vendor approval (new file)
 import OrderWaitingScreen from "../components/OrderWaitingScreen";
 import styles from "./styles/Cart.module.scss";
@@ -78,6 +79,8 @@ export default function Cart() {
   // NEW: State for order approval workflow
   const [showWaitingScreen, setShowWaitingScreen] = useState(false);
   const [currentOrderId, setCurrentOrderId] = useState<string | null>(null);
+  // NEW: State to check if vendor has pending order service
+  const [hasPendingOrderService, setHasPendingOrderService] = useState<boolean>(false);
   // State for scroll arrows
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
@@ -194,6 +197,28 @@ export default function Cart() {
         // Dispatch event to update cart count in navbar
         window.dispatchEvent(new Event(CART_COUNT_UPDATE_EVENT));
 
+        // Check if vendor has pending order service
+        if (cartRes.data.vendorId) {
+          try {
+            const vendorServicesRes = await axios.get(
+              `${BACKEND_URL}/api/vendor/${cartRes.data.vendorId}/assignments`,
+              getAuthHeaders()
+            );
+            if (vendorServicesRes.data.success && vendorServicesRes.data.data.services) {
+              const services = vendorServicesRes.data.data.services || [];
+              const hasPendingOrder = services.some(
+                (service: { name?: string }) => 
+                  service.name?.toLowerCase().includes("pending order")
+              );
+              setHasPendingOrderService(hasPendingOrder);
+            }
+          } catch (error) {
+            console.error("Error fetching vendor services:", error);
+            // Default to false if we can't fetch services
+            setHasPendingOrderService(false);
+          }
+        }
+
         // Fetch extras after cart is loaded
         await fetchExtras();
       } catch {
@@ -239,7 +264,47 @@ export default function Cart() {
       setExtras([]);
     }
      
-  }, [cart, userData?._id]);  
+  }, [cart, userData?._id]);
+
+  // Check vendor services when cart vendorId changes
+  useEffect(() => {
+    const checkVendorServices = async () => {
+      if (!userLoggedIn || !userData || cart.length === 0) {
+        setHasPendingOrderService(false);
+        return;
+      }
+
+      const vendorId = cart[0]?.vendorId;
+      if (!vendorId) {
+        setHasPendingOrderService(false);
+        return;
+      }
+
+      try {
+        const vendorServicesRes = await axios.get(
+          `${BACKEND_URL}/api/vendor/${vendorId}/assignments`,
+          getAuthHeaders()
+        );
+        if (vendorServicesRes.data.success && vendorServicesRes.data.data.services) {
+          const services = vendorServicesRes.data.data.services || [];
+          const hasPendingOrder = services.some(
+            (service: { name?: string }) => 
+              service.name?.toLowerCase().includes("pending order")
+          );
+          setHasPendingOrderService(hasPendingOrder);
+        } else {
+          setHasPendingOrderService(false);
+        }
+      } catch (error) {
+        console.error("Error fetching vendor services:", error);
+        // Default to false if we can't fetch services
+        setHasPendingOrderService(false);
+      }
+    };
+
+    checkVendorServices();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cart, userLoggedIn, userData?._id]);  
 
   const reFetchCart = async () => {
     try {
@@ -281,9 +346,9 @@ export default function Cart() {
     }
   };
 
-  // Cancel all pending orders when cart changes
+  // Cancel all pending orders when cart changes (only if vendor has approval service)
   const cancelPendingOrders = async () => {
-    if (!userLoggedIn || !userData) return;
+    if (!userLoggedIn || !userData || !hasPendingOrderService) return;
     
     try {
       // Silently cancel pending orders - don't show toast if none exist
@@ -671,23 +736,35 @@ export default function Cart() {
 
           {cart.length > 0 && userData && (
             <aside className={styles.cartRight}>
-              {/* CHANGED: Using new BillBoxApproval component instead of BillBox for approval workflow */}
-              <BillBoxApproval
-                userId={userData._id}
-                items={cart}
-                onOrderSubmitted={(orderId) => {
-                  // Order submitted - will show waiting screen
-                  setCurrentOrderId(orderId);
-                  setShowWaitingScreen(true);
-                }}
-              />
+              {/* Conditionally render BillBoxApproval (if vendor has pending order service) or BillBox (regular flow) */}
+              {hasPendingOrderService ? (
+                <BillBoxApproval
+                  userId={userData._id}
+                  items={cart}
+                  onOrderSubmitted={(orderId) => {
+                    // Order submitted - will show waiting screen
+                    setCurrentOrderId(orderId);
+                    setShowWaitingScreen(true);
+                  }}
+                />
+              ) : (
+                <BillBox
+                  userId={userData._id}
+                  items={cart}
+                  onOrder={(orderId) => {
+                    // Clear cart and redirect to payment confirmation page
+                    setCart([]);
+                    window.location.href = `/payment?orderId=${orderId}`;
+                  }}
+                />
+              )}
             </aside>
           )}
         </div>
       </div>
       
-      {/* NEW: Order waiting screen overlay */}
-      {showWaitingScreen && currentOrderId && userData && (
+      {/* Order waiting screen overlay - only show if using approval workflow */}
+      {hasPendingOrderService && showWaitingScreen && currentOrderId && userData && (
         <OrderWaitingScreen
           orderId={currentOrderId}
           userId={userData._id}
@@ -710,10 +787,10 @@ export default function Cart() {
             reFetchCart();
           }}
           onOrderCancelled={() => {
-            // Order cancelled - hide waiting screen and refresh cart
+            // Order cancelled - hide waiting screen and refresh cart so user can modify
             setShowWaitingScreen(false);
             setCurrentOrderId(null);
-            toast.info("Order cancelled. Your cart has been restored.");
+            toast.info("Order cancelled. You can now modify your cart.");
             // Refresh cart to get updated state
             reFetchCart();
           }}
