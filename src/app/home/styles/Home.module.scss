@@ -1,375 +1,407 @@
+// ============================================================
+// KAMPYN Home Page — Modern Redesign
+// Palette: Deep teal (#01302c), teal (#01796f), cream (#f5f0e8),
+//          off-white (#fafaf8), slate accent (#64748b)
+// ============================================================
+
+// ── Container ───────────────────────────────────────────────
 .container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 50%, #f0f9ff 100%);
-  padding: 3rem 1rem;
+  background-color: #0d1f1e;
+  padding: 0;
   margin-top: 4.75rem;
   position: relative;
   overflow: hidden;
-  
-  @media (max-width: 768px) {
-    padding: 2rem 1rem;
+}
+
+// ── Decorative grid overlay ──────────────────────────────────
+.gridOverlay {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(1, 121, 111, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(1, 121, 111, 0.06) 1px, transparent 1px);
+  background-size: 72px 72px;
+  pointer-events: none;
+  z-index: 0;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(1, 121, 111, 0.18) 0%, transparent 70%);
   }
 }
 
-.backgroundGradient {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: 
-    radial-gradient(circle at 20% 50%, rgba(78, 161, 153, 0.08) 0%, transparent 50%),
-    radial-gradient(circle at 80% 80%, rgba(111, 195, 189, 0.06) 0%, transparent 50%),
-    radial-gradient(circle at 40% 20%, rgba(1, 121, 111, 0.05) 0%, transparent 50%);
-  pointer-events: none;
-  z-index: 0;
-}
-
+// ── Content wrapper ──────────────────────────────────────────
 .content {
   max-width: 1200px;
   margin: 0 auto;
+  padding: 5rem 2rem 6rem;
   position: relative;
   z-index: 1;
+
+  @media (max-width: 768px) {
+    padding: 4rem 1.25rem 5rem;
+  }
 }
 
-.headerSection {
+// ── Hero ─────────────────────────────────────────────────────
+.hero {
   text-align: center;
   margin-bottom: 4rem;
-  animation: fadeInUp 0.6s ease-out;
-  
+  animation: fadeUp 0.7s ease-out both;
+
   @media (max-width: 768px) {
     margin-bottom: 3rem;
   }
 }
 
-.iconWrapper {
+.eyebrow {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  width: 80px;
-  height: 80px;
-  background: linear-gradient(135deg, rgba(78, 161, 153, 0.1), rgba(111, 195, 189, 0.1));
-  border-radius: 20px;
-  margin-bottom: 1.5rem;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(78, 161, 153, 0.2);
-  
-  @media (max-width: 768px) {
-    width: 64px;
-    height: 64px;
-    margin-bottom: 1rem;
-  }
-}
-
-.headerIcon {
+  gap: 0.5rem;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   color: #4ea199;
-  animation: float 3s ease-in-out infinite;
-}
-
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
+  background: rgba(78, 161, 153, 0.1);
+  border: 1px solid rgba(78, 161, 153, 0.25);
+  padding: 0.4rem 1rem;
+  border-radius: 100px;
+  margin-bottom: 2rem;
 }
 
 .heading {
-  font-size: 3.5rem;
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(2.8rem, 6vw, 5.5rem);
   font-weight: 800;
-  text-align: center;
-  margin-bottom: 1rem;
-  background: linear-gradient(135deg, #4ea199 0%, #6fc3bd 50%, #01796f 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  text-fill-color: transparent;
-  letter-spacing: -0.02em;
-  line-height: 1.1;
-  
-  @media (max-width: 768px) {
-    font-size: 2.5rem;
-    margin-bottom: 0.75rem;
-  }
-  
+  color: #f5f0e8;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  margin: 0 0 1.5rem;
+
   @media (max-width: 480px) {
-    font-size: 2rem;
+    font-size: 2.5rem;
+  }
+}
+
+.headingAccent {
+  color: #4ea199;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 4px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: #01796f;
+    border-radius: 2px;
+    opacity: 0.7;
   }
 }
 
 .subtitle {
-  font-size: 1.25rem;
-  color: #64748b;
-  text-align: center;
-  max-width: 600px;
-  margin: 0 auto;
-  line-height: 1.6;
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  color: rgba(245, 240, 232, 0.5);
+  max-width: 520px;
+  margin: 0 auto 3rem;
+  line-height: 1.7;
   font-weight: 400;
-  
-  @media (max-width: 768px) {
-    font-size: 1.125rem;
-    padding: 0 1rem;
-  }
-  
+}
+
+.heroDivider {
+  width: 48px;
+  height: 3px;
+  background: linear-gradient(90deg, #01796f, #4ea199);
+  border-radius: 2px;
+  margin: 0 auto;
+}
+
+// ── Stats Bar ────────────────────────────────────────────────
+.statsBar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(78, 161, 153, 0.15);
+  border-radius: 16px;
+  padding: 1.25rem 2rem;
+  margin-bottom: 4rem;
+  animation: fadeUp 0.7s 0.1s ease-out both;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+
   @media (max-width: 480px) {
-    font-size: 1rem;
+    padding: 1rem 1.5rem;
+    gap: 0;
   }
 }
 
+.statItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 2.5rem;
+
+  @media (max-width: 480px) {
+    padding: 0 1.25rem;
+  }
+}
+
+.statNumber {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #f5f0e8;
+  line-height: 1;
+  letter-spacing: -0.03em;
+
+  @media (max-width: 480px) {
+    font-size: 1.4rem;
+  }
+}
+
+.statLabel {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: rgba(78, 161, 153, 0.8);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: 0.25rem;
+}
+
+.statDivider {
+  width: 1px;
+  height: 40px;
+  background: rgba(78, 161, 153, 0.2);
+  flex-shrink: 0;
+}
+
+// ── College Grid ─────────────────────────────────────────────
 .collegeGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 1.75rem;
-  max-width: 1100px;
-  margin: 0 auto;
-  
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.25rem;
+  animation: fadeUp 0.7s 0.2s ease-out both;
+
   @media (min-width: 1024px) {
     grid-template-columns: repeat(3, 1fr);
   }
-  
+
   @media (max-width: 640px) {
     grid-template-columns: 1fr;
-    gap: 1.25rem;
+    gap: 1rem;
   }
 }
 
+// ── College Card ─────────────────────────────────────────────
 .collegeCard {
   position: relative;
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(20px);
-  border-radius: 20px;
-  padding: 2rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(78, 161, 153, 0.12);
+  border-radius: 16px;
+  padding: 1.75rem 1.75rem 1.75rem;
   cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 1px solid rgba(226, 232, 240, 0.8);
-  min-height: 140px;
-  display: flex;
-  align-items: center;
+  text-align: left;
+  width: 100%;
   overflow: hidden;
-  box-shadow: 
-    0 4px 6px -1px rgba(0, 0, 0, 0.05),
-    0 2px 4px -1px rgba(0, 0, 0, 0.03);
-  animation: fadeInUp 0.6s ease-out backwards;
-  
+  transition:
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 0.3s ease,
+    background 0.3s ease,
+    box-shadow 0.3s ease;
+  animation: cardFadeIn 0.5s ease-out backwards;
+
   &::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba(78, 161, 153, 0.05), rgba(111, 195, 189, 0.05));
+    inset: 0;
+    background: linear-gradient(135deg, rgba(1, 121, 111, 0.08) 0%, transparent 60%);
     opacity: 0;
-    transition: opacity 0.4s ease;
-    border-radius: 20px;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
   }
-  
-  &:hover {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: 
-      0 25px 50px -12px rgba(78, 161, 153, 0.25),
-      0 0 0 1px rgba(78, 161, 153, 0.1);
-    border-color: rgba(78, 161, 153, 0.3);
-    background: rgba(255, 255, 255, 0.95);
-    
+
+  &:hover,
+  &:focus-visible {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.07);
+    border-color: rgba(78, 161, 153, 0.4);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(78, 161, 153, 0.15);
+
     &::before {
       opacity: 1;
     }
-    
-    .cardGradient {
+
+    .cardTopBar {
       opacity: 1;
+      transform: scaleX(1);
     }
-    
-    .chevronIcon {
-      transform: translateX(6px);
-      opacity: 1;
+
+    .collegeIconWrapper {
+      background: rgba(1, 121, 111, 0.25);
+      color: #6fc3bd;
     }
-    
-    .collegeIcon {
-      transform: scale(1.1) rotate(5deg);
-      color: #4ea199;
+
+    .cardArrow {
+      background: #01796f;
+      color: #f5f0e8;
+      transform: translateX(2px);
     }
-    
-    .cardHoverEffect {
-      opacity: 1;
+
+    .collegeName {
+      color: #f5f0e8;
+    }
+
+    .cardIndex {
+      opacity: 0.5;
     }
   }
-  
+
   &:active {
-    transform: translateY(-4px) scale(1.01);
+    transform: translateY(-2px);
   }
 }
 
-.cardGradient {
+.cardTopBar {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, #4ea199, #6fc3bd, #01796f);
+  height: 2px;
+  background: linear-gradient(90deg, #01796f, #4ea199);
   opacity: 0;
-  transition: opacity 0.4s ease;
-}
-
-.cardHoverEffect {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(78, 161, 153, 0.1), transparent);
-  transform: translate(-50%, -50%);
-  transition: width 0.6s ease, height 0.6s ease, opacity 0.4s ease;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.collegeCard:hover .cardHoverEffect {
-  width: 300px;
-  height: 300px;
+  transform: scaleX(0.6);
+  transform-origin: left;
+  transition: opacity 0.3s ease, transform 0.4s ease;
 }
 
 .cardContent {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  width: 100%;
   gap: 1rem;
-  position: relative;
-  z-index: 1;
 }
 
-.collegeIcon {
+.collegeIconWrapper {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
-  background: linear-gradient(135deg, rgba(78, 161, 153, 0.1), rgba(111, 195, 189, 0.1));
+  width: 44px;
+  height: 44px;
+  background: rgba(78, 161, 153, 0.1);
   border-radius: 12px;
-  color: #64748b;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  color: #4ea199;
   flex-shrink: 0;
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
 .collegeName {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #1e293b;
-  line-height: 1.5;
   flex: 1;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: rgba(245, 240, 232, 0.85);
+  line-height: 1.4;
   transition: color 0.3s ease;
-  
-  @media (max-width: 480px) {
-    font-size: 1.125rem;
-  }
 }
 
-.collegeCard:hover .collegeName {
-  color: #0f172a;
-}
-
-.chevronWrapper {
+.cardArrow {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  background: linear-gradient(135deg, rgba(78, 161, 153, 0.1), rgba(111, 195, 189, 0.1));
+  width: 36px;
+  height: 36px;
+  background: rgba(78, 161, 153, 0.1);
   border-radius: 10px;
-  flex-shrink: 0;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.collegeCard:hover .chevronWrapper {
-  background: linear-gradient(135deg, #4ea199, #6fc3bd);
-  transform: scale(1.1);
-}
-
-.chevronIcon {
   color: #4ea199;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  opacity: 0.8;
+  flex-shrink: 0;
+  transition: background 0.3s ease, color 0.3s ease, transform 0.3s ease;
 }
 
-.collegeCard:hover .chevronIcon {
-  color: #ffffff;
-  opacity: 1;
-}
-
-// Skeleton Loading States
-.skeletonCard {
-  background: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
-  padding: 2rem;
-  min-height: 140px;
-  border: 1px solid rgba(226, 232, 240, 0.8);
-  position: relative;
-  overflow: hidden;
-  animation: fadeInUp 0.6s ease-out backwards;
-}
-
-.skeletonShimmer {
+.cardIndex {
   position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
+  bottom: 1rem;
+  right: 1.25rem;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: rgba(78, 161, 153, 0.25);
+  opacity: 0.3;
+  transition: opacity 0.3s ease;
+  user-select: none;
+}
+
+// ── Skeleton ─────────────────────────────────────────────────
+.skeletonCard {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(78, 161, 153, 0.1);
+  border-radius: 16px;
+  padding: 1.75rem;
+  min-height: 96px;
+  overflow: hidden;
+  position: relative;
+  animation: cardFadeIn 0.5s ease-out backwards;
+}
+
+.skeletonInner {
+  position: absolute;
+  inset: 0;
   background: linear-gradient(
     90deg,
-    transparent,
-    rgba(255, 255, 255, 0.6),
-    transparent
+    transparent 0%,
+    rgba(78, 161, 153, 0.07) 40%,
+    rgba(78, 161, 153, 0.12) 50%,
+    rgba(78, 161, 153, 0.07) 60%,
+    transparent 100%
   );
-  animation: shimmer 1.5s infinite;
+  background-size: 200% 100%;
+  animation: shimmer 1.8s infinite linear;
 }
 
-@keyframes shimmer {
-  0% {
-    left: -100%;
-  }
-  100% {
-    left: 100%;
-  }
-}
-
-// Error State
+// ── Error State ──────────────────────────────────────────────
 .errorState {
   text-align: center;
-  padding: 4rem 2rem;
-  animation: fadeInUp 0.6s ease-out;
+  padding: 6rem 2rem;
+  animation: fadeUp 0.6s ease-out both;
 }
 
 .errorIconWrapper {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 100px;
-  height: 100px;
-  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(239, 68, 68, 0.05));
-  border-radius: 50%;
-  margin-bottom: 2rem;
-  
-  @media (max-width: 768px) {
-    width: 80px;
-    height: 80px;
-    margin-bottom: 1.5rem;
-  }
+  width: 80px;
+  height: 80px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 20px;
+  color: #f87171;
+  margin-bottom: 1.5rem;
 }
 
-.errorIcon {
-  color: #ef4444;
+.errorHeading {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #f5f0e8;
+  margin-bottom: 0.75rem;
 }
 
-.error {
-  color: #64748b;
-  font-size: 1.125rem;
-  margin-top: 1rem;
+.errorMessage {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1rem;
+  color: rgba(245, 240, 232, 0.5);
   margin-bottom: 2rem;
-  max-width: 500px;
+  max-width: 400px;
   margin-left: auto;
   margin-right: auto;
   line-height: 1.6;
@@ -378,37 +410,56 @@
 .retryButton {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
+  gap: 0.5rem;
   padding: 0.875rem 2rem;
-  background: linear-gradient(135deg, #4ea199, #6fc3bd);
-  color: white;
+  background: #01796f;
+  color: #f5f0e8;
   border: none;
   border-radius: 12px;
-  font-size: 1rem;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 6px -1px rgba(78, 161, 153, 0.3);
-  
+  transition: background 0.2s ease, transform 0.2s ease;
+
   &:hover {
+    background: #4ea199;
     transform: translateY(-2px);
-    box-shadow: 0 8px 12px -2px rgba(78, 161, 153, 0.4);
-    background: linear-gradient(135deg, #01796f, #4ea199);
   }
-  
+
   &:active {
     transform: translateY(0);
   }
 }
 
-// Animations
-@keyframes fadeInUp {
+// ── Keyframes ────────────────────────────────────────────────
+@keyframes fadeUp {
   from {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(24px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes cardFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
   }
 }

@@ -1,39 +1,195 @@
 import React from 'react';
-import { Skeleton, SkeletonCircle } from '../components/shared/Skeleton/Skeleton';
 
 export default function Loading() {
-    return (
-        <div className="min-h-screen bg-[#D6E6F3] pt-24 px-4 md:px-8 pb-12">
-            <div className="max-w-7xl mx-auto">
-                {/* Header Section Skeleton */}
-                <div className="flex flex-col items-center text-center mb-16 animate-pulse">
-                    <SkeletonCircle size={64} className="mb-6 opacity-40 bg-teal-900/10" />
-                    <Skeleton width={300} height={48} className="mb-4 rounded-full opacity-60 bg-teal-900/10" />
-                    <Skeleton width={450} height={20} className="rounded-full opacity-30 bg-teal-900/5" />
-                </div>
-
-                {/* College Grid Skeleton */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {Array.from({ length: 9 }).map((_, i) => (
-                        <div
-                            key={i}
-                            className="relative p-6 rounded-2xl border border-white/80 bg-white/60 backdrop-blur-md shadow-sm overflow-hidden"
-                            style={{ animationDelay: `${i * 0.1}s` }}
-                        >
-                            <div className="flex items-center gap-4 relative z-10">
-                                <SkeletonCircle size={40} className="shrink-0 opacity-40 bg-teal-900/10" />
-                                <div className="flex-1">
-                                    <Skeleton width="80%" height={24} className="rounded-md opacity-40 bg-teal-900/10" />
-                                </div>
-                                <SkeletonCircle size={32} className="shrink-0 opacity-20 bg-teal-900/5" />
-                            </div>
-
-                            {/* Subtle shimmer effect */}
-                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent shimmer" />
-                        </div>
-                    ))}
-                </div>
-            </div>
+  return (
+    <div
+      style={{
+        minHeight: '100vh',
+        backgroundColor: '#0d1f1e',
+        backgroundImage:
+          'linear-gradient(rgba(1,121,111,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(1,121,111,0.06) 1px, transparent 1px)',
+        backgroundSize: '72px 72px',
+        paddingTop: '4.75rem',
+      }}
+    >
+      <div
+        style={{
+          maxWidth: 1200,
+          margin: '0 auto',
+          padding: '5rem 2rem 6rem',
+        }}
+      >
+        {/* Hero skeleton */}
+        <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
+          <div
+            style={{
+              display: 'inline-block',
+              width: 160,
+              height: 28,
+              borderRadius: 100,
+              background: 'rgba(78,161,153,0.1)',
+              marginBottom: '1.5rem',
+            }}
+          />
+          <div
+            style={{
+              width: '60%',
+              maxWidth: 480,
+              height: 72,
+              borderRadius: 12,
+              background: 'rgba(78,161,153,0.07)',
+              margin: '0 auto 1rem',
+            }}
+          />
+          <div
+            style={{
+              width: '45%',
+              maxWidth: 360,
+              height: 20,
+              borderRadius: 8,
+              background: 'rgba(78,161,153,0.05)',
+              margin: '0 auto 2rem',
+            }}
+          />
+          <div
+            style={{
+              width: 48,
+              height: 3,
+              borderRadius: 2,
+              background: 'rgba(1,121,111,0.3)',
+              margin: '0 auto',
+            }}
+          />
         </div>
-    );
+
+        {/* Stats bar skeleton */}
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            gap: 0,
+            background: 'rgba(255,255,255,0.03)',
+            border: '1px solid rgba(78,161,153,0.15)',
+            borderRadius: 16,
+            padding: '1.25rem 2rem',
+            marginBottom: '4rem',
+            width: 'fit-content',
+            marginLeft: 'auto',
+            marginRight: 'auto',
+          }}
+        >
+          {[0, 1, 2].map((i) => (
+            <React.Fragment key={i}>
+              {i > 0 && (
+                <div
+                  style={{
+                    width: 1,
+                    height: 40,
+                    background: 'rgba(78,161,153,0.2)',
+                  }}
+                />
+              )}
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  padding: '0 2.5rem',
+                }}
+              >
+                <div
+                  style={{
+                    width: 56,
+                    height: 28,
+                    borderRadius: 8,
+                    background: 'rgba(78,161,153,0.1)',
+                    marginBottom: '0.25rem',
+                  }}
+                />
+                <div
+                  style={{
+                    width: 72,
+                    height: 12,
+                    borderRadius: 4,
+                    background: 'rgba(78,161,153,0.06)',
+                  }}
+                />
+              </div>
+            </React.Fragment>
+          ))}
+        </div>
+
+        {/* Grid skeleton */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+            gap: '1.25rem',
+          }}
+        >
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div
+              key={i}
+              style={{
+                background: 'rgba(255,255,255,0.04)',
+                border: '1px solid rgba(78,161,153,0.1)',
+                borderRadius: 16,
+                padding: '1.75rem',
+                minHeight: 96,
+                overflow: 'hidden',
+                position: 'relative',
+                animationDelay: `${i * 0.08}s`,
+              }}
+            >
+              <div
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  background:
+                    'linear-gradient(90deg, transparent 0%, rgba(78,161,153,0.07) 40%, rgba(78,161,153,0.12) 50%, rgba(78,161,153,0.07) 60%, transparent 100%)',
+                  backgroundSize: '200% 100%',
+                  animation: 'shimmer 1.8s infinite linear',
+                }}
+              />
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                <div
+                  style={{
+                    width: 44,
+                    height: 44,
+                    borderRadius: 12,
+                    background: 'rgba(78,161,153,0.1)',
+                    flexShrink: 0,
+                  }}
+                />
+                <div
+                  style={{
+                    flex: 1,
+                    height: 20,
+                    borderRadius: 8,
+                    background: 'rgba(78,161,153,0.08)',
+                  }}
+                />
+                <div
+                  style={{
+                    width: 36,
+                    height: 36,
+                    borderRadius: 10,
+                    background: 'rgba(78,161,153,0.06)',
+                    flexShrink: 0,
+                  }}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <style>{`
+        @keyframes shimmer {
+          0% { background-position: -200% 0; }
+          100% { background-position: 200% 0; }
+        }
+      `}</style>
+    </div>
+  );
 }
