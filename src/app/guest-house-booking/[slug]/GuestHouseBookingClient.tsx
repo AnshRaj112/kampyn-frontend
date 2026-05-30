@@ -501,7 +501,7 @@ export default function GuestHouseBookingClient() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f7fbfa] px-4 py-8 md:px-8">
+    <div className="min-h-screen pt-[5.5rem] bg-[#f7fbfa] px-4 py-8 md:px-8">
       <div className="mx-auto max-w-7xl">
         <div className="mb-6 rounded-3xl border border-[#d8ece8] bg-white p-6 shadow-sm">
           <h1 className="text-2xl font-bold text-slate-900">{pageTitle}</h1>
