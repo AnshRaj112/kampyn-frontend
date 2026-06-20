@@ -948,7 +948,7 @@
 
 ---
 
-**Reviewers:** @EXSOLVIA/kampyn-frontend-team @kampyn/qa-team @kampyn/design-team  
+**Reviewers:** @exsolvia/kampyn-frontend-team @kampyn/qa-team @kampyn/design-team  
 **Approvers:** @AnshRaj112 @GuinAditi @ashmit-sinha-30
 **Labels:** `frontend`, `ready-for-review`, `priority-medium`  
 **Milestone:** Sprint X.X  
