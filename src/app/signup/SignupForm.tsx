@@ -7,7 +7,7 @@ import dynamic from "next/dynamic";
 import styles from "./styles/Signup.module.scss";
 import { useAuthRedirect } from "@/hooks/useAuthRedirect";
 import api from "@/utils/apiUtils";
-// import GoogleSignup from "./GoogleSignup";
+import { useTenant } from "@/app/components/context/TenantContext";
 
 // Lazy load ToastContainer to reduce initial bundle size
 const ToastContainer = dynamic(
@@ -43,14 +43,17 @@ export default function SignupForm() {
     uniID: "",
   });
 
+  const { tenant } = useTenant();
   const router = useRouter();
+
+  useEffect(() => {
+    if (tenant?._id) {
+      setFormData((prev) => ({ ...prev, uniID: tenant._id }));
+    }
+  }, [tenant]);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showGenderDropdown, setShowGenderDropdown] = useState(false);
-  const [showCollegeDropdown, setShowCollegeDropdown] = useState(false);
-  const [colleges, setColleges] = useState<
-    Array<{ _id: string; fullName: string }>
-  >([]);
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const hasInitialized = useRef(false);
@@ -143,27 +146,27 @@ export default function SignupForm() {
     };
   }, [checkSession]);
 
-  // Fetch colleges on component mount - deferred to not block initial render
-  useEffect(() => {
-    // Defer college fetch to after initial render (keeps logic identical, just timing)
-    const timeoutId = setTimeout(() => {
-      const fetchColleges = async () => {
-        try {
-          const res = await api.get("/api/user/auth/list");
-          if (res.status === 200) {
-            const data = res.data;
-            setColleges(data);
-          }
-        } catch (error) {
-          console.error("Error fetching colleges:", error);
-          notify("Error loading colleges. Please try again.", "error");
-        }
-      };
-      fetchColleges();
-    }, 100); // Small delay to allow UI to render first
+  // // Fetch colleges on component mount - deferred to not block initial render
+  // useEffect(() => {
+  //   // Defer college fetch to after initial render (keeps logic identical, just timing)
+  //   const timeoutId = setTimeout(() => {
+  //     const fetchColleges = async () => {
+  //       try {
+  //         const res = await api.get("/api/user/auth/list");
+  //         if (res.status === 200) {
+  //           const data = res.data;
+  //           setColleges(data);
+  //         }
+  //       } catch (error) {
+  //         console.error("Error fetching colleges:", error);
+  //         notify("Error loading colleges. Please try again.", "error");
+  //       }
+  //     };
+  //     fetchColleges();
+  //   }, 100); // Small delay to allow UI to render first
 
-    return () => clearTimeout(timeoutId);
-  }, []);
+  //   return () => clearTimeout(timeoutId);
+  // }, []);
 
   console.log("Making request to:", `${BACKEND_URL}/api/user/auth/signup`);
   console.log("Request body:", formData);
@@ -193,9 +196,13 @@ export default function SignupForm() {
         return;
       }
     } else if (step === 3) {
-      if (!formData.gender || !formData.uniID) {
-        notify("Please select your gender and college.", "error");
+      const activeUniID = formData.uniID || tenant?._id;
+      if (!formData.gender || !activeUniID) {
+        notify("Please select your gender.", "error");
         return;
+      }
+      if (!formData.uniID && activeUniID) {
+        setFormData((prev) => ({ ...prev, uniID: activeUniID }));
       }
     }
 
@@ -227,30 +234,30 @@ export default function SignupForm() {
     setShowGenderDropdown(false);
   };
 
-  const handleCollegeSelection = (uniId: string) => {
-    setFormData((prev) => ({ ...prev, uniID: uniId }));
-    setShowCollegeDropdown(false);
-  };
+  // const handleCollegeSelection = (uniId: string) => {
+  //   setFormData((prev) => ({ ...prev, uniID: uniId }));
+  //   setShowCollegeDropdown(false);
+  // };
 
   const genderDropdownRef = useRef<HTMLDivElement>(null);
-  const collegeDropdownRef = useRef<HTMLDivElement>(null);
+  // const collegeDropdownRef = useRef<HTMLDivElement>(null);
 
-  // Add click outside handler
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (genderDropdownRef.current && !genderDropdownRef.current.contains(event.target as Node)) {
-        setShowGenderDropdown(false);
-      }
-      if (collegeDropdownRef.current && !collegeDropdownRef.current.contains(event.target as Node)) {
-        setShowCollegeDropdown(false);
-      }
-    };
+  // // Add click outside handler
+  // useEffect(() => {
+  //   const handleClickOutside = (event: MouseEvent) => {
+  //     if (genderDropdownRef.current && !genderDropdownRef.current.contains(event.target as Node)) {
+  //       setShowGenderDropdown(false);
+  //     }
+  //     if (collegeDropdownRef.current && !collegeDropdownRef.current.contains(event.target as Node)) {
+  //       setShowCollegeDropdown(false);
+  //     }
+  //   };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
+  //   document.addEventListener('mousedown', handleClickOutside);
+  //   return () => {
+  //     document.removeEventListener('mousedown', handleClickOutside);
+  //   };
+  // }, []);
 
   return (
     <div className={styles.container}>
@@ -364,33 +371,6 @@ export default function SignupForm() {
                         onClick={() => handleGenderSelection(genderOption)}
                       >
                         {genderOption}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* College Selection */}
-                <div className={styles.collegeField} ref={collegeDropdownRef}>
-                  <input
-                    name="college"
-                    value={
-                      colleges.find((c) => c._id === formData.uniID)?.fullName ||
-                      ""
-                    }
-                    readOnly
-                    placeholder="Select College"
-                    onClick={() => setShowCollegeDropdown(!showCollegeDropdown)}
-                  />
-                  <FaChevronDown
-                    className={`${styles.dropdownIcon} ${showCollegeDropdown ? styles.open : ''}`}
-                  />
-                  <ul className={`${styles.collegeList} ${showCollegeDropdown ? styles.show : ''}`}>
-                    {colleges.map((college) => (
-                      <li
-                        key={college._id}
-                        onClick={() => handleCollegeSelection(college._id)}
-                      >
-                        {college.fullName}
                       </li>
                     ))}
                   </ul>

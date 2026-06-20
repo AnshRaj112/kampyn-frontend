@@ -12,6 +12,7 @@ interface TenantBranding {
 }
 
 interface TenantConfig {
+  _id: string;
   name: string;
   slug: string;
   branding: TenantBranding;
