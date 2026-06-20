@@ -7,6 +7,22 @@ export function middleware(request: NextRequest) {
   const pathname = url.pathname;
   const lowercasePath = pathname.toLowerCase();
 
+  // Extract tenant slug from host header
+  let tenantSlug = "";
+  const cleanHost = hostname.split(":")[0].toLowerCase();
+  const parts = cleanHost.split(".");
+  const reservedSubdomains = ["admin", "api", "www", "main"];
+
+  if (parts.length === 2 && parts[1] === "localhost") {
+    if (!reservedSubdomains.includes(parts[0])) {
+      tenantSlug = parts[0];
+    }
+  } else if (parts.length >= 3) {
+    if (!reservedSubdomains.includes(parts[0])) {
+      tenantSlug = parts[0];
+    }
+  }
+
   // Skip middleware for Next.js internals, API routes, and static assets
   if (
     pathname.startsWith("/_next") ||
@@ -17,15 +33,30 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Clone headers and inject tenant slug if present
+  const requestHeaders = new Headers(request.headers);
+  if (tenantSlug) {
+    requestHeaders.set("x-tenant-slug", tenantSlug);
+  }
+
   // Handle admin subdomain routing
   if (hostname.startsWith("admin.")) {
     if (pathname === "/" || pathname === "/login") {
-      return NextResponse.rewrite(new URL("/admin-login", request.url));
+      return NextResponse.rewrite(new URL("/admin-login", request.url), {
+        request: {
+          headers: requestHeaders,
+        },
+      });
     }
     // Only prepend /admin-dashboard if the path doesn't already start with it
     if (!pathname.startsWith("/admin-dashboard") && !pathname.startsWith("/admin-login")) {
       return NextResponse.rewrite(
-        new URL("/admin-dashboard" + pathname, request.url)
+        new URL("/admin-dashboard" + pathname, request.url),
+        {
+          request: {
+            headers: requestHeaders,
+          },
+        }
       );
     }
   }
@@ -47,10 +78,13 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL(lowercasePath, request.url));
   }
 
-  return NextResponse.next(); // Allow request to proceed normally if already correct
+  return NextResponse.next({
+    request: {
+      headers: requestHeaders,
+    },
+  });
 }
 
 export const config = {
   matcher: "/:path*", // Apply this middleware to all paths
 };
-

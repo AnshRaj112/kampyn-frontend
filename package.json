@@ -1,7 +1,18 @@
 {
-  "name": "kampyn-frontend",
+  "name": "@kampyn/frontend",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
+  "description": "KAMPYN Core Multi-Tenant Frontend Package",
+  "files": [
+    "src/components",
+    "src/utils",
+    "src/app/components/context"
+  ],
+  "exports": {
+    "./components/*": "./src/components/*.tsx",
+    "./utils/*": "./src/utils/*.ts",
+    "./context/*": "./src/app/components/context/*.tsx"
+  },
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",

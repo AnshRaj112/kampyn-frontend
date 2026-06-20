@@ -11,6 +11,24 @@ const isAdminRequest = (url: string) => {
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || '';
 
+const getTenantSlugFromHostname = (): string => {
+    if (typeof window === 'undefined') return '';
+    const hostname = window.location.hostname;
+    const parts = hostname.toLowerCase().split('.');
+    const reservedSubdomains = ["admin", "api", "www", "main"];
+
+    if (parts.length === 2 && parts[1] === 'localhost') {
+        if (!reservedSubdomains.includes(parts[0])) {
+            return parts[0];
+        }
+    } else if (parts.length >= 3) {
+        if (!reservedSubdomains.includes(parts[0])) {
+            return parts[0];
+        }
+    }
+    return '';
+};
+
 const getForcedLoginRedirectForPath = (pathname: string): string | null => {
     const path = (pathname || "").toLowerCase();
     if (!path) return null;
@@ -70,11 +88,16 @@ export const api = axios.create({
     },
 });
 
-// Add a request interceptor to handle Authorization
+// Add a request interceptor to handle Authorization and Tenant headers
 api.interceptors.request.use(
     (config) => {
-        // Attach Bearer token for cross-origin requests (cookies may be blocked by browsers)
+        // Attach Bearer token and tenant header for cross-origin requests
         if (typeof window !== 'undefined') {
+            const tenantSlug = getTenantSlugFromHostname();
+            if (tenantSlug) {
+                config.headers['X-Tenant'] = tenantSlug;
+            }
+
             const pathname = window.location.pathname;
             const forcedLogin = getForcedLoginRedirectForPath(pathname);
             const hasToken = Boolean(localStorage.getItem("token") || localStorage.getItem("adminToken"));
@@ -165,6 +188,11 @@ export const userApi = axios.create({
 
 userApi.interceptors.request.use((config) => {
     if (typeof window !== 'undefined') {
+        const tenantSlug = getTenantSlugFromHostname();
+        if (tenantSlug) {
+            config.headers['X-Tenant'] = tenantSlug;
+        }
+
         const url = config.url || '';
         const isAdminRoute = isAdminRequest(url);
         const token = isAdminRoute ? localStorage.getItem('adminToken') : localStorage.getItem('token');

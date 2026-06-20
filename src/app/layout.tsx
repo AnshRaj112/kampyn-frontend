@@ -5,6 +5,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/react";
 import { Metadata } from "next";
 import { SearchCartProvider } from './components/context/SearchCartContext';
+import { TenantProvider } from './components/context/TenantContext';
 import ConditionalHeader from './components/layout/ConditionalHeader/ConditionalHeader';
 import NextTopLoader from 'nextjs-toploader';
 
@@ -83,22 +84,24 @@ export default function RootLayout({
       </head> */}
       <body>
         <GoogleOAuthProvider clientId={googleClientId}>
-          <SearchCartProvider>
-            <NextTopLoader
-              color="#01796f"
-              initialPosition={0.08}
-              crawlSpeed={200}
-              height={3}
-              crawl={true}
-              showSpinner={false}
-              easing="ease"
-              speed={200}
-              shadow="0 0 10px #01796f,0 0 5px #01796f"
-            />
-            <ConditionalHeader />
-            <main>{children}</main>
-            <Footer />
-          </SearchCartProvider>
+          <TenantProvider>
+            <SearchCartProvider>
+              <NextTopLoader
+                color="var(--primary-color, #01796f)"
+                initialPosition={0.08}
+                crawlSpeed={200}
+                height={3}
+                crawl={true}
+                showSpinner={false}
+                easing="ease"
+                speed={200}
+                shadow="0 0 10px var(--primary-color, #01796f),0 0 5px var(--primary-color, #01796f)"
+              />
+              <ConditionalHeader />
+              <main>{children}</main>
+              <Footer />
+            </SearchCartProvider>
+          </TenantProvider>
         </GoogleOAuthProvider>
         <SpeedInsights />
         <Analytics />
