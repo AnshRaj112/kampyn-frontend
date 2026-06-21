@@ -20,12 +20,18 @@ const ConditionalHeader = () => {
     '/vendorDashboard',
     '/vendor-login',
     '/vendor-otp-verification',
+    '/vendor-forgot-password',
+    '/vendor-reset-password',
     '/uniDashboard',
     '/uni-login',
+    '/uni-otp-verification',
+    '/uni-forgot-password',
+    '/uni-reset-password',
     '/admin-dashboard',
     '/food-ordering-uniDashboard',
     '/guest-house-booking-unidashboard',
     '/auditorium-booking-unidashboard',
+    '/auditorium-booking-uniDashboard',
     '/guest-house-dashboard',
     '/guest-house-login',
     '/guest-house-otp-verification',
@@ -33,11 +39,15 @@ const ConditionalHeader = () => {
     '/guest-house-reset-password',
     '/unidashboard',
     '/vendordashboard',
-    '/tenant-studio'
+    '/tenant-studio',
+    '/tenant-login',
+    '/tenant-forgot-password',
+    '/tenant-otp-verification',
+    '/tenant-reset-password',
   ];
 
   // Check if current path starts with any of the hide header paths
-  const shouldHideHeader = hideHeaderPaths.some(path => 
+  const shouldHideHeader = hideHeaderPaths.some(path =>
     pathname.startsWith(path)
   ) || isAdminSubdomain;
 

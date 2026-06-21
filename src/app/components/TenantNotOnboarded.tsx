@@ -23,7 +23,7 @@ export default function TenantNotOnboarded({ slug }: TenantNotOnboardedProps) {
     }
   }, []);
 
-  const mailtoUrl = `mailto:partnerships@kampyn.com?subject=Onboarding%20Request%20for%20${encodeURIComponent(
+  const mailtoUrl = `mailto:contact@kampyn.com?subject=Onboarding%20Request%20for%20${encodeURIComponent(
     slug || "our"
   )}%20Campus&body=Hello%20KAMPYN%20Team%2C%0A%0AI%20would%20like%20to%20request%20onboarding%20for%20our%20campus%20(${encodeURIComponent(
     slug || "our-campus"
