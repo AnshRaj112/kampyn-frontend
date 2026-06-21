@@ -8,7 +8,7 @@ import { IoColorPaletteOutline, IoNavigateOutline, IoBuildOutline, IoGitNetworkO
 import { useRouter } from 'next/navigation';
 
 export default function TenantStudio() {
-  const { tenant } = useTenant();
+  const { tenant, refetchTenant } = useTenant();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'branding' | 'navigation' | 'pages' | 'workflows' | 'promotion'>('branding');
   
@@ -47,8 +47,10 @@ export default function TenantStudio() {
     const token = localStorage.getItem("token");
     if (!token) {
       router.push("/tenant-login");
+    } else {
+      refetchTenant();
     }
-  }, [router]);
+  }, [router, refetchTenant]);
 
   useEffect(() => {
     if (tenant) {
@@ -197,7 +199,9 @@ export default function TenantStudio() {
         <div>
           <span className="text-xs text-[#01796f] uppercase font-bold tracking-widest">Campus Control Panel</span>
           <h1 className="text-3xl font-extrabold text-white mt-1">KAMPYN Tenant Studio</h1>
-          <p className="text-sm text-zinc-400 mt-1">Tenant Scoped Administrator Sandbox — {tenant?.name || 'Loading University...'}</p>
+          <p className="text-sm text-zinc-400 mt-1">
+            Tenant Scoped Administrator Sandbox for <span className="font-semibold text-zinc-200">{tenant?.createdByUniName || tenant?.name || 'Loading University...'}</span>
+          </p>
         </div>
         <div className="flex space-x-3 items-center">
           <span className="px-3 py-1 bg-zinc-900 border border-zinc-700 text-zinc-300 text-xs rounded-full font-mono">

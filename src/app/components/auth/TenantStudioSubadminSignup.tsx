@@ -3,7 +3,11 @@
 import React, { useState } from "react";
 import { signupSubAdmin } from "@/utils/apiUtils";
 
-const TenantStudioSubadminSignup: React.FC = () => {
+interface TenantStudioSubadminSignupProps {
+  onSuccess?: () => void;
+}
+
+const TenantStudioSubadminSignup: React.FC<TenantStudioSubadminSignupProps> = ({ onSuccess }) => {
   const [form, setForm] = useState({ fullName: "", email: "", phone: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ text: string; type: "success" | "error" } | null>(null);
@@ -18,6 +22,7 @@ const TenantStudioSubadminSignup: React.FC = () => {
       if (res.data?.success) {
         setMessage({ text: "Sub-administrator registered successfully!", type: "success" });
         setForm({ fullName: "", email: "", phone: "", password: "" });
+        if (onSuccess) onSuccess();
       } else {
         setMessage({ text: res.data?.message || "Failed to register sub-administrator", type: "error" });
       }

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { api, getTenantSlugFromHostname } from '../../../utils/apiUtils';
 import TenantNotOnboarded from '../TenantNotOnboarded';
 
@@ -31,12 +31,14 @@ interface TenantConfig {
     approvalRole?: string;
     outingLimit?: number;
   };
+  createdByUniName?: string;
 }
 
 interface TenantContextProps {
   tenant: TenantConfig | null;
   loading: boolean;
   isModuleEnabled: (moduleName: string) => boolean;
+  refetchTenant: () => Promise<void>;
 }
 
 const TenantContext = createContext<TenantContextProps | undefined>(undefined);
@@ -47,34 +49,34 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [tenantNotFound, setTenantNotFound] = useState(false);
   const [tenantSlug, setTenantSlug] = useState('');
 
-  useEffect(() => {
-    const fetchTenantConfig = async () => {
-      const slug = getTenantSlugFromHostname();
-      if (slug) {
-        setTenantSlug(slug);
-      }
-      try {
-        const response = await api.get('/api/tenant/config');
-        if (response.data?.success && response.data?.data) {
-          const tenantData = response.data.data;
-          setTenant(tenantData);
-          applyBranding(tenantData);
-          setTenantNotFound(false);
-        } else {
-          if (slug) {
-            setTenantNotFound(true);
-          }
-        }
-      } catch (error) {
-        console.error("Failed to load tenant configuration:", error);
+  const fetchTenantConfig = useCallback(async () => {
+    const slug = getTenantSlugFromHostname();
+    if (slug) {
+      setTenantSlug(slug);
+    }
+    try {
+      const response = await api.get('/api/tenant/config');
+      if (response.data?.success && response.data?.data) {
+        const tenantData = response.data.data;
+        setTenant(tenantData);
+        applyBranding(tenantData);
+        setTenantNotFound(false);
+      } else {
         if (slug) {
           setTenantNotFound(true);
         }
-      } finally {
-        setLoading(false);
       }
-    };
+    } catch (error) {
+      console.error("Failed to load tenant configuration:", error);
+      if (slug) {
+        setTenantNotFound(true);
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
+  useEffect(() => {
     fetchTenantConfig();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -146,10 +148,17 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     return `${r}, ${g}, ${b}`;
   };
 
-  const isModuleEnabled = (moduleName: string): boolean => {
+  const isModuleEnabled = useCallback((moduleName: string): boolean => {
     if (!tenant) return false;
     return tenant.enabledModules.includes(moduleName);
-  };
+  }, [tenant]);
+
+  const contextValue = useMemo(() => ({
+    tenant,
+    loading,
+    isModuleEnabled,
+    refetchTenant: fetchTenantConfig
+  }), [tenant, loading, isModuleEnabled, fetchTenantConfig]);
 
   if (loading) {
     return (
@@ -165,7 +174,7 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   }
 
   return (
-    <TenantContext.Provider value={{ tenant, loading, isModuleEnabled }}>
+    <TenantContext.Provider value={contextValue}>
       {children}
     </TenantContext.Provider>
   );

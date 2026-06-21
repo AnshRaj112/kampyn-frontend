@@ -14,6 +14,9 @@ const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || '';
 export const getTenantSlugFromHostname = (): string => {
     if (typeof window === 'undefined') return '';
     const hostname = window.location.hostname;
+    const isIPAddress = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/.test(hostname);
+    if (isIPAddress) return '';
+
     const parts = hostname.toLowerCase().split('.');
     const reservedSubdomains = ["admin", "api", "www", "main", "tenant-studio"];
 
@@ -212,6 +215,14 @@ userApi.interceptors.request.use((config) => {
  */
 export const signupSubAdmin = async (formData: Record<string, string>) => {
     return api.post('/api/uni/auth/sub-admin/signup', formData);
+};
+
+export const getSubAdmins = async () => {
+    return api.get('/api/uni/auth/sub-admins');
+};
+
+export const deleteSubAdmin = async (id: string) => {
+    return api.delete(`/api/uni/auth/sub-admin/${id}`);
 };
 
 export default api;
