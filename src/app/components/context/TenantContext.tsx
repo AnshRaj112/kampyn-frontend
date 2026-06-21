@@ -11,12 +11,20 @@ interface TenantBranding {
   font?: string;
 }
 
+interface TenantNavigationItem {
+  label: string;
+  path: string;
+  icon?: string;
+  roles?: string[];
+}
+
 interface TenantConfig {
   _id: string;
   name: string;
   slug: string;
   branding: TenantBranding;
   enabledModules: string[];
+  navigation: TenantNavigationItem[];
 }
 
 interface TenantContextProps {
@@ -48,6 +56,7 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     };
 
     fetchTenantConfig();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const applyBranding = (config: TenantConfig) => {

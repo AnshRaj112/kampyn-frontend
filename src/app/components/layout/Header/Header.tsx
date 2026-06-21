@@ -22,6 +22,7 @@ import { IoReceiptOutline } from "react-icons/io5";
 
 import styles from "./Header.module.scss";
 import { useCartCount } from "../../../hooks/useCartCount";
+import { useTenant } from "../../context/TenantContext";
 
 // const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL; // Handled by apiUtils
 
@@ -35,6 +36,7 @@ const Header: React.FC<HeaderProps> = ({
   showProfile = true,
 }) => {
   const router = useRouter();
+  const { tenant } = useTenant();
   const pathname = usePathname();
   const isLandingPage = pathname === "/";
 
@@ -230,7 +232,7 @@ const Header: React.FC<HeaderProps> = ({
 
   return (
     <header className={`${styles.header} ${scrolling ? styles.scrolled : ""} ${menuOpen ? styles.headerMenuOpen : ""}`}>
-      <div className={styles.logoContainer}>
+      <div className={styles.logoContainer} style={{ display: 'flex', alignItems: 'center' }}>
         <Link href="/food" onClick={handleLinkClick}>
           <Image
             src="https://res.cloudinary.com/dt45pu5mx/image/upload/v1754770229/FullLogo_Transparent_NoBuffer_1_fg1iux.png"
@@ -241,6 +243,16 @@ const Header: React.FC<HeaderProps> = ({
             className={styles.logoImage}
           />
         </Link>
+        {tenant?.branding?.logo && (
+          <div style={{ display: 'flex', alignItems: 'center', marginLeft: '12px', borderLeft: '1px solid #e4e4e7', paddingLeft: '12px' }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={tenant.branding.logo}
+              alt={`${tenant.name} Logo`}
+              style={{ height: '32px', maxWidth: '120px', objectFit: 'contain' }}
+            />
+          </div>
+        )}
       </div>
 
       <div className={`${styles.menuToggle} ${menuOpen ? styles.menuToggleOpen : ""}`} onClick={() => setMenuOpen(!menuOpen)}>
