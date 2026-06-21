@@ -5,9 +5,11 @@ import { useTenant } from '../components/context/TenantContext';
 import api from '@/utils/apiUtils';
 import { motion } from 'framer-motion';
 import { IoColorPaletteOutline, IoNavigateOutline, IoBuildOutline, IoGitNetworkOutline, IoCloudUploadOutline } from 'react-icons/io5';
+import { useRouter } from 'next/navigation';
 
 export default function TenantStudio() {
   const { tenant } = useTenant();
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<'branding' | 'navigation' | 'pages' | 'workflows' | 'promotion'>('branding');
   
   // Branding states
@@ -38,6 +40,14 @@ export default function TenantStudio() {
   // Promotion states
   const [logs, setLogs] = useState<string[]>([]);
   const [currentVersion, setCurrentVersion] = useState(1);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      router.push("/tenant-login");
+    }
+  }, [router]);
 
   useEffect(() => {
     if (tenant) {
@@ -46,8 +56,70 @@ export default function TenantStudio() {
       setFontFamily(tenant.branding?.font || 'Poppins');
       setLogoUrl(tenant.branding?.logo || '');
       setNavItems(tenant.navigation || []);
+      if (tenant.widgets) {
+        setSelectedWidgets(tenant.widgets);
+      }
+      if (tenant.workflows) {
+        setApprovalRole(tenant.workflows.approvalRole || 'Warden');
+        setOutingLimit(tenant.workflows.outingLimit || 3);
+      }
     }
   }, [tenant]);
+
+  const isDirty = tenant ? (
+    primaryColor !== (tenant.branding?.primaryColor || '#01796f') ||
+    secondaryColor !== (tenant.branding?.secondaryColor || '#4ea199') ||
+    fontFamily !== (tenant.branding?.font || 'Poppins') ||
+    logoUrl !== (tenant.branding?.logo || '') ||
+    JSON.stringify(navItems) !== JSON.stringify(tenant.navigation || []) ||
+    JSON.stringify(selectedWidgets) !== JSON.stringify(tenant.widgets || ['StatCard', 'SystemAlerts']) ||
+    approvalRole !== (tenant.workflows?.approvalRole || 'Warden') ||
+    outingLimit !== (tenant.workflows?.outingLimit || 3)
+  ) : false;
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const response = await api.put('/api/tenant/studio-config', {
+        branding: {
+          primaryColor,
+          secondaryColor,
+          font: fontFamily,
+          logo: logoUrl
+        },
+        navigation: navItems,
+        widgets: selectedWidgets,
+        workflows: {
+          approvalRole,
+          outingLimit
+        }
+      });
+      
+      if (response.data?.success) {
+        window.location.reload();
+      } else {
+        alert("Failed to save changes");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Failed to save changes");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleReset = () => {
+    if (tenant) {
+      setPrimaryColor(tenant.branding?.primaryColor || '#01796f');
+      setSecondaryColor(tenant.branding?.secondaryColor || '#4ea199');
+      setFontFamily(tenant.branding?.font || 'Poppins');
+      setLogoUrl(tenant.branding?.logo || '');
+      setNavItems(tenant.navigation || []);
+      setSelectedWidgets(tenant.widgets || ['StatCard', 'SystemAlerts']);
+      setApprovalRole(tenant.workflows?.approvalRole || 'Warden');
+      setOutingLimit(tenant.workflows?.outingLimit || 3);
+    }
+  };
 
   // Live preview styling updater
   const handleColorChange = (type: 'primary' | 'secondary', val: string) => {
@@ -427,12 +499,43 @@ export default function TenantStudio() {
                   ) : (
                     logs.map((log, i) => <p key={i}>{log}</p>)
                   )}
-                </div>
+                 </div>
               </div>
             </motion.div>
           )}
         </main>
       </div>
+
+      {/* Premium Floating Save Bar */}
+      {isDirty && (
+        <motion.div
+          initial={{ y: 100, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: 100, opacity: 0 }}
+          className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 bg-zinc-900 border border-zinc-700 shadow-2xl rounded-2xl px-6 py-4 flex items-center justify-between w-full max-w-xl backdrop-blur-md bg-opacity-95"
+        >
+          <div className="flex flex-col">
+            <span className="text-sm font-semibold text-white">Unsaved Changes</span>
+            <span className="text-xs text-zinc-400">You have modified tenant customizations</span>
+          </div>
+          <div className="flex space-x-3">
+            <button
+              onClick={handleReset}
+              disabled={saving}
+              className="px-4 py-2 border border-zinc-700 hover:bg-zinc-800 text-zinc-300 text-sm font-semibold rounded-lg transition-colors"
+            >
+              Reset
+            </button>
+            <button
+              onClick={handleSave}
+              disabled={saving}
+              className="px-5 py-2 bg-[#01796f] hover:bg-[#01796f]/80 disabled:opacity-50 text-white text-sm font-semibold rounded-lg transition-colors shadow-lg shadow-[#01796f]/20 flex items-center space-x-2"
+            >
+              <span>{saving ? "Saving..." : "Save Changes"}</span>
+            </button>
+          </div>
+        </motion.div>
+      )}
     </div>
   );
 }

@@ -1,7 +1,8 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { api } from '../../../utils/apiUtils';
+import { api, getTenantSlugFromHostname } from '../../../utils/apiUtils';
+import TenantNotOnboarded from '../TenantNotOnboarded';
 
 interface TenantBranding {
   logo?: string;
@@ -25,6 +26,11 @@ interface TenantConfig {
   branding: TenantBranding;
   enabledModules: string[];
   navigation: TenantNavigationItem[];
+  widgets?: string[];
+  workflows?: {
+    approvalRole?: string;
+    outingLimit?: number;
+  };
 }
 
 interface TenantContextProps {
@@ -38,18 +44,32 @@ const TenantContext = createContext<TenantContextProps | undefined>(undefined);
 export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [tenant, setTenant] = useState<TenantConfig | null>(null);
   const [loading, setLoading] = useState(true);
+  const [tenantNotFound, setTenantNotFound] = useState(false);
+  const [tenantSlug, setTenantSlug] = useState('');
 
   useEffect(() => {
     const fetchTenantConfig = async () => {
+      const slug = getTenantSlugFromHostname();
+      if (slug) {
+        setTenantSlug(slug);
+      }
       try {
         const response = await api.get('/api/tenant/config');
         if (response.data?.success && response.data?.data) {
           const tenantData = response.data.data;
           setTenant(tenantData);
           applyBranding(tenantData);
+          setTenantNotFound(false);
+        } else {
+          if (slug) {
+            setTenantNotFound(true);
+          }
         }
       } catch (error) {
         console.error("Failed to load tenant configuration:", error);
+        if (slug) {
+          setTenantNotFound(true);
+        }
       } finally {
         setLoading(false);
       }
@@ -138,6 +158,10 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         <p className="mt-4 text-sm font-medium text-zinc-500 animate-pulse">Loading experience...</p>
       </div>
     );
+  }
+
+  if (tenantNotFound) {
+    return <TenantNotOnboarded slug={tenantSlug} />;
   }
 
   return (

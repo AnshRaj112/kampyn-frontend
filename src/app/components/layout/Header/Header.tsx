@@ -239,7 +239,7 @@ const Header: React.FC<HeaderProps> = ({
             alt="KAMPYN Logo"
             width={150} // adjust width as needed
             height={50} // adjust height as needed
-            style={{ height: "auto" }}
+            style={{ width: "auto", height: "auto" }}
             className={styles.logoImage}
           />
         </Link>

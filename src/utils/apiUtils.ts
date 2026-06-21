@@ -11,11 +11,11 @@ const isAdminRequest = (url: string) => {
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || '';
 
-const getTenantSlugFromHostname = (): string => {
+export const getTenantSlugFromHostname = (): string => {
     if (typeof window === 'undefined') return '';
     const hostname = window.location.hostname;
     const parts = hostname.toLowerCase().split('.');
-    const reservedSubdomains = ["admin", "api", "www", "main"];
+    const reservedSubdomains = ["admin", "api", "www", "main", "tenant-studio"];
 
     if (parts.length === 2 && parts[1] === 'localhost') {
         if (!reservedSubdomains.includes(parts[0])) {
@@ -43,12 +43,16 @@ const getForcedLoginRedirectForPath = (pathname: string): string | null => {
         return "/guest-house-login";
     }
 
+    // Tenant Studio protected area
+    if (path.includes("/tenant-studio")) {
+        return "/tenant-login";
+    }
+
     // Uni protected areas (including auditorium + guest-house uni dashboards)
     if (
         path.includes("/food-ordering-unidashboard") ||
         path.includes("/guest-house-booking-unidashboard") ||
         path.includes("/auditorium-booking-unidashboard") ||
-        path.includes("/unidashboard") ||
         path.includes("/unidashboard")
     ) {
         return "/uni-login";
@@ -143,11 +147,11 @@ api.interceptors.response.use(
 
             if (isDashboardArea) {
                 const url = error.config?.url || '';
-                
+
                 // Only redirect if the 401 error comes from an endpoint that matches the dashboard role.
                 // This prevents "shopper" side 401s (like SearchCartContext profile checks) from 
                 // accidentally logging out vendors or administrators.
-                
+
                 let shouldRedirect = false;
                 let targetLogin = '/login';
 
@@ -202,5 +206,12 @@ userApi.interceptors.request.use((config) => {
     }
     return config;
 });
+
+/**
+ * Register a secondary university sub-administrator for Tenant Studio
+ */
+export const signupSubAdmin = async (formData: Record<string, string>) => {
+    return api.post('/api/uni/auth/sub-admin/signup', formData);
+};
 
 export default api;

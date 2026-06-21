@@ -38,7 +38,9 @@ const nextConfig: NextConfig = {
       "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://checkout.razorpay.com https://vercel.live https://accounts.google.com",
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob: https:",
-      "connect-src 'self' https://api.razorpay.com https:",
+      isProduction
+        ? "connect-src 'self' https://api.razorpay.com https:"
+        : "connect-src 'self' https://api.razorpay.com https: http://localhost:5001 http://127.0.0.1:5001 ws://localhost:* ws://127.0.0.1:*",
       "frame-src https://checkout.razorpay.com https://vercel.live https://accounts.google.com",
       "font-src 'self' https:",
     ].join("; ");

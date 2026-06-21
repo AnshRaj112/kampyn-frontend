@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import styles from "./styles/UniDashboard.module.scss";
 import api from "@/utils/apiUtils";
 import axios from "axios";
+import TenantStudioSubadminSignup from "@/app/components/auth/TenantStudioSubadminSignup";
 
 export default function UniDashboardPage() {
   const router = useRouter();
@@ -26,15 +27,6 @@ export default function UniDashboardPage() {
   useEffect(() => {
     const init = async () => {
       try {
-        // Token is now in HTTP-only cookies
-        /* REMOVED:
-        const token = localStorage.getItem("token");
-        if (!token) {
-          router.push("/uni-login");
-          return;
-        }
-        */
-
         // Use standardized api utility
         const userRes = await api.get("/api/uni/auth/user");
 
@@ -57,10 +49,8 @@ export default function UniDashboardPage() {
         }
       } catch (e) {
         console.error("Failed to init uni dashboard", e);
-        // On 401, the apiUtils interceptor will handle redirect
-        // For other errors, we might still want to clear/redirect if it's a critical failure
         if (axios.isAxiosError(e) && e.response?.status === 401) {
-          return; // Interceptor already handled it
+          return;
         }
         router.push("/uni-login");
         return;
@@ -89,8 +79,6 @@ export default function UniDashboardPage() {
   return (
     <div className={styles.dashboardContainer}>
       <main className={styles.main}>
-
-
         {/* Loading State */}
         {loading && (
           <div className={styles.loadingContainer}>
@@ -103,51 +91,60 @@ export default function UniDashboardPage() {
 
         {/* Dashboard Segment: Feature selection */}
         {activeSegment === "dashboard" && !loading && (
-          <div className={styles.featuresSection}>
-            <h2 className={styles.sectionTitle}>Available Features</h2>
+          <div className="space-y-12">
+            <div className={styles.featuresSection}>
+              <h2 className={styles.sectionTitle}>Available Features</h2>
 
-            <div className={styles.featuresGrid}>
-              {features.map((feature) => {
-                const slug = `${feature.name}`
-                  .toLowerCase()
-                  .replace(/[^a-z0-9\s-]/g, "")
-                  .trim()
-                  .replace(/\s+/g, "-");
+              <div className={styles.featuresGrid}>
+                {features.map((feature) => {
+                  const slug = `${feature.name}`
+                    .toLowerCase()
+                    .replace(/[^a-z0-9\s-]/g, "")
+                    .trim()
+                    .replace(/\s+/g, "-");
 
-                return (
-                  <div
-                    key={feature._id}
-                    className={`${styles.featureCard} ${styles.fadeInUp}`}
-                    onClick={() => {
-                      localStorage.removeItem("activeSegment");
-                      router.push(`/${slug}-uniDashboard`);
-                    }}
-                  >
-                    <div className={styles.cardContent}>
-                      <div className={styles.featureIcon}>
-                        {getFeatureIcon(feature.name)}
+                  return (
+                    <div
+                      key={feature._id}
+                      className={`${styles.featureCard} ${styles.fadeInUp}`}
+                      onClick={() => {
+                        localStorage.removeItem("activeSegment");
+                        router.push(`/${slug}-uniDashboard`);
+                      }}
+                    >
+                      <div className={styles.cardContent}>
+                        <div className={styles.featureIcon}>
+                          {getFeatureIcon(feature.name)}
+                        </div>
+                        <h3 className={styles.featureTitle}>{feature.name}</h3>
+                        <p className={styles.featureDescription}>
+                          Access and manage your {feature.name.toLowerCase()} dashboard
+                        </p>
                       </div>
-                      <h3 className={styles.featureTitle}>{feature.name}</h3>
-                      <p className={styles.featureDescription}>
-                        Access and manage your {feature.name.toLowerCase()} dashboard
-                      </p>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            {features.length === 0 && (
-              <div className={styles.emptyState}>
-                <p className={styles.emptyDescription}>
-                  No features assigned. Please contact your administrator.
-                </p>
+                  );
+                })}
               </div>
-            )}
-          </div>
+
+              {features.length === 0 && (
+                <div className={styles.emptyState}>
+                  <p className={styles.emptyDescription}>
+                    No features assigned. Please contact your administrator.
+                  </p>
+                </div>
+              )}
+                {/* Sub-Admins Signup Form */}
+                <div className="bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 p-6 rounded-2xl">
+                  <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100 mb-2">Add Sub-Administrators</h3>
+                  <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-4">
+                    Create secondary administrator accounts that can access and configure the Tenant Studio portal.
+                  </p>
+                  
+                  <TenantStudioSubadminSignup />
+                </div>
+              </div>
+            </div>
         )}
-
-
 
       </main>
     </div>
