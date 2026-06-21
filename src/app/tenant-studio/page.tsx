@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useTenant } from '../components/context/TenantContext';
 import api from '@/utils/apiUtils';
 import { motion } from 'framer-motion';
-import { IoColorPaletteOutline, IoNavigateOutline, IoBuildOutline, IoGitNetworkOutline, IoCloudUploadOutline } from 'react-icons/io5';
+import { IoColorPaletteOutline, IoNavigateOutline, IoBuildOutline, IoGitNetworkOutline, IoCloudUploadOutline, IoLogOutOutline } from 'react-icons/io5';
 import { useRouter } from 'next/navigation';
 
 export default function TenantStudio() {
@@ -175,6 +175,16 @@ export default function TenantStudio() {
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      await api.post('/api/tenant/auth/logout');
+    } catch (err) {
+      console.error("Logout request failed:", err);
+    }
+    localStorage.removeItem("token");
+    router.push("/tenant-login");
+  };
+
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans p-8">
       {/* Studio Header */}
@@ -184,13 +194,20 @@ export default function TenantStudio() {
           <h1 className="text-3xl font-extrabold text-white mt-1">KAMPYN Tenant Studio</h1>
           <p className="text-sm text-zinc-400 mt-1">Tenant Scoped Administrator Sandbox — {tenant?.name || 'Loading University...'}</p>
         </div>
-        <div className="flex space-x-3">
+        <div className="flex space-x-3 items-center">
           <span className="px-3 py-1 bg-zinc-900 border border-zinc-700 text-zinc-300 text-xs rounded-full font-mono">
             Tenant Slug: {tenant?.slug || 'localhost'}
           </span>
           <span className="px-3 py-1 bg-[#01796f]/15 border border-[#01796f]/40 text-[#01796f] text-xs rounded-full font-mono">
             Active Config: v{currentVersion}
           </span>
+          <button
+            onClick={handleLogout}
+            className="flex items-center space-x-1.5 px-3 py-1 bg-red-950/40 hover:bg-red-900/20 border border-red-900/40 text-red-400 hover:text-red-300 text-xs font-semibold rounded-full transition-all cursor-pointer"
+          >
+            <IoLogOutOutline size={14} />
+            <span>Logout</span>
+          </button>
         </div>
       </header>
 
@@ -242,6 +259,16 @@ export default function TenantStudio() {
             <IoCloudUploadOutline size={18} />
             <span>Environment Promotion</span>
           </button>
+          
+          <div className="pt-4 border-t border-zinc-800 mt-2">
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all bg-zinc-900/50 hover:bg-red-950/20 text-red-400 hover:text-red-300 border border-zinc-800/80 hover:border-red-900/30 cursor-pointer"
+            >
+              <IoLogOutOutline size={18} />
+              <span>Sign Out</span>
+            </button>
+          </div>
         </aside>
 
         {/* Content Box */}
