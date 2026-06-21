@@ -32,7 +32,8 @@ const ConditionalHeader = () => {
     '/guest-house-forgot-password',
     '/guest-house-reset-password',
     '/unidashboard',
-    '/vendordashboard'
+    '/vendordashboard',
+    '/tenant-studio'
   ];
 
   // Check if current path starts with any of the hide header paths
