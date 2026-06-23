@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useTenant } from '../components/context/TenantContext';
 import api from '@/utils/apiUtils';
 import { motion } from 'framer-motion';
-import { IoColorPaletteOutline, IoNavigateOutline, IoBuildOutline, IoGitNetworkOutline, IoCloudUploadOutline, IoLogOutOutline } from 'react-icons/io5';
+import { IoColorPaletteOutline, IoNavigateOutline, IoBuildOutline, IoGitNetworkOutline, IoCloudUploadOutline, IoLogOutOutline, IoCheckmarkCircleOutline, IoAlertCircleOutline, IoSaveOutline } from 'react-icons/io5';
 import { useRouter } from 'next/navigation';
 
 export default function TenantStudio() {
@@ -42,6 +42,27 @@ export default function TenantStudio() {
   const [logs, setLogs] = useState<string[]>([]);
   const [currentVersion, setCurrentVersion] = useState(1);
   const [saving, setSaving] = useState(false);
+
+  // Toast notification states
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [toastType, setToastType] = useState<'success' | 'error' | 'info'>('success');
+
+  const triggerToast = (msg: string, type: 'success' | 'error' | 'info' = 'success') => {
+    setToastMessage(msg);
+    setToastType(type);
+    setShowToast(true);
+  };
+
+  // Auto-hide toast after 4 seconds
+  useEffect(() => {
+    if (showToast) {
+      const timer = setTimeout(() => {
+        setShowToast(false);
+      }, 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [showToast]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -102,13 +123,19 @@ export default function TenantStudio() {
       });
       
       if (response.data?.success) {
-        window.location.reload();
+        if (response.data.data?.version) {
+          setCurrentVersion(response.data.data.version);
+        }
+        await refetchTenant();
+        addLog(`Configurations saved successfully to DEV environment. Version: v${response.data.data?.version || currentVersion}`);
+        triggerToast("Configurations saved successfully!", "success");
       } else {
-        alert("Failed to save changes");
+        triggerToast(response.data?.message || "Failed to save changes", "error");
       }
     } catch (err) {
       console.error(err);
-      alert("Failed to save changes");
+      const error = err as { response?: { data?: { message?: string } } };
+      triggerToast(error.response?.data?.message || "Failed to save changes", "error");
     } finally {
       setSaving(false);
     }
@@ -125,6 +152,7 @@ export default function TenantStudio() {
       setSelectedWidgets(tenant.widgets || ['StatCard', 'SystemAlerts']);
       setApprovalRole(tenant.workflows?.approvalRole || 'Warden');
       setOutingLimit(tenant.workflows?.outingLimit || 3);
+      triggerToast("Changes reverted to active configuration", "info");
     }
   };
 
@@ -204,12 +232,50 @@ export default function TenantStudio() {
           </p>
         </div>
         <div className="flex space-x-3 items-center">
+          {/* Live Save Status Badge */}
+          <div className={`flex items-center space-x-1.5 px-3 py-1 rounded-full border text-xs font-semibold transition-all duration-300 ${
+            isDirty 
+              ? 'bg-amber-950/40 border-amber-800/60 text-amber-400' 
+              : 'bg-emerald-950/40 border-emerald-800/60 text-emerald-400'
+          }`}>
+            {isDirty ? (
+              <>
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+                </span>
+                <span>Unsaved Changes</span>
+              </>
+            ) : (
+              <>
+                <IoCheckmarkCircleOutline className="text-emerald-400" size={14} />
+                <span>All Changes Saved</span>
+              </>
+            )}
+          </div>
+
           <span className="px-3 py-1 bg-zinc-900 border border-zinc-700 text-zinc-300 text-xs rounded-full font-mono">
             Tenant Slug: {tenant?.slug || 'localhost'}
           </span>
           <span className="px-3 py-1 bg-[#01796f]/15 border border-[#01796f]/40 text-[#01796f] text-xs rounded-full font-mono">
             Active Config: v{currentVersion}
           </span>
+
+          {/* Persistent Save Changes / Saved button */}
+          <button
+            onClick={handleSave}
+            disabled={!isDirty || saving}
+            className={`flex items-center space-x-1.5 px-4 py-1 text-xs font-bold rounded-full transition-all duration-200 ${
+              isDirty 
+                ? 'bg-[#01796f] hover:bg-[#01796f]/80 text-white shadow-md shadow-[#01796f]/20 cursor-pointer animate-pulse' 
+                : 'bg-zinc-900 border border-zinc-800 text-zinc-500 cursor-not-allowed'
+            }`}
+            title={isDirty ? "Click to save changes" : "All changes up to date"}
+          >
+            <IoSaveOutline size={13} />
+            <span>{saving ? "Saving..." : isDirty ? "Save Changes" : "Saved"}</span>
+          </button>
+
           <button
             onClick={handleLogout}
             className="flex items-center space-x-1.5 px-3 py-1 bg-red-950/40 hover:bg-red-900/20 border border-red-900/40 text-red-400 hover:text-red-300 text-xs font-semibold rounded-full transition-all cursor-pointer"
@@ -346,9 +412,6 @@ export default function TenantStudio() {
                     placeholder="Enter dynamic logo URL (e.g. S3 or GCP URL)"
                     onChange={(e) => {
                       setLogoUrl(e.target.value);
-                      if (tenant?.branding) {
-                        tenant.branding.logo = e.target.value;
-                      }
                       addLog(`Logo URL customized: ${e.target.value}`);
                     }}
                     className="bg-zinc-950 border border-zinc-700 rounded px-3 py-2 text-sm text-zinc-200 w-full"
@@ -363,9 +426,6 @@ export default function TenantStudio() {
                     placeholder="Enter dynamic favicon URL (e.g. S3 or GCP URL, or favicon.ico)"
                     onChange={(e) => {
                       setFaviconUrl(e.target.value);
-                      if (tenant?.branding) {
-                        tenant.branding.favicon = e.target.value;
-                      }
                       addLog(`Favicon URL customized: ${e.target.value}`);
                     }}
                     className="bg-zinc-950 border border-zinc-700 rounded px-3 py-2 text-sm text-zinc-200 w-full"
@@ -387,6 +447,33 @@ export default function TenantStudio() {
                     Custom Button
                   </button>
                 </div>
+              </div>
+
+              {/* Tab Actions */}
+              <div className="flex justify-end space-x-3 pt-4 border-t border-zinc-800/60 mt-6">
+                <button
+                  onClick={handleReset}
+                  disabled={!isDirty || saving}
+                  className={`px-4 py-2 border text-sm font-semibold rounded-lg transition-colors duration-200 ${
+                    isDirty 
+                      ? 'border-zinc-700 hover:bg-zinc-800 text-zinc-300 cursor-pointer' 
+                      : 'border-zinc-800/80 text-zinc-600 cursor-not-allowed'
+                  }`}
+                >
+                  Reset
+                </button>
+                <button
+                  onClick={handleSave}
+                  disabled={!isDirty || saving}
+                  className={`px-5 py-2 text-sm font-semibold rounded-lg transition-colors duration-200 flex items-center space-x-2 ${
+                    isDirty 
+                      ? 'bg-[#01796f] hover:bg-[#01796f]/80 text-white shadow-md shadow-[#01796f]/20 cursor-pointer' 
+                      : 'bg-zinc-950 border border-zinc-800 text-zinc-500 cursor-not-allowed'
+                  }`}
+                >
+                  <IoSaveOutline size={15} />
+                  <span>{saving ? "Saving..." : isDirty ? "Save Changes" : "Saved"}</span>
+                </button>
               </div>
             </motion.div>
           )}
@@ -439,6 +526,33 @@ export default function TenantStudio() {
                   </button>
                 </div>
               </div>
+
+              {/* Tab Actions */}
+              <div className="flex justify-end space-x-3 pt-4 border-t border-zinc-800/60 mt-6">
+                <button
+                  onClick={handleReset}
+                  disabled={!isDirty || saving}
+                  className={`px-4 py-2 border text-sm font-semibold rounded-lg transition-colors duration-200 ${
+                    isDirty 
+                      ? 'border-zinc-700 hover:bg-zinc-800 text-zinc-300 cursor-pointer' 
+                      : 'border-zinc-800/80 text-zinc-600 cursor-not-allowed'
+                  }`}
+                >
+                  Reset
+                </button>
+                <button
+                  onClick={handleSave}
+                  disabled={!isDirty || saving}
+                  className={`px-5 py-2 text-sm font-semibold rounded-lg transition-colors duration-200 flex items-center space-x-2 ${
+                    isDirty 
+                      ? 'bg-[#01796f] hover:bg-[#01796f]/80 text-white shadow-md shadow-[#01796f]/20 cursor-pointer' 
+                      : 'bg-zinc-950 border border-zinc-800 text-zinc-500 cursor-not-allowed'
+                  }`}
+                >
+                  <IoSaveOutline size={15} />
+                  <span>{saving ? "Saving..." : isDirty ? "Save Changes" : "Saved"}</span>
+                </button>
+              </div>
             </motion.div>
           )}
 
@@ -470,6 +584,33 @@ export default function TenantStudio() {
                     </div>
                   );
                 })}
+              </div>
+
+              {/* Tab Actions */}
+              <div className="flex justify-end space-x-3 pt-4 border-t border-zinc-800/60 mt-6">
+                <button
+                  onClick={handleReset}
+                  disabled={!isDirty || saving}
+                  className={`px-4 py-2 border text-sm font-semibold rounded-lg transition-colors duration-200 ${
+                    isDirty 
+                      ? 'border-zinc-700 hover:bg-zinc-800 text-zinc-300 cursor-pointer' 
+                      : 'border-zinc-800/80 text-zinc-650 cursor-not-allowed'
+                  }`}
+                >
+                  Reset
+                </button>
+                <button
+                  onClick={handleSave}
+                  disabled={!isDirty || saving}
+                  className={`px-5 py-2 text-sm font-semibold rounded-lg transition-colors duration-200 flex items-center space-x-2 ${
+                    isDirty 
+                      ? 'bg-[#01796f] hover:bg-[#01796f]/80 text-white shadow-md shadow-[#01796f]/20 cursor-pointer' 
+                      : 'bg-zinc-950 border border-zinc-800 text-zinc-500 cursor-not-allowed'
+                  }`}
+                >
+                  <IoSaveOutline size={15} />
+                  <span>{saving ? "Saving..." : isDirty ? "Save Changes" : "Saved"}</span>
+                </button>
               </div>
             </motion.div>
           )}
@@ -509,6 +650,33 @@ export default function TenantStudio() {
                     <option value="Transport Coordinator">Transport Coordinator</option>
                   </select>
                 </div>
+              </div>
+
+              {/* Tab Actions */}
+              <div className="flex justify-end space-x-3 pt-4 border-t border-zinc-800/60 mt-6">
+                <button
+                  onClick={handleReset}
+                  disabled={!isDirty || saving}
+                  className={`px-4 py-2 border text-sm font-semibold rounded-lg transition-colors duration-200 ${
+                    isDirty 
+                      ? 'border-zinc-700 hover:bg-zinc-800 text-zinc-300 cursor-pointer' 
+                      : 'border-zinc-800/80 text-zinc-600 cursor-not-allowed'
+                  }`}
+                >
+                  Reset
+                </button>
+                <button
+                  onClick={handleSave}
+                  disabled={!isDirty || saving}
+                  className={`px-5 py-2 text-sm font-semibold rounded-lg transition-colors duration-200 flex items-center space-x-2 ${
+                    isDirty 
+                      ? 'bg-[#01796f] hover:bg-[#01796f]/80 text-white shadow-md shadow-[#01796f]/20 cursor-pointer' 
+                      : 'bg-zinc-950 border border-zinc-800 text-zinc-500 cursor-not-allowed'
+                  }`}
+                >
+                  <IoSaveOutline size={15} />
+                  <span>{saving ? "Saving..." : isDirty ? "Save Changes" : "Saved"}</span>
+                </button>
               </div>
             </motion.div>
           )}
@@ -584,6 +752,7 @@ export default function TenantStudio() {
               disabled={saving}
               className="px-5 py-2 bg-[#01796f] hover:bg-[#01796f]/80 disabled:opacity-50 text-white text-sm font-semibold rounded-lg transition-colors shadow-lg shadow-[#01796f]/20 flex items-center space-x-2.5"
             >
+              { }
               {(faviconUrl || tenant?.branding?.favicon) && (
                 <img 
                   src={faviconUrl || tenant?.branding?.favicon} 
@@ -597,6 +766,7 @@ export default function TenantStudio() {
               <span>{saving ? "Saving..." : "Save Changes"}</span>
               {(logoUrl || tenant?.branding?.logo) && (
                 <span className="border-l border-white/20 pl-2.5 ml-1.5 flex items-center">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img 
                     src={logoUrl || tenant?.branding?.logo} 
                     alt="Logo" 
@@ -608,6 +778,32 @@ export default function TenantStudio() {
                 </span>
               )}
             </button>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Toast Notification */}
+      {showToast && (
+        <motion.div
+          initial={{ opacity: 0, y: 50, scale: 0.9 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 20, scale: 0.9 }}
+          className={`fixed bottom-8 right-8 z-50 flex items-center space-x-3 px-5 py-3.5 rounded-xl border shadow-2xl backdrop-blur-md bg-opacity-95 ${
+            toastType === 'success' 
+              ? 'bg-zinc-900 border-emerald-500/30 text-emerald-400 shadow-emerald-950/20' 
+              : toastType === 'error'
+              ? 'bg-zinc-900 border-red-500/30 text-red-400 shadow-red-950/20'
+              : 'bg-zinc-900 border-blue-500/30 text-blue-400 shadow-blue-950/20'
+          }`}
+        >
+          {toastType === 'success' && <IoCheckmarkCircleOutline size={20} className="text-emerald-400 flex-shrink-0" />}
+          {toastType === 'error' && <IoAlertCircleOutline size={20} className="text-red-400 flex-shrink-0" />}
+          {toastType === 'info' && <IoAlertCircleOutline size={20} className="text-blue-400 flex-shrink-0" />}
+          <div className="flex flex-col">
+            <span className="text-sm font-semibold text-white">
+              {toastType === 'success' ? 'Success' : toastType === 'error' ? 'Error' : 'Notification'}
+            </span>
+            <span className="text-xs text-zinc-300 mt-0.5">{toastMessage}</span>
           </div>
         </motion.div>
       )}
