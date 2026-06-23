@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
-import api from "@/utils/apiUtils";
+import api, { getTenantSlugFromHostname } from "@/utils/apiUtils";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
@@ -46,6 +46,11 @@ const Header: React.FC<HeaderProps> = ({
   const [showDropdown, setShowDropdown] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [isTenantSubdomain, setIsTenantSubdomain] = useState(false);
+
+  useEffect(() => {
+    setIsTenantSubdomain(getTenantSlugFromHostname() !== "");
+  }, []);
 
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { count: cartCount } = useCartCount();
@@ -233,24 +238,43 @@ const Header: React.FC<HeaderProps> = ({
   return (
     <header className={`${styles.header} ${scrolling ? styles.scrolled : ""} ${menuOpen ? styles.headerMenuOpen : ""}`}>
       <div className={styles.logoContainer}>
-        <Link href="/food" onClick={handleLinkClick}>
-          <Image
-            src="https://res.cloudinary.com/dt45pu5mx/image/upload/v1754770229/FullLogo_Transparent_NoBuffer_1_fg1iux.png"
-            alt="KAMPYN Logo"
-            width={120}
-            height={40}
-            className={styles.logoImage}
-          />
-        </Link>
-        {tenant?.branding?.logo && (
-          <div className={styles.uniLogoContainer}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={tenant.branding.logo}
-              alt={`${tenant.name} Logo`}
-              className={styles.uniLogoImage}
-            />
-          </div>
+        {isTenantSubdomain ? (
+          tenant?.branding?.logo ? (
+            <Link href="/" onClick={handleLinkClick}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={tenant.branding.logo}
+                alt={`${tenant.name} Logo`}
+                className={styles.uniLogoImage}
+              />
+            </Link>
+          ) : (
+            <Link href="/" onClick={handleLinkClick} style={{ textDecoration: 'none', fontWeight: 'bold', fontSize: '1.25rem', color: 'var(--primary-color, #01796f)' }}>
+              {tenant?.name}
+            </Link>
+          )
+        ) : (
+          <>
+            <Link href="/food" onClick={handleLinkClick}>
+              <Image
+                src="https://res.cloudinary.com/dt45pu5mx/image/upload/v1754770229/FullLogo_Transparent_NoBuffer_1_fg1iux.png"
+                alt="KAMPYN Logo"
+                width={120}
+                height={40}
+                className={styles.logoImage}
+              />
+            </Link>
+            {tenant?.branding?.logo && (
+              <div className={styles.uniLogoContainer}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={tenant.branding.logo}
+                  alt={`${tenant.name} Logo`}
+                  className={styles.uniLogoImage}
+                />
+              </div>
+            )}
+          </>
         )}
       </div>
 
