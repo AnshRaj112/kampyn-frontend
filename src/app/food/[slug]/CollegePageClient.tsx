@@ -167,6 +167,8 @@ const CollegePageContent = ({ slug = "", userIdProp }: { slug?: string, userIdPr
           categories: matchedCollege.categoryImages
         });
         localStorage.setItem("currentCollegeId", matchedCollege._id);
+        const resolvedSlug = matchedCollege.slug || normalizeName(matchedCollege.fullName);
+        localStorage.setItem("currentTenantSlug", resolvedSlug);
         updateUrlWithCollegeId(matchedCollege._id);
         return true;
       } else {
@@ -206,6 +208,8 @@ const CollegePageContent = ({ slug = "", userIdProp }: { slug?: string, userIdPr
                 categories: found.categoryImages
               });
               localStorage.setItem("currentCollegeId", found._id);
+              const resolvedSlug = found.slug || normalizeName(found.fullName);
+              localStorage.setItem("currentTenantSlug", resolvedSlug);
               updateUrlWithCollegeId(found._id);
               return;
             }
@@ -217,6 +221,12 @@ const CollegePageContent = ({ slug = "", userIdProp }: { slug?: string, userIdPr
             setUniId(cid);
             localStorage.setItem("currentCollegeId", cid);
             updateUrlWithCollegeId(cid);
+            
+            const pathname = window.location.pathname.toLowerCase();
+            const pathParts = pathname.split('/');
+            if (pathParts[1] === 'food' && pathParts[2]) {
+              localStorage.setItem("currentTenantSlug", pathParts[2]);
+            }
           }
           return;
         }

@@ -50,7 +50,7 @@ const Header: React.FC<HeaderProps> = ({
 
   useEffect(() => {
     setIsTenantSubdomain(getTenantSlugFromHostname() !== "");
-  }, []);
+  }, [pathname]);
 
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { count: cartCount } = useCartCount();

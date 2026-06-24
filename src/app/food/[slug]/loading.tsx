@@ -3,7 +3,7 @@ import { Skeleton, SkeletonCard } from '../../components/shared/Skeleton/Skeleto
 
 export default function Loading() {
     return (
-        <div className="min-h-screen bg-[#D6E6F3] pt-24 pb-12">
+        <div className="min-h-screen bg-[var(--background-color,#D6E6F3)] pt-24 pb-12">
             <div className="max-w-7xl mx-auto px-4 md:px-8">
                 {/* Banner Skeleton */}
                 <div className="relative h-48 md:h-64 rounded-3xl overflow-hidden mb-12 animate-pulse">

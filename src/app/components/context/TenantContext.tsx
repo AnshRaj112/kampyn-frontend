@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
+import { usePathname } from 'next/navigation';
 import { api, getTenantSlugFromHostname } from '../../../utils/apiUtils';
 import TenantNotOnboarded from '../TenantNotOnboarded';
 
@@ -10,6 +11,7 @@ interface TenantBranding {
   primaryColor?: string;
   secondaryColor?: string;
   font?: string;
+  backgroundColor?: string;
 }
 
 interface TenantNavigationItem {
@@ -44,42 +46,102 @@ interface TenantContextProps {
 const TenantContext = createContext<TenantContextProps | undefined>(undefined);
 
 export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const pathname = usePathname();
   const [tenant, setTenant] = useState<TenantConfig | null>(null);
   const [loading, setLoading] = useState(true);
   const [tenantNotFound, setTenantNotFound] = useState(false);
   const [tenantSlug, setTenantSlug] = useState('');
 
+  const clearBranding = useCallback(() => {
+    if (typeof window === 'undefined') return;
+
+    const root = document.documentElement;
+
+    root.style.removeProperty('--primary-color');
+    root.style.removeProperty('--primary-color-rgb');
+    root.style.removeProperty('--secondary-color');
+    root.style.removeProperty('--secondary-color-rgb');
+    root.style.removeProperty('--background-color');
+    root.style.removeProperty('--background-color-rgb');
+    root.style.removeProperty('--font-family');
+    
+    document.body.style.backgroundColor = '';
+    document.body.style.fontFamily = '';
+
+    const fontId = 'tenant-google-font';
+    const fontLink = document.getElementById(fontId);
+    if (fontLink) {
+      fontLink.parentNode?.removeChild(fontLink);
+    }
+
+    const defaultFavicon = '/favicon.ico';
+    const favicons = ['link[rel="icon"]', 'link[rel="shortcut icon"]', 'link[rel="apple-touch-icon"]'];
+    favicons.forEach(selector => {
+      const favEl = document.querySelector(selector) as HTMLLinkElement;
+      if (favEl) {
+        favEl.href = defaultFavicon;
+      }
+    });
+
+    document.title = document.title.replace(/\s*-\s*KAMPYN\s*-\s*.+$/, 'KAMPYN').replace(/KAMPYN\s*-\s*.+$/, 'KAMPYN');
+  }, []);
+
   const fetchTenantConfig = useCallback(async () => {
     const slug = getTenantSlugFromHostname();
+    const token = typeof window !== 'undefined' ? localStorage.getItem("token") : null;
+
+    if (!slug && !token) {
+      setTenantSlug('');
+      setTenant(null);
+      clearBranding();
+      setTenantNotFound(false);
+      setLoading(false);
+      return;
+    }
+
     if (slug) {
       setTenantSlug(slug);
     }
+
     try {
       const response = await api.get('/api/tenant/config');
       if (response.data?.success && response.data?.data) {
         const tenantData = response.data.data;
         setTenant(tenantData);
-        applyBranding(tenantData);
+
+        if (tenantData.slug) {
+          setTenantSlug(tenantData.slug);
+          if (typeof window !== 'undefined') {
+            localStorage.setItem("currentTenantSlug", tenantData.slug);
+          }
+        }
+
+        // Skip applying branding styles to administrative/management routes and static platform pages
+        const path = window.location.pathname.toLowerCase();
+        const isAdminRoute = path.includes('/admin-dashboard') || 
+                             path.includes('/admin-login')
+
+        if (isAdminRoute) {
+          clearBranding();
+        } else {
+          applyBranding(tenantData);
+        }
         setTenantNotFound(false);
       } else {
-        if (slug) {
-          setTenantNotFound(true);
-        }
+        setTenantNotFound(true);
       }
     } catch (error) {
       console.error("Failed to load tenant configuration:", error);
-      if (slug) {
-        setTenantNotFound(true);
-      }
+      setTenantNotFound(true);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [clearBranding]);
 
   useEffect(() => {
     fetchTenantConfig();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [pathname]);
 
   const applyBranding = (config: TenantConfig) => {
     if (typeof window === 'undefined') return;
@@ -96,6 +158,11 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     if (branding.secondaryColor) {
       root.style.setProperty('--secondary-color', branding.secondaryColor);
       root.style.setProperty('--secondary-color-rgb', hexToRgb(branding.secondaryColor));
+    }
+    if (branding.backgroundColor) {
+      root.style.setProperty('--background-color', branding.backgroundColor);
+      root.style.setProperty('--background-color-rgb', hexToRgb(branding.backgroundColor));
+      document.body.style.backgroundColor = branding.backgroundColor;
     }
 
     // Apply custom font dynamic styling

@@ -3,7 +3,7 @@ import { Skeleton, SkeletonCircle, SkeletonText } from '../components/shared/Ske
 
 export default function Loading() {
     return (
-        <div className="min-h-screen bg-[#D6E6F3] pt-32 px-4 md:px-8 pb-12">
+        <div className="min-h-screen bg-[var(--background-color,#D6E6F3)] pt-32 px-4 md:px-8 pb-12">
             <div className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-8">
                 {/* Cart Items Section */}
                 <div className="flex-1 space-y-4">

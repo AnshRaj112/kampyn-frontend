@@ -56,6 +56,7 @@ export interface Vendor {
 export interface College {
   _id: string;
   fullName: string;
+  slug?: string;
   retailImage?: string;
   produceImage?: string;
   categoryImages?: { name: string; image: string }[];

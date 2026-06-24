@@ -1,5 +1,5 @@
 .dashboardContainer {
-  background: linear-gradient(120deg, #f7fafc 60%, #e6fffa 100%);
+  background: var(--background-color, linear-gradient(135deg, #f8fafc 0%, #e0f2fe 30%, #f0f9ff 60%, #f8fafc 100%));
   min-height: 100vh;
   padding: 2rem;
   font-family: "Poppins", sans-serif;

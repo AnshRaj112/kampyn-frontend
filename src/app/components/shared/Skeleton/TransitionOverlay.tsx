@@ -3,7 +3,7 @@ import { Skeleton, SkeletonCircle } from './Skeleton';
 
 export const TransitionOverlay: React.FC = () => {
     return (
-        <div className="fixed inset-0 z-[9999] bg-[#D6E6F3] pt-24 px-4 md:px-8 pb-12 overflow-hidden animate-in fade-in duration-500">
+        <div className="fixed inset-0 z-[9999] bg-[var(--background-color,#D6E6F3)] pt-24 px-4 md:px-8 pb-12 overflow-hidden animate-in fade-in duration-500">
             <div className="max-w-7xl mx-auto">
                 {/* Header Section Skeleton */}
                 <div className="flex flex-col items-center text-center mb-16 animate-pulse">

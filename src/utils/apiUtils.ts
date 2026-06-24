@@ -11,6 +11,54 @@ const isAdminRequest = (url: string) => {
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || '';
 
+const isGlobalPath = (pathname: string): boolean => {
+    const path = pathname.toLowerCase();
+    const exactGlobalPaths = [
+        '/',
+        '/food',
+        '/about',
+        '/team',
+        '/help',
+        '/privacypolicy',
+        '/termncondition',
+        '/refundcancellationpolicy',
+        '/login',
+        '/signup',
+        '/forgotpassword',
+        '/resetpassword',
+        '/otpverification',
+        '/admin-login',
+        '/tenant-login',
+        '/uni-login',
+        '/vendor-login',
+        '/guest-house-login',
+        '/tenant-studio',
+        '/unidashboard'
+    ];
+    if (exactGlobalPaths.includes(path)) {
+        return true;
+    }
+    const globalPrefixes = [
+        '/admin-dashboard',
+        '/tenant-forgot-password',
+        '/tenant-reset-password',
+        '/tenant-otp-verification',
+        '/uni-forgot-password',
+        '/uni-reset-password',
+        '/uni-otp-verification',
+        '/vendor-forgot-password',
+        '/vendor-reset-password',
+        '/vendor-otp-verification',
+        '/guest-house-forgot-password',
+        '/guest-house-reset-password',
+        '/guest-house-otp-verification',
+        '/food-ordering-unidashboard',
+        '/guest-house-booking-unidashboard',
+        '/auditorium-booking-unidashboard'
+    ];
+    return globalPrefixes.some(prefix => path.startsWith(prefix));
+};
+
 export const getTenantSlugFromHostname = (): string => {
     if (typeof window === 'undefined') return '';
     const hostname = window.location.hostname;
@@ -29,6 +77,27 @@ export const getTenantSlugFromHostname = (): string => {
             return parts[0];
         }
     }
+
+    const pathname = window.location.pathname.toLowerCase();
+    
+    // Localhost fallback path checking (e.g. localhost:3000/food/kiit)
+    const pathParts = pathname.split('/');
+    if (pathParts[1] === 'food' && pathParts[2] && !reservedSubdomains.includes(pathParts[2])) {
+        return pathParts[2];
+    }
+
+    // Local storage fallback checking (only for non-global paths)
+    if (!isGlobalPath(pathname)) {
+        try {
+            const localSlug = localStorage.getItem("currentTenantSlug");
+            if (localSlug) {
+                return localSlug;
+            }
+        } catch {
+            // ignore
+        }
+    }
+
     return '';
 };
 

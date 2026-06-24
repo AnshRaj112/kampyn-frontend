@@ -3,7 +3,7 @@ import { Skeleton, SkeletonCircle } from '../components/shared/Skeleton/Skeleton
 
 export default function Loading() {
     return (
-        <div className="min-h-screen bg-[#D6E6F3] pt-24 px-4 md:px-8 pb-12">
+        <div className="min-h-screen bg-[var(--background-color,#D6E6F3)] pt-24 px-4 md:px-8 pb-12">
             <div className="max-w-7xl mx-auto">
                 {/* Header Section Skeleton */}
                 <div className="flex flex-col items-center text-center mb-16 animate-pulse">

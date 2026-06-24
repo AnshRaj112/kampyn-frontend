@@ -94,7 +94,7 @@
   body {
     @apply bg-background text-foreground font-poppins;
     /* Global page background */
-    background-color: #D6E6F3;
+    background-color: var(--background-color);
   }
 
   .section {
@@ -167,7 +167,7 @@
 
   /* Gradient text */
   .gradient-text {
-    background: linear-gradient(135deg, #01796f 0%, #4ea199 50%, #54a6a1 100%);
+    background: linear-gradient(135deg, var(--primary-color, #01796f) 0%, var(--secondary-color, #4ea199) 50%, #54a6a1 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -246,7 +246,7 @@
 
 /* Enhanced focus states */
 *:focus-visible {
-  outline: 2px solid #01796f;
+  outline: 2px solid var(--primary-color, #01796f);
   outline-offset: 2px;
   border-radius: 4px;
 }
@@ -265,7 +265,7 @@
 /* Global Scrollbar Styling (Matching Vendor Sidebar) */
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(1, 121, 111, 0.2) transparent;
+  scrollbar-color: rgba(var(--primary-color-rgb, 1, 121, 111), 0.2) transparent;
 }
 
 ::-webkit-scrollbar {
@@ -278,12 +278,12 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(1, 121, 111, 0.1);
+  background: rgba(var(--primary-color-rgb, 1, 121, 111), 0.1);
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(1, 121, 111, 0.3);
+  background: rgba(var(--primary-color-rgb, 1, 121, 111), 0.3);
 }
 
 /* Premium Skeleton Pulse Animation - Updated for Light Theme */

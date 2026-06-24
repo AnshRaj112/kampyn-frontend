@@ -70,6 +70,9 @@ const RoleLoginForm: React.FC<RoleLoginFormProps> = ({
       if (data.token) {
         localStorage.setItem("token", data.token);
       }
+      if (data.tenantSlug) {
+        localStorage.setItem("currentTenantSlug", data.tenantSlug);
+      }
 
       window.dispatchEvent(new Event("authChanged"));
       postLoginLocalStorage?.forEach(({ key, value }) => {

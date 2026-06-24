@@ -154,9 +154,9 @@
   }
 
   &.active {
-    background: linear-gradient(90deg, #4ea199, #6fc3bd);
+    background: linear-gradient(90deg, var(--secondary-color, #4ea199), #6fc3bd);
     color: white;
-    border-color: #4ea199;
+    border-color: var(--secondary-color, #4ea199);
   }
 }
 
@@ -183,9 +183,9 @@
   }
 
   &.active {
-    background: linear-gradient(90deg, #4ea199, #6fc3bd);
+    background: linear-gradient(90deg, var(--secondary-color, #4ea199), #6fc3bd);
     color: white;
-    border-color: #4ea199;
+    border-color: var(--secondary-color, #4ea199);
   }
 }
 
@@ -220,7 +220,7 @@
   color: #111827;
   margin: 0;
   padding-bottom: 0.5rem;
-  border-bottom: 3px solid #4ea199;
+  border-bottom: 3px solid var(--secondary-color, #4ea199);
   text-transform: capitalize;
 }
 

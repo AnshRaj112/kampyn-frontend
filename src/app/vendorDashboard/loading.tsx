@@ -3,7 +3,7 @@ import { Skeleton, SkeletonCircle } from '../components/shared/Skeleton/Skeleton
 
 export default function Loading() {
     return (
-        <div className="flex h-screen bg-[#D6E6F3] overflow-hidden">
+        <div className="flex h-screen bg-[var(--background-color,#D6E6F3)] overflow-hidden">
             {/* Sidebar Skeleton */}
             <aside className="w-64 border-r border-white/80 bg-white/40 p-6 flex flex-col gap-8 shrink-0 hidden md:flex backdrop-blur-md">
                 <div className="flex items-center gap-3">

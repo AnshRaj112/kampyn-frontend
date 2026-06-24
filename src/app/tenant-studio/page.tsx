@@ -7,6 +7,18 @@ import { motion } from 'framer-motion';
 import { IoColorPaletteOutline, IoNavigateOutline, IoBuildOutline, IoGitNetworkOutline, IoCloudUploadOutline, IoLogOutOutline, IoCheckmarkCircleOutline, IoAlertCircleOutline, IoSaveOutline } from 'react-icons/io5';
 import { useRouter } from 'next/navigation';
 
+const isValidHexColor = (color: string): boolean => {
+  return /^#([A-Fa-f0-9]{3}|[A-Fa-f0-9]{6})$/.test(color);
+};
+
+const normalizeHexColor = (color: string): string => {
+  let trimmed = color.trim();
+  if (!trimmed.startsWith('#')) {
+    trimmed = '#' + trimmed;
+  }
+  return trimmed;
+};
+
 export default function TenantStudio() {
   const { tenant, refetchTenant } = useTenant();
   const router = useRouter();
@@ -18,6 +30,7 @@ export default function TenantStudio() {
   const [fontFamily, setFontFamily] = useState('Poppins');
   const [logoUrl, setLogoUrl] = useState('');
   const [faviconUrl, setFaviconUrl] = useState('');
+  const [backgroundColor, setBackgroundColor] = useState('#D6E6F3');
   
   interface NavigationItem {
     label: string;
@@ -80,6 +93,7 @@ export default function TenantStudio() {
       setFontFamily(tenant.branding?.font || 'Poppins');
       setLogoUrl(tenant.branding?.logo || '');
       setFaviconUrl(tenant.branding?.favicon || '');
+      setBackgroundColor(tenant.branding?.backgroundColor || '#D6E6F3');
       setNavItems(tenant.navigation || []);
       if (tenant.widgets) {
         setSelectedWidgets(tenant.widgets);
@@ -97,6 +111,7 @@ export default function TenantStudio() {
     fontFamily !== (tenant.branding?.font || 'Poppins') ||
     logoUrl !== (tenant.branding?.logo || '') ||
     faviconUrl !== (tenant.branding?.favicon || '') ||
+    backgroundColor !== (tenant.branding?.backgroundColor || '#D6E6F3') ||
     JSON.stringify(navItems) !== JSON.stringify(tenant.navigation || []) ||
     JSON.stringify(selectedWidgets) !== JSON.stringify(tenant.widgets || ['StatCard', 'SystemAlerts']) ||
     approvalRole !== (tenant.workflows?.approvalRole || 'Warden') ||
@@ -104,15 +119,38 @@ export default function TenantStudio() {
   ) : false;
 
   const handleSave = async () => {
+    const normPrimary = normalizeHexColor(primaryColor);
+    const normSecondary = normalizeHexColor(secondaryColor);
+    const normBackground = normalizeHexColor(backgroundColor);
+
+    if (!isValidHexColor(normPrimary)) {
+      triggerToast("Primary Color must be a valid hex code (e.g., #01796F or #000)", "error");
+      return;
+    }
+    if (!isValidHexColor(normSecondary)) {
+      triggerToast("Secondary Color must be a valid hex code (e.g., #4EA199 or #FFF)", "error");
+      return;
+    }
+    if (!isValidHexColor(normBackground)) {
+      triggerToast("Page Background Color must be a valid hex code (e.g., #D6E6F3 or #000)", "error");
+      return;
+    }
+
+    // Update states to the normalized valid colors
+    setPrimaryColor(normPrimary);
+    setSecondaryColor(normSecondary);
+    setBackgroundColor(normBackground);
+
     setSaving(true);
     try {
       const response = await api.put('/api/tenant/studio-config', {
         branding: {
-          primaryColor,
-          secondaryColor,
+          primaryColor: normPrimary,
+          secondaryColor: normSecondary,
           font: fontFamily,
           logo: logoUrl,
-          favicon: faviconUrl
+          favicon: faviconUrl,
+          backgroundColor: normBackground
         },
         navigation: navItems,
         widgets: selectedWidgets,
@@ -148,22 +186,24 @@ export default function TenantStudio() {
       setFontFamily(tenant.branding?.font || 'Poppins');
       setLogoUrl(tenant.branding?.logo || '');
       setFaviconUrl(tenant.branding?.favicon || '');
+      setBackgroundColor(tenant.branding?.backgroundColor || '#D6E6F3');
       setNavItems(tenant.navigation || []);
       setSelectedWidgets(tenant.widgets || ['StatCard', 'SystemAlerts']);
       setApprovalRole(tenant.workflows?.approvalRole || 'Warden');
       setOutingLimit(tenant.workflows?.outingLimit || 3);
+
       triggerToast("Changes reverted to active configuration", "info");
     }
   };
 
   // Live preview styling updater
-  const handleColorChange = (type: 'primary' | 'secondary', val: string) => {
+  const handleColorChange = (type: 'primary' | 'secondary' | 'background', val: string) => {
     if (type === 'primary') {
       setPrimaryColor(val);
-      document.documentElement.style.setProperty('--primary-color', val);
-    } else {
+    } else if (type === 'secondary') {
       setSecondaryColor(val);
-      document.documentElement.style.setProperty('--secondary-color', val);
+    } else if (type === 'background') {
+      setBackgroundColor(val);
     }
   };
 
@@ -353,7 +393,7 @@ export default function TenantStudio() {
               <h2 className="text-xl font-bold text-white mb-2">Campus Branding & Theme Overrides</h2>
               <p className="text-sm text-zinc-400">Modify the primary colors and typography tokens. Changes are instantly visible on the client layout variables.</p>
               
-              <div className="grid grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                 <div>
                   <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Primary Color (Hex)</label>
                   <div className="flex space-x-3">
@@ -385,6 +425,24 @@ export default function TenantStudio() {
                       type="text"
                       value={secondaryColor}
                       onChange={(e) => handleColorChange('secondary', e.target.value)}
+                      className="bg-zinc-950 border border-zinc-700 rounded px-3 py-2 text-sm text-zinc-200 font-mono w-full"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Page Background Color (Hex)</label>
+                  <div className="flex space-x-3">
+                    <input
+                      type="color"
+                      value={backgroundColor}
+                      onChange={(e) => handleColorChange('background', e.target.value)}
+                      className="h-10 w-12 bg-transparent cursor-pointer rounded border border-zinc-700"
+                    />
+                    <input
+                      type="text"
+                      value={backgroundColor}
+                      onChange={(e) => handleColorChange('background', e.target.value)}
                       className="bg-zinc-950 border border-zinc-700 rounded px-3 py-2 text-sm text-zinc-200 font-mono w-full"
                     />
                   </div>
@@ -435,10 +493,10 @@ export default function TenantStudio() {
 
               <div className="mt-8 p-4 bg-zinc-950 border border-zinc-800 rounded-lg">
                 <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-500 mb-2">Live Canvas Theme Preview</h3>
-                <div className="p-6 rounded-lg border border-zinc-800 flex items-center justify-between" style={{ backgroundColor: 'transparent' }}>
+                <div className="p-6 rounded-lg border border-zinc-800 flex items-center justify-between transition-colors duration-300" style={{ backgroundColor: backgroundColor }}>
                   <div>
-                    <h4 className="text-sm font-bold text-white">University Portal Card</h4>
-                    <p className="text-xs text-zinc-400 mt-1">This card matches the custom styling variables.</p>
+                    <h4 className="text-sm font-bold mix-blend-difference text-white">University Portal Card</h4>
+                    <p className="text-xs mix-blend-difference text-white/80 mt-1">This canvas preview dynamically inherits the custom background and brand styling.</p>
                   </div>
                   <button 
                     className="text-xs font-bold px-4 py-2 rounded transition-all text-white" 

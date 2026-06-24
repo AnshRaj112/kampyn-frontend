@@ -3,7 +3,7 @@ import { Skeleton, SkeletonCircle } from './Skeleton';
 
 export const UniTransitionOverlay: React.FC = () => {
     return (
-        <div className="fixed inset-0 z-[9999] bg-[#D6E6F3] flex h-screen overflow-hidden animate-in fade-in duration-500">
+        <div className="fixed inset-0 z-[9999] bg-[var(--background-color,#D6E6F3)] flex h-screen overflow-hidden animate-in fade-in duration-500">
             {/* Sidebar Skeleton */}
             <aside className="w-64 border-r border-white/80 bg-white/40 p-6 flex flex-col gap-8 shrink-0 hidden md:flex backdrop-blur-md">
                 <div className="flex items-center gap-3">
