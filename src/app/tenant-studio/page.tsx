@@ -19,6 +19,23 @@ const normalizeHexColor = (color: string): string => {
   return trimmed;
 };
 
+/** Only allow http(s) image URLs — blocks javascript:/data: etc. from DOM-sourced branding fields. */
+const getSafeImageUrl = (url: string | undefined | null): string | undefined => {
+  if (!url) return undefined;
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
+      return parsed.href;
+    }
+  } catch {
+    // Relative same-origin paths are safe for <img src>
+    if (url.startsWith('/') && !url.startsWith('//')) {
+      return url;
+    }
+  }
+  return undefined;
+};
+
 export default function TenantStudio() {
   const { tenant, refetchTenant } = useTenant();
   const router = useRouter();
@@ -117,6 +134,9 @@ export default function TenantStudio() {
     approvalRole !== (tenant.workflows?.approvalRole || 'Warden') ||
     outingLimit !== (tenant.workflows?.outingLimit || 3)
   ) : false;
+
+  const safeFaviconSrc = getSafeImageUrl(faviconUrl || tenant?.branding?.favicon);
+  const safeLogoSrc = getSafeImageUrl(logoUrl || tenant?.branding?.logo);
 
   const handleSave = async () => {
     const normPrimary = normalizeHexColor(primaryColor);
@@ -810,25 +830,25 @@ export default function TenantStudio() {
               disabled={saving}
               className="px-5 py-2 bg-[#01796f] hover:bg-[#01796f]/80 disabled:opacity-50 text-white text-sm font-semibold rounded-lg transition-colors shadow-lg shadow-[#01796f]/20 flex items-center space-x-2.5"
             >
-              { }
-              {(faviconUrl || tenant?.branding?.favicon) && (
-                <img 
-                  src={faviconUrl || tenant?.branding?.favicon} 
-                  alt="Favicon" 
-                  className="h-5 w-5 object-contain bg-white rounded p-0.5" 
+              {safeFaviconSrc && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={safeFaviconSrc}
+                  alt="Favicon"
+                  className="h-5 w-5 object-contain bg-white rounded p-0.5"
                   onError={(e) => {
                     (e.target as HTMLImageElement).style.display = 'none';
                   }}
                 />
               )}
               <span>{saving ? "Saving..." : "Save Changes"}</span>
-              {(logoUrl || tenant?.branding?.logo) && (
+              {safeLogoSrc && (
                 <span className="border-l border-white/20 pl-2.5 ml-1.5 flex items-center">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img 
-                    src={logoUrl || tenant?.branding?.logo} 
-                    alt="Logo" 
-                    className="h-5 w-auto max-w-[70px] object-contain" 
+                  <img
+                    src={safeLogoSrc}
+                    alt="Logo"
+                    className="h-5 w-auto max-w-[70px] object-contain"
                     onError={(e) => {
                       (e.target as HTMLImageElement).style.display = 'none';
                     }}
