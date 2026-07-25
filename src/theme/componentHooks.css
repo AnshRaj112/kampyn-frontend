@@ -1,0 +1,181 @@
+/**
+ * Component-level CSS hooks for the theme registry.
+ * Components opt in via data-theme-component="<category>.<id>".
+ */
+
+[data-theme-component="card.dish"],
+[data-theme-component="card.restaurant"],
+[data-theme-component="card.order"],
+[data-theme-component="card.vendor"],
+[data-theme-component="card.category"],
+[data-theme-component="card.offer"],
+[data-theme-component="card.coupon"],
+[data-theme-component="card.notification"],
+[data-theme-component="card.profile"],
+[data-theme-component="card.analytics"],
+[data-theme-component="card.statistics"],
+[data-theme-component="card.membership"],
+[data-theme-component="card.wallet"] {
+  background: var(--kampyn-component-card-background, var(--kampyn-color-surface));
+  border-color: var(--kampyn-component-card-border, var(--kampyn-color-border));
+  border-radius: var(--kampyn-component-card-radius, var(--kampyn-shape-radiusMd));
+  box-shadow: var(--kampyn-component-card-shadow, var(--kampyn-elevation-shadowSm));
+  color: var(--kampyn-component-card-title, var(--kampyn-color-text));
+}
+
+[data-theme-component="card.dish"] {
+  background: var(--kampyn-component-card-dish-background, var(--kampyn-color-surface));
+  border-color: var(--kampyn-component-card-dish-border, var(--kampyn-color-border));
+  border-radius: var(--kampyn-component-card-dish-radius, var(--kampyn-shape-radiusMd));
+  box-shadow: var(--kampyn-component-card-dish-shadow, var(--kampyn-elevation-shadowSm));
+}
+
+[data-theme-component="card.restaurant"] {
+  background: var(--kampyn-component-card-restaurant-background, var(--kampyn-color-surface));
+  border-color: var(--kampyn-component-card-restaurant-border, var(--kampyn-color-border));
+  border-radius: var(--kampyn-component-card-restaurant-radius, var(--kampyn-shape-radiusMd));
+}
+
+[data-theme-component="button.primary"],
+[data-theme-component="button.addToCart"],
+[data-theme-component="button.checkout"],
+[data-theme-component="button.buyNow"],
+[data-theme-component="button.login"],
+[data-theme-component="button.signup"],
+[data-theme-component="button.pay"],
+[data-theme-component="button.confirm"],
+[data-theme-component="button.continue"],
+[data-theme-component="button.save"] {
+  background-color: var(--kampyn-component-button-primary-background, var(--kampyn-color-primary));
+  color: var(--kampyn-component-button-primary-text, var(--kampyn-color-textInverse));
+  border-radius: var(--kampyn-component-button-primary-radius, var(--kampyn-shape-radiusMd));
+}
+
+[data-theme-component="button.addToCart"] {
+  background: var(
+    --kampyn-component-button-addToCart-background,
+    var(--kampyn-component-button-primary-background, var(--kampyn-color-primary))
+  ) !important;
+  background-color: var(
+    --kampyn-component-button-addToCart-background,
+    var(--kampyn-component-button-primary-background, var(--kampyn-color-primary))
+  );
+  color: var(
+    --kampyn-component-button-addToCart-text,
+    var(--kampyn-component-button-primary-text, var(--kampyn-color-textInverse))
+  ) !important;
+  border-radius: var(
+    --kampyn-component-button-addToCart-radius,
+    var(--kampyn-component-button-primary-radius, var(--kampyn-shape-radiusMd))
+  );
+}
+
+[data-theme-component="card.vendor"] {
+  background: var(--kampyn-component-card-vendor-background, var(--kampyn-color-surface));
+  border-color: var(--kampyn-component-card-vendor-border, var(--kampyn-color-border));
+  border-radius: var(--kampyn-component-card-vendor-radius, var(--kampyn-shape-radiusMd));
+  box-shadow: var(--kampyn-component-card-vendor-shadow, var(--kampyn-elevation-shadowSm));
+}
+
+[data-theme-component="card.category"] {
+  border-color: var(--kampyn-component-card-category-border, var(--kampyn-color-border));
+  border-radius: var(--kampyn-component-card-category-radius, var(--kampyn-shape-radiusLg));
+}
+
+[data-theme-component="card.offer"] {
+  background: var(--kampyn-component-card-offer-background, var(--kampyn-color-surface));
+  border-color: var(--kampyn-component-card-offer-border, var(--kampyn-color-border));
+}
+
+[data-theme-component="button.checkout"] {
+  background-color: var(
+    --kampyn-component-button-checkout-background,
+    var(--kampyn-color-secondary)
+  );
+}
+
+[data-theme-component="button.destructive"],
+[data-theme-component="button.delete"] {
+  background-color: var(--kampyn-component-button-destructive-background, var(--kampyn-color-error));
+  color: var(--kampyn-component-button-destructive-text, var(--kampyn-color-textInverse));
+}
+
+[data-theme-component="button.secondary"],
+[data-theme-component="button.cancel"] {
+  background-color: var(--kampyn-component-button-secondary-background, var(--kampyn-color-secondary));
+  color: var(--kampyn-component-button-secondary-text, var(--kampyn-color-textInverse));
+}
+
+[data-theme-component="nav.navbar"],
+[data-theme-component="nav.sidebar"],
+[data-theme-component="nav.bottomNav"],
+[data-theme-component="nav.tabs"] {
+  background: var(--kampyn-component-nav-navbar-background, var(--kampyn-color-surface));
+  color: var(--kampyn-component-nav-navbar-inactive, var(--kampyn-color-textMuted));
+}
+
+[data-theme-component="form.input"],
+[data-theme-component="form.search"],
+[data-theme-component="form.select"] {
+  background: var(--kampyn-component-form-input-background, var(--kampyn-color-surface));
+  border-color: var(--kampyn-component-form-input-border, var(--kampyn-color-border));
+  color: var(--kampyn-color-text);
+}
+
+[data-theme-component="form.input"]:focus,
+[data-theme-component="form.search"]:focus {
+  border-color: var(--kampyn-component-form-input-focus, var(--kampyn-color-primary));
+  outline-color: var(--kampyn-component-form-input-focus, var(--kampyn-color-primary));
+}
+
+[data-theme-component="alert.success"] {
+  background: var(--kampyn-component-alert-success-background, var(--kampyn-color-success));
+  color: var(--kampyn-component-alert-success-text, var(--kampyn-color-textInverse));
+}
+[data-theme-component="alert.warning"] {
+  background: var(--kampyn-component-alert-warning-background, var(--kampyn-color-warning));
+}
+[data-theme-component="alert.error"] {
+  background: var(--kampyn-component-alert-error-background, var(--kampyn-color-error));
+}
+[data-theme-component="alert.info"] {
+  background: var(--kampyn-component-alert-info-background, var(--kampyn-color-info));
+}
+
+[data-theme-component="badge.new"],
+[data-theme-component="badge.popular"],
+[data-theme-component="badge.bestseller"],
+[data-theme-component="badge.premium"],
+[data-theme-component="badge.discount"] {
+  background: var(--kampyn-component-badge-new-background, var(--kampyn-color-primary));
+  color: var(--kampyn-component-badge-new-text, var(--kampyn-color-textInverse));
+}
+
+[data-theme-component="badge.veg"] {
+  background: var(--kampyn-component-badge-veg-background, var(--kampyn-color-success));
+}
+[data-theme-component="badge.nonVeg"] {
+  background: var(--kampyn-component-badge-nonVeg-background, var(--kampyn-color-error));
+}
+
+[data-theme-component="misc.toast"],
+[data-theme-component="misc.loader"],
+[data-theme-component="misc.progress"],
+[data-theme-component="misc.fab"] {
+  accent-color: var(--kampyn-color-primary);
+  color: var(--kampyn-color-primary);
+}
+
+[data-theme-component="dialog.default"] {
+  background: var(--kampyn-component-dialog-default-background, var(--kampyn-color-surface));
+  border-radius: var(--kampyn-shape-radiusLg);
+  box-shadow: var(--kampyn-elevation-shadowLg);
+}
+
+[data-theme-component="table.default"] th {
+  background: var(--kampyn-component-table-default-header, var(--kampyn-color-surfaceElevated));
+  color: var(--kampyn-color-text);
+}
+[data-theme-component="table.default"] tr:hover {
+  background: var(--kampyn-component-table-default-hover, color-mix(in srgb, var(--kampyn-color-primary) 8%, transparent));
+}

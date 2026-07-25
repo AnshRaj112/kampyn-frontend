@@ -242,7 +242,10 @@ const ProductCard = ({ item, categories, userId, onModalOpen, onModalClose }: Pr
   return (
     <>
       <div className={styles.slideWrapper}>
-        <div className={styles.foodCard}>
+        <div
+          className={styles.foodCard}
+          data-theme-component={item.isSpecial === 'Y' ? 'card.offer' : 'card.dish'}
+        >
           <div className={styles.imageContainer}>
             {item.image ? (
               <img src={item.image} alt={item.title} className={styles.foodImage} />
@@ -311,6 +314,7 @@ const ProductCard = ({ item, categories, userId, onModalOpen, onModalClose }: Pr
               {quantity === 0 && (
                 <button
                   className={`${styles.addToCartButton} ${loading ? styles.loading : ''}`}
+                  data-theme-component="button.addToCart"
                   onClick={handleAddToCart}
                   disabled={loading}
                 >

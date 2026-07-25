@@ -21,9 +21,12 @@ export const DynamicNavbar: React.FC = () => {
           <Link
             key={index}
             href={item.path}
-            className={`text-sm font-medium transition-colors hover:text-[#01796f] ${
-              isActive ? 'text-[#01796f] border-b-2 border-[#01796f]' : 'text-zinc-600 dark:text-zinc-300'
+            className={`text-sm font-medium transition-colors hover:text-[var(--kampyn-color-primary,#01796f)] ${
+              isActive
+                ? 'text-[var(--kampyn-color-primary,#01796f)] border-b-2 border-[var(--kampyn-color-primary,#01796f)]'
+                : 'text-zinc-600 dark:text-zinc-300'
             }`}
+            data-theme-component="nav.navbar"
           >
             {item.label}
           </Link>

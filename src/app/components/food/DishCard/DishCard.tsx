@@ -14,7 +14,10 @@ const DishCard: React.FC<Props> = ({ dishName, price, image, variant = "list" })
   const isSearch = variant === "search-result";
 
   return (
-    <div className={`${styles.dishCard} ${isSearch ? styles.searchResult : styles.list}`}>
+    <div
+      className={`${styles.dishCard} ${isSearch ? styles.searchResult : styles.list}`}
+      data-theme-component="card.dish"
+    >
       <img
         src={image}
         alt={dishName}

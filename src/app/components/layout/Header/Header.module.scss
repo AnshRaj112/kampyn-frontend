@@ -33,11 +33,11 @@
   }
 
   .activeNavItem {
-    color: #01796f;
+    color: var(--kampyn-color-primary, #01796f);
 
     span,
     svg {
-      color: #01796f;
+      color: var(--kampyn-color-primary, #01796f);
     }
   }
 
@@ -48,7 +48,7 @@
     z-index: 2;
 
     &:hover {
-      color: #01796f;
+      color: var(--kampyn-color-primary, #01796f);
     }
 
     @media (max-width: 770px) {
@@ -213,7 +213,7 @@
     color: inherit;
 
     &:hover {
-      color: #01796f;
+      color: var(--kampyn-color-primary, #01796f);
     }
 
     @media (max-width: 770px) {
@@ -236,7 +236,7 @@
     position: absolute;
     top: -8px;
     right: -8px;
-    background-color: #01796f;
+    background-color: var(--kampyn-color-primary, #01796f);
     color: white;
     border-radius: 50%;
     width: 20px;
@@ -282,7 +282,7 @@
   }
 
   .avatarIcon {
-    color: #01796f;
+    color: var(--kampyn-color-primary, #01796f);
     transition: transform 0.2s ease;
 
     &:hover {
@@ -427,16 +427,16 @@
       background-color: #f1f5f9;
       
       svg:first-child {
-        color: #01796f;
+        color: var(--kampyn-color-primary, #01796f);
       }
     }
 
     &.activeMenuItem {
       background-color: #f1f5f9;
-      color: #01796f;
+      color: var(--kampyn-color-primary, #01796f);
 
       svg:first-child {
-        color: #01796f;
+        color: var(--kampyn-color-primary, #01796f);
       }
     }
   }

@@ -49,6 +49,7 @@ const DishQuantityControls: React.FC<DishQuantityControlsProps> = ({
   return (
     <button
       className={styles.addBtn}
+      data-theme-component="button.addToCart"
       onClick={() => onAdd(item)}
       disabled={!inStock || isLoading}
       style={{

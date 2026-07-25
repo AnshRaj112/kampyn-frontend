@@ -1,5 +1,6 @@
 import Footer from "./components/layout/Footer/Footer";
 import "./globals.css"; // Optional global styles
+import "@/theme/componentHooks.css";
 import { GoogleOAuthProvider } from "@react-oauth/google";// Import AuthProvider
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/react";

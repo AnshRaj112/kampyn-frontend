@@ -1,5 +1,6 @@
 import { toast } from "react-toastify";
 import api from "@/utils/apiUtils";
+import { notifyCartCountChanged } from "@/app/hooks/useCartCount";
 
 // const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL; // Handled by apiUtils
 
@@ -13,11 +14,13 @@ interface VendorItem {
   isAvailable?: string;
 }
 
-const getItemKind = (item: VendorItem): "Retail" | "Produce" => {
-  // Check if the item is from retailItems or produceItems
-  if (item.type === "retail" || item.type === "Retail") {
-    return "Retail";
-  }
+const getItemKind = (item: VendorItem & { category?: string }): "Retail" | "Produce" => {
+  // Prefer explicit inventory category; fall back to legacy type field.
+  const kindSource = (item.category || item.type || "").toLowerCase();
+  if (kindSource === "retail") return "Retail";
+  if (kindSource === "produce") return "Produce";
+  // Menu types like "Beverage" / "ITALIAN" are NOT inventory kinds — default Produce for food, Retail only if quantity stocked
+  if (item.quantity !== undefined) return "Retail";
   return "Produce";
 };
 
@@ -53,6 +56,7 @@ export const addToCart = async (
       throw new Error(response.data.message || "Failed to add to cart");
     }
 
+    notifyCartCountChanged({ delta: 1, userId });
     toast.success(`${item.name} added to cart!`);
     return true;
   } catch (error) {
@@ -86,6 +90,7 @@ export const increaseQuantity = async (
       throw new Error(response.data.message || "Failed to increase quantity");
     }
 
+    notifyCartCountChanged({ delta: 1, userId });
     toast.success(`Increased quantity of ${item.name}`);
     return true;
   } catch (error) {
@@ -119,6 +124,7 @@ export const decreaseQuantity = async (
       throw new Error(response.data.message || "Failed to decrease quantity");
     }
 
+    notifyCartCountChanged({ delta: -1, userId });
     toast.success(`Decreased quantity of ${item.name}`);
     return true;
   } catch (error) {

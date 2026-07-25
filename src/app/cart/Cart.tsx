@@ -14,7 +14,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Script from "next/script";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { CART_COUNT_UPDATE_EVENT } from "../hooks/useCartCount";
+import { notifyCartCountChanged, sumCartQuantities } from "../hooks/useCartCount";
 import { Skeleton, SkeletonCircle, SkeletonText } from "../components/shared/Skeleton/Skeleton";
 
 
@@ -154,7 +154,10 @@ export default function Cart() {
         });
 
         setCart(detailedCart);
-        window.dispatchEvent(new Event(CART_COUNT_UPDATE_EVENT));
+        notifyCartCountChanged({
+          count: sumCartQuantities(detailedCart),
+          userId: userData?._id ?? null,
+        });
 
         if (cartRes.data.vendorId) {
           try {
@@ -189,9 +192,13 @@ export default function Cart() {
               category: item.kind === "Retail" ? "Retail" as const : "Produce" as const
             }));
             setCart(guestCartWithCategory);
-            window.dispatchEvent(new Event(CART_COUNT_UPDATE_EVENT));
+            notifyCartCountChanged({
+              count: sumCartQuantities(guestCartWithCategory),
+              userId: null,
+            });
           } catch {
             setCart([]);
+            notifyCartCountChanged({ count: 0, userId: null });
           }
         } else {
           console.error("Error fetching user or cart:", err);
@@ -313,8 +320,10 @@ export default function Cart() {
         };
       });
       setCart(updated);
-      // Dispatch event to update cart count in navbar
-      window.dispatchEvent(new Event(CART_COUNT_UPDATE_EVENT));
+      notifyCartCountChanged({
+        count: sumCartQuantities(updated),
+        userId: userData._id,
+      });
     } catch {
       // Error refetching cart
     }
@@ -384,8 +393,10 @@ export default function Cart() {
       localStorage.setItem("guest_cart", JSON.stringify(updatedCart));
       toast.success(`Increased quantity of ${thisItem.name}`);
       setLoadingItemId(null);
-      // Dispatch event to update cart count in navbar
-      window.dispatchEvent(new Event(CART_COUNT_UPDATE_EVENT));
+      notifyCartCountChanged({
+        count: sumCartQuantities(updatedCart),
+        userId: null,
+      });
     }
   };
 
@@ -430,8 +441,10 @@ export default function Cart() {
       localStorage.setItem("guest_cart", JSON.stringify(updatedCart));
       toast.info(`Decreased quantity of ${thisItem.name}`);
       setLoadingItemId(null);
-      // Dispatch event to update cart count in navbar
-      window.dispatchEvent(new Event(CART_COUNT_UPDATE_EVENT));
+      notifyCartCountChanged({
+        count: sumCartQuantities(updatedCart),
+        userId: null,
+      });
     }
   };
 
@@ -466,8 +479,10 @@ export default function Cart() {
       localStorage.setItem("guest_cart", JSON.stringify(updatedCart));
       toast.error(`${thisItem.name} removed from cart`);
       setLoadingItemId(null);
-      // Dispatch event to update cart count in navbar
-      window.dispatchEvent(new Event(CART_COUNT_UPDATE_EVENT));
+      notifyCartCountChanged({
+        count: sumCartQuantities(updatedCart),
+        userId: null,
+      });
     }
   };
 
@@ -549,8 +564,10 @@ export default function Cart() {
       localStorage.setItem("guest_cart", JSON.stringify(updatedCart));
       toast.success(`${item.name} added to cart!`);
       setLoadingItemId(null);
-      // Dispatch event to update cart count in navbar
-      window.dispatchEvent(new Event(CART_COUNT_UPDATE_EVENT));
+      notifyCartCountChanged({
+        count: sumCartQuantities(updatedCart),
+        userId: null,
+      });
     }
   };
 
@@ -800,6 +817,7 @@ export default function Cart() {
                     onOrder={(orderId) => {
                       // Clear cart and redirect to payment confirmation page
                       setCart([]);
+                      notifyCartCountChanged({ count: 0, userId: userData?._id ?? null });
                       window.location.href = `/payment?orderId=${orderId}`;
                     }}
                   />
@@ -818,6 +836,7 @@ export default function Cart() {
           onOrderAccepted={() => {
             // Order accepted - clear cart and redirect to active orders
             setCart([]);
+            notifyCartCountChanged({ count: 0, userId: userData?._id ?? null });
             setShowWaitingScreen(false);
             setCurrentOrderId(null);
             toast.success("Order accepted by vendor! Redirecting to your orders...");

@@ -1,9 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback } from 'react';
-import api from '@/utils/apiUtils';
-
-// const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || ""; // Handled by apiUtils
+import { useState, useEffect, useCallback } from "react";
+import api from "@/utils/apiUtils";
 
 interface CachedCartCount {
   count: number;
@@ -11,47 +9,81 @@ interface CachedCartCount {
   userId: string | null;
 }
 
-const CART_COUNT_CACHE_KEY = 'cart_count_cache';
+export type CartCountUpdateDetail = {
+  /** Absolute total quantity already known (preferred — no API). */
+  count?: number;
+  /** Optimistic bump after a successful +/-1 mutation (no API). */
+  delta?: number;
+  /** User the count belongs to; kept in localStorage cache. */
+  userId?: string | null;
+  /** Rare full refetch for this browser session only (e.g. auth change). */
+  sync?: boolean;
+};
+
+const CART_COUNT_CACHE_KEY = "cart_count_cache";
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
-// Event name for cart updates
-export const CART_COUNT_UPDATE_EVENT = 'cartCountUpdated';
+export const CART_COUNT_UPDATE_EVENT = "cartCountUpdated";
+
+export function sumCartQuantities(
+  items: Array<{ quantity?: number }> | null | undefined
+): number {
+  if (!Array.isArray(items)) return 0;
+  return items.reduce((sum, item) => sum + (item.quantity || 1), 0);
+}
+
+function readCache(): CachedCartCount | null {
+  try {
+    const cached = localStorage.getItem(CART_COUNT_CACHE_KEY);
+    if (!cached) return null;
+    return JSON.parse(cached) as CachedCartCount;
+  } catch {
+    return null;
+  }
+}
+
+function writeCache(count: number, userId: string | null): void {
+  const cacheData: CachedCartCount = {
+    count: Math.max(0, count),
+    timestamp: Date.now(),
+    userId,
+  };
+  localStorage.setItem(CART_COUNT_CACHE_KEY, JSON.stringify(cacheData));
+}
 
 /**
- * Hook to get and manage cart item count
- * Uses localStorage caching and custom events to avoid multiple API calls
+ * Per-browser cart badge sync.
+ * Never broadcasts to other users / tenants — only this tab's UI + localStorage.
+ * Prefer { count } or { delta } so the header does not hit the API again.
+ */
+export function notifyCartCountChanged(detail: CartCountUpdateDetail = {}): void {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(
+    new CustomEvent<CartCountUpdateDetail>(CART_COUNT_UPDATE_EVENT, { detail })
+  );
+}
+
+/**
+ * Hook for navbar cart badge.
+ * Mutations should call notifyCartCountChanged({ delta } | { count }) —
+ * that updates local state only. API fetch happens once on mount (if cache miss)
+ * or when sync:true (auth change).
  */
 export const useCartCount = () => {
   const [count, setCount] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  // Get cached cart count
   const getCachedCount = useCallback((): CachedCartCount | null => {
-    try {
-      const cached = localStorage.getItem(CART_COUNT_CACHE_KEY);
-      if (!cached) return null;
-
-      const parsed: CachedCartCount = JSON.parse(cached);
-      const now = Date.now();
-
-      // Check if cache is still valid
-      if (now - parsed.timestamp < CACHE_DURATION) {
-        return parsed;
-      }
-
-      // Cache expired, remove it
-      localStorage.removeItem(CART_COUNT_CACHE_KEY);
-      return null;
-    } catch {
-      return null;
+    const parsed = readCache();
+    if (!parsed) return null;
+    if (Date.now() - parsed.timestamp < CACHE_DURATION) {
+      return parsed;
     }
+    localStorage.removeItem(CART_COUNT_CACHE_KEY);
+    return null;
   }, []);
 
-  // Get user ID helper
   const getUserId = useCallback(async (): Promise<string | null> => {
-    // Token is now in HTTP-only cookies
-    // if (!token) return null; // REMOVED
-
     try {
       const response = await api.get("/api/user/auth/user");
       const user = response.data;
@@ -61,83 +93,77 @@ export const useCartCount = () => {
     }
   }, []);
 
-  // Fetch cart count from API
-  const fetchCartCount = useCallback(async (userId: string | null, forceRefresh: boolean = false) => {
-    // If not forcing refresh, check cache first
-    if (!forceRefresh) {
-      const cached = getCachedCount();
-      if (cached) {
-        const currentUserId = userId || await getUserId();
-
-        // If user matches and cache is valid, use cached count
-        if (cached.userId === currentUserId) {
-          setCount(cached.count);
-          return cached.count;
-        }
-      }
-    }
-
-    // No valid cache or force refresh, fetch from API
-    setIsLoading(true);
-    try {
-
-      // Handle guest cart (If getUserId returns null, assume guest)
-      const currentUserId = userId || await getUserId();
-
-      if (!currentUserId) {
-        const guestCart = localStorage.getItem("guest_cart") || "[]";
-        try {
-          const guestCartItems = JSON.parse(guestCart);
-          const guestCount = Array.isArray(guestCartItems)
-            ? guestCartItems.reduce((sum: number, item: { quantity?: number }) => sum + (item.quantity || 1), 0)
-            : 0;
-
-          const cacheData: CachedCartCount = {
-            count: guestCount,
-            timestamp: Date.now(),
-            userId: null
-          };
-          localStorage.setItem(CART_COUNT_CACHE_KEY, JSON.stringify(cacheData));
-          setCount(guestCount);
-          return guestCount;
-        } catch {
-          setCount(0);
-          return 0;
+  const fetchCartCount = useCallback(
+    async (userId: string | null, forceRefresh: boolean = false) => {
+      if (!forceRefresh) {
+        const cached = getCachedCount();
+        if (cached) {
+          const currentUserId = userId || (await getUserId());
+          if (cached.userId === currentUserId) {
+            setCount(cached.count);
+            return cached.count;
+          }
         }
       }
 
-      // Handle logged-in user
-      if (!currentUserId) {
+      setIsLoading(true);
+      try {
+        const currentUserId = userId || (await getUserId());
+
+        if (!currentUserId) {
+          const guestCart = localStorage.getItem("guest_cart") || "[]";
+          try {
+            const guestCartItems = JSON.parse(guestCart);
+            const guestCount = sumCartQuantities(guestCartItems);
+            writeCache(guestCount, null);
+            setCount(guestCount);
+            return guestCount;
+          } catch {
+            setCount(0);
+            return 0;
+          }
+        }
+
+        const response = await api.get(`/cart/${currentUserId}`);
+        const itemCount = sumCartQuantities(response.data.cart || []);
+        writeCache(itemCount, currentUserId);
+        setCount(itemCount);
+        return itemCount;
+      } catch (error) {
+        console.error("Error fetching cart count:", error);
         setCount(0);
         return 0;
+      } finally {
+        setIsLoading(false);
       }
+    },
+    [getCachedCount, getUserId]
+  );
 
-      const response = await api.get(`/cart/${currentUserId}`);
+  const applyLocalUpdate = useCallback((detail: CartCountUpdateDetail) => {
+    const cached = readCache();
+    const userId =
+      detail.userId !== undefined ? detail.userId : cached?.userId ?? null;
 
-      const data = response.data;
-      const cartItems = data.cart || [];
-      const itemCount = cartItems.reduce((sum: number, item: { quantity?: number }) => sum + (item.quantity || 1), 0);
-
-      // Cache the result
-      const cacheData: CachedCartCount = {
-        count: itemCount,
-        timestamp: Date.now(),
-        userId: currentUserId
-      };
-      localStorage.setItem(CART_COUNT_CACHE_KEY, JSON.stringify(cacheData));
-
-      setCount(itemCount);
-      return itemCount;
-    } catch (error) {
-      console.error('Error fetching cart count:', error);
-      setCount(0);
-      return 0;
-    } finally {
-      setIsLoading(false);
+    if (typeof detail.count === "number" && Number.isFinite(detail.count)) {
+      const next = Math.max(0, detail.count);
+      writeCache(next, userId);
+      setCount(next);
+      return;
     }
-  }, [getCachedCount, getUserId]);
 
-  // Initialize cart count on mount
+    if (typeof detail.delta === "number" && Number.isFinite(detail.delta)) {
+      setCount((prev) => {
+        const base = cached && Date.now() - cached.timestamp < CACHE_DURATION
+          ? cached.count
+          : prev;
+        const next = Math.max(0, base + detail.delta!);
+        writeCache(next, userId);
+        return next;
+      });
+    }
+  }, []);
+
   useEffect(() => {
     const initializeCartCount = async () => {
       const userId = await getUserId();
@@ -146,29 +172,37 @@ export const useCartCount = () => {
 
     initializeCartCount();
 
-    // Listen for cart count update events
-    const handleCartUpdate = async () => {
+    const handleCartUpdate = async (event: Event) => {
+      const detail = (event as CustomEvent<CartCountUpdateDetail>).detail || {};
+
+      // Optimistic / already-known totals — no network.
+      if (
+        !detail.sync &&
+        (typeof detail.count === "number" || typeof detail.delta === "number")
+      ) {
+        applyLocalUpdate(detail);
+        return;
+      }
+
+      // Legacy bare Event or explicit sync — one GET for this user only.
       const userId = await getUserId();
-      await fetchCartCount(userId, true); // Force refresh on event
+      await fetchCartCount(userId, true);
     };
 
-    window.addEventListener(CART_COUNT_UPDATE_EVENT, handleCartUpdate);
-
-    // Also listen for auth changes to refresh cart count
     const handleAuthChange = async () => {
       const userId = await getUserId();
       await fetchCartCount(userId, true);
     };
 
+    window.addEventListener(CART_COUNT_UPDATE_EVENT, handleCartUpdate);
     window.addEventListener("authChanged", handleAuthChange);
 
     return () => {
       window.removeEventListener(CART_COUNT_UPDATE_EVENT, handleCartUpdate);
       window.removeEventListener("authChanged", handleAuthChange);
     };
-  }, [fetchCartCount, getUserId]);
+  }, [fetchCartCount, getUserId, applyLocalUpdate]);
 
-  // Manual refresh function
   const refreshCount = useCallback(async () => {
     const userId = await getUserId();
     await fetchCartCount(userId, true);
@@ -176,4 +210,3 @@ export const useCartCount = () => {
 
   return { count, isLoading, refreshCount };
 };
-

@@ -19,7 +19,7 @@ export const SystemAlerts: React.FC<SystemAlertsProps> = ({
       <h3 className="text-sm font-semibold text-zinc-800 dark:text-zinc-200 mb-4">{title}</h3>
       <ul className="space-y-2">
         {alerts.map((alert, idx) => (
-          <li key={idx} className="text-xs text-zinc-600 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-800 p-2.5 rounded border-l-4 border-[#01796f]">
+          <li key={idx} className="text-xs text-zinc-600 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-800 p-2.5 rounded border-l-4 border-[var(--kampyn-color-primary,#01796f)]">
             {alert}
           </li>
         ))}

@@ -114,6 +114,7 @@ export default function HomeGatewayClient() {
                 key={card.key}
                 type="button"
                 className={styles.optionCard}
+                data-theme-component="card.category"
                 onClick={() => router.push(card.route)}
               >
                 <h2 className={styles.cardTitle}>{card.title}</h2>

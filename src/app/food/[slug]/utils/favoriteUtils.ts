@@ -2,6 +2,7 @@ import { FavoriteItem, Vendor } from "../types";
 import { toast } from "react-toastify";
 
 import api from "@/utils/apiUtils";
+import { notifyCartCountChanged } from "@/app/hooks/useCartCount";
 
 // const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || ""; // Handled by apiUtils
 
@@ -96,6 +97,7 @@ export const addFavoriteToCart = async (
       throw new Error(response.data.message || "Failed to add favorite to cart");
     }
 
+    notifyCartCountChanged({ delta: 1, userId });
     toast.success(`${item.name} added to cart!`);
     return true;
   } catch (error) {

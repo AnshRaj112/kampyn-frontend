@@ -5,7 +5,7 @@
   justify-content: center;
   padding: 3rem 1rem;
   margin-top: 4.75rem;
-  background: var(--background-color, linear-gradient(135deg, #f8fafc 0%, #e0f2fe 30%, #f0f9ff 60%, #f8fafc 100%));
+  background: var(--kampyn-color-background, var(--background-color, linear-gradient(135deg, #f8fafc 0%, #e0f2fe 30%, #f0f9ff 60%, #f8fafc 100%)));
   position: relative;
   overflow: hidden;
 }
@@ -17,9 +17,9 @@
   right: 0;
   bottom: 0;
   background:
-    radial-gradient(circle at 20% 50%, rgba(78, 161, 153, 0.08) 0%, transparent 50%),
-    radial-gradient(circle at 80% 80%, rgba(111, 195, 189, 0.06) 0%, transparent 50%),
-    radial-gradient(circle at 40% 20%, rgba(1, 121, 111, 0.05) 0%, transparent 50%);
+    radial-gradient(circle at 20% 50%, rgba(var(--secondary-color-rgb, 78, 161, 153), 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(var(--secondary-color-rgb, 78, 161, 153), 0.06) 0%, transparent 50%),
+    radial-gradient(circle at 40% 20%, rgba(var(--primary-color-rgb, 1, 121, 111), 0.05) 0%, transparent 50%);
   pointer-events: none;
   z-index: 0;
 }
@@ -41,7 +41,12 @@
   font-size: clamp(2rem, 3.2vw, 3rem);
   font-weight: 800;
   margin-bottom: 0.75rem;
-  background: linear-gradient(135deg, #4ea199 0%, #6fc3bd 50%, #01796f 100%);
+  background: linear-gradient(
+    135deg,
+    var(--kampyn-color-secondary, #4ea199) 0%,
+    var(--kampyn-color-secondary, #4ea199) 50%,
+    var(--kampyn-color-primary, #01796f) 100%
+  );
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -49,7 +54,7 @@
 
 .subheading {
   text-align: center;
-  color: #64748b;
+  color: var(--kampyn-color-textMuted, #64748b);
   font-size: 1.05rem;
   margin-bottom: 2rem;
 }
@@ -64,9 +69,9 @@
   display: block;
   width: 100%;
   text-align: left;
-  border-radius: 20px;
-  border: 1px solid rgba(226, 232, 240, 0.8);
-  background: rgba(255, 255, 255, 0.82);
+  border-radius: var(--kampyn-component-card-category-radius, var(--kampyn-shape-radiusLg, 20px));
+  border: 1px solid var(--kampyn-component-card-category-border, rgba(226, 232, 240, 0.8));
+  background: var(--kampyn-component-card-category-background, rgba(255, 255, 255, 0.82));
   backdrop-filter: blur(20px);
   padding: 1.75rem;
   text-decoration: none;
@@ -80,41 +85,44 @@
 
 .optionCard:hover {
   transform: translateY(-6px);
-  border-color: rgba(78, 161, 153, 0.3);
-  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(var(--primary-color-rgb, 1, 121, 111), 0.3);
+  background: var(
+    --kampyn-component-card-category-hoverBackground,
+    rgba(255, 255, 255, 0.95)
+  );
   box-shadow:
-    0 20px 40px -12px rgba(78, 161, 153, 0.22),
-    0 0 0 1px rgba(78, 161, 153, 0.1);
+    0 20px 40px -12px rgba(var(--primary-color-rgb, 1, 121, 111), 0.22),
+    0 0 0 1px rgba(var(--primary-color-rgb, 1, 121, 111), 0.1);
 }
 
 .cardTitle {
   font-size: 1.35rem;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--kampyn-component-card-category-title, var(--kampyn-color-text, #1e293b));
   margin-bottom: 0.65rem;
 }
 
 .cardDescription {
-  color: #64748b;
+  color: var(--kampyn-color-textMuted, #64748b);
   margin-bottom: 1.1rem;
   line-height: 1.6;
 }
 
 .cta {
-  color: #4ea199;
+  color: var(--kampyn-color-primary, var(--kampyn-color-secondary, #4ea199));
   font-weight: 600;
 }
 
 .loadingText {
   text-align: center;
-  color: #64748b;
+  color: var(--kampyn-color-textMuted, #64748b);
   font-size: 1rem;
   padding: 1.5rem 0;
 }
 
 .emptyState {
   text-align: center;
-  color: #64748b;
+  color: var(--kampyn-color-textMuted, #64748b);
   background: rgba(255, 255, 255, 0.82);
   border: 1px solid rgba(226, 232, 240, 0.8);
   border-radius: 16px;

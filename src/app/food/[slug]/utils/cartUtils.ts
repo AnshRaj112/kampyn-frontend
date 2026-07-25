@@ -2,6 +2,7 @@ import { toast } from "react-toastify";
 import { FoodItem, CartItem, Vendor } from "../types";
 import { SearchResult } from '@/app/components/search/SearchBar/SearchBar';
 import { userApi } from "@/utils/apiUtils";
+import { notifyCartCountChanged } from "@/app/hooks/useCartCount";
 
 export const checkItemAvailability = async (
   item: FoodItem,
@@ -80,6 +81,7 @@ export const addToCart = async (
       throw new Error(error.message);
     }
 
+    notifyCartCountChanged({ delta: 1, userId });
     toast.success(`${item.title} added to cart!`);
     return true;
   } catch (error) {
@@ -107,6 +109,7 @@ export const increaseQuantity = async (
       throw new Error(error.message);
     }
 
+    notifyCartCountChanged({ delta: 1, userId });
     toast.success(`Increased quantity of ${item.title}`);
     return true;
   } catch (error) {
@@ -134,6 +137,7 @@ export const decreaseQuantity = async (
       throw new Error(error.message);
     }
 
+    notifyCartCountChanged({ delta: -1, userId });
     toast.info(`Decreased quantity of ${item.title}`);
     return true;
   } catch (error) {

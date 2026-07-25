@@ -59,7 +59,7 @@ const HeroSection: React.FC = () => {
       {/* Animated Background Pattern */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute inset-0" style={{
-          backgroundImage: `radial-gradient(circle at 2px 2px, #01796f 1px, transparent 0)`,
+          backgroundImage: `radial-gradient(circle at 2px 2px, var(--kampyn-color-primary, #01796f) 1px, transparent 0)`,
           backgroundSize: '40px 40px'
         }}></div>
       </div>
@@ -80,18 +80,18 @@ const HeroSection: React.FC = () => {
       ></div>
 
       {/* Decorative shapes */}
-      <div className="absolute top-20 left-10 w-72 h-72 bg-[#4ea199]/10 rounded-full blur-3xl animate-float"></div>
-      <div className="absolute bottom-20 right-20 w-96 h-96 bg-[#01796f]/10 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
+      <div className="absolute top-20 left-10 w-72 h-72 bg-[var(--kampyn-color-secondary,#4ea199)]/10 rounded-full blur-3xl animate-float"></div>
+      <div className="absolute bottom-20 right-20 w-96 h-96 bg-[var(--kampyn-color-primary,#01796f)]/10 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
 
       <div className="container mx-auto px-4 pt-20 pb-12 relative z-10">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
           {/* Left column with text */}
           <div className="max-w-xl lg:ml-12 reveal">
             <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight mb-6">
-              <span className="block mb-2 bg-gradient-to-r from-[#0e6e6e] via-[#4ea199] to-[#01796f] bg-clip-text text-transparent">
+              <span className="block mb-2 bg-gradient-to-r from-[var(--kampyn-color-primary,#0e6e6e)] via-[var(--kampyn-color-secondary,#4ea199)] to-[var(--kampyn-color-primary,#01796f)] bg-clip-text text-transparent">
                 Your Campus.
               </span>
-              <span className="block mb-2 bg-gradient-to-r from-[#0e6e6e] via-[#4ea199] to-[#01796f] bg-clip-text text-transparent">
+              <span className="block mb-2 bg-gradient-to-r from-[var(--kampyn-color-primary,#0e6e6e)] via-[var(--kampyn-color-secondary,#4ea199)] to-[var(--kampyn-color-primary,#01796f)] bg-clip-text text-transparent">
                 Your Cravings.
               </span>
               <span className="block text-bitesbay-accent drop-shadow-sm">
@@ -105,7 +105,7 @@ const HeroSection: React.FC = () => {
             <div className="flex flex-col sm:flex-row gap-4 mb-8">
               <Button
                 onClick={handleOrderNow}
-                className="bg-gradient-to-r from-[#0e6e6e] to-[#01796f] hover:from-[#0a5858] hover:to-[#025e57] text-white px-8 py-6 rounded-lg text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                className="bg-gradient-to-r from-[var(--kampyn-color-primary,#0e6e6e)] to-[var(--kampyn-color-primary,#01796f)] hover:opacity-90 text-white px-8 py-6 rounded-lg text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
               >
                 Order Now
               </Button>

@@ -52,9 +52,9 @@
 
   &:hover {
     background-color: white;
-    border-color: #4ea199;
-    color: #4ea199;
-    box-shadow: 0 4px 6px -1px rgba(78, 161, 153, 0.1);
+    border-color: var(--kampyn-color-secondary, #4ea199);
+    color: var(--kampyn-color-secondary, #4ea199);
+    box-shadow: 0 4px 6px -1px rgba(var(--secondary-color-rgb, 78, 161, 153), 0.1);
     transform: translateX(-4px);
   }
 
@@ -96,9 +96,9 @@
 
   &:focus {
     outline: none;
-    border-color: #4ea199;
+    border-color: var(--kampyn-color-secondary, #4ea199);
     background-color: white;
-    box-shadow: 0 0 0 4px rgba(78, 161, 153, 0.1);
+    box-shadow: 0 0 0 4px rgba(var(--secondary-color-rgb, 78, 161, 153), 0.1);
   }
 
   &::placeholder {
@@ -112,7 +112,7 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
     
     &:focus {
-      box-shadow: 0 0 0 4px rgba(78, 161, 153, 0.15), 0 4px 12px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 0 0 4px rgba(var(--secondary-color-rgb, 78, 161, 153), 0.15), 0 4px 12px rgba(0, 0, 0, 0.05);
     }
   }
 }
@@ -150,7 +150,7 @@
   }
 
   &.active {
-    color: #4ea199;
+    color: var(--kampyn-color-secondary, #4ea199);
     font-weight: 600;
     background-color: #ebf8ff;
   }
@@ -317,7 +317,7 @@
 
     &:focus {
       outline: none;
-      box-shadow: 0 0 0 2px #4ea199;
+      box-shadow: 0 0 0 2px var(--kampyn-color-secondary, #4ea199);
     }
 
     &.disabled {
@@ -334,7 +334,7 @@
     right: 1.5rem;
     top: 50%;
     transform: translateY(-50%);
-    color: #4ea199;
+    color: var(--kampyn-color-secondary, #4ea199);
     transition: transform 0.3s ease;
     pointer-events: none;
 
@@ -400,7 +400,7 @@
 
       &:hover, &.selected {
         background: rgba(255, 255, 255, 0.6);
-        color: #01796f;
+        color: var(--kampyn-color-primary, #01796f);
         transform: translateX(4px);
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
       }
@@ -537,7 +537,7 @@
   height: 24px;
   border: 1px solid #e2e8f0;
   border-radius: 0.25rem;
-  background: #4ea199;
+  background: var(--kampyn-color-secondary, #4ea199);
   color: white;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -574,7 +574,7 @@
   border: none;
   border-radius: 0.25rem;
   // background: #4299e1;
-  background: linear-gradient(90deg, #4ea199, #6fc3bd);
+  background: linear-gradient(90deg, var(--kampyn-color-secondary, #4ea199), var(--kampyn-color-secondary, #4ea199));
   color: white;
   font-size: 0.875rem;
   font-weight: 500;
@@ -586,7 +586,7 @@
   gap: 0.5rem;
 
   &:hover:not(:disabled) {
-    background: linear-gradient(90deg, #4ea199, #6fc3bd);
+    background: linear-gradient(90deg, var(--kampyn-color-secondary, #4ea199), var(--kampyn-color-secondary, #4ea199));
   }
 
   &:disabled {
@@ -595,7 +595,7 @@
   }
 
   &.loading {
-    background: #6fc3bd;
+    background: var(--kampyn-color-secondary, #4ea199);
   }
 }
 
@@ -640,7 +640,7 @@
   flex-direction: column;
   box-shadow: 
     0 25px 50px -12px rgba(0, 0, 0, 0.25),
-    0 0 0 1px rgba(78, 161, 153, 0.1);
+    0 0 0 1px rgba(var(--secondary-color-rgb, 78, 161, 153), 0.1);
   border: 1px solid rgba(226, 232, 240, 0.8);
   animation: modalSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -651,7 +651,7 @@
   align-items: center;
   padding: 2rem 2rem 1.5rem;
   border-bottom: 2px solid rgba(226, 232, 240, 0.8);
-  background: linear-gradient(135deg, rgba(78, 161, 153, 0.05), rgba(111, 195, 189, 0.05));
+  background: linear-gradient(135deg, rgba(var(--secondary-color-rgb, 78, 161, 153), 0.05), rgba(var(--secondary-color-rgb, 78, 161, 153), 0.05));
 }
 
 .vendorModalTitleWrapper {
@@ -661,14 +661,14 @@
 }
 
 .vendorModalIcon {
-  color: #4ea199;
+  color: var(--kampyn-color-secondary, #4ea199);
   flex-shrink: 0;
 }
 
 .vendorModalTitle {
   font-size: 1.75rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #4ea199, #6fc3bd);
+  background: linear-gradient(135deg, var(--kampyn-color-secondary, #4ea199), var(--kampyn-color-secondary, #4ea199));
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -692,8 +692,8 @@
   flex-shrink: 0;
 
   &:hover {
-    background: linear-gradient(135deg, #4ea199, #6fc3bd);
-    border-color: rgba(78, 161, 153, 0.3);
+    background: linear-gradient(135deg, var(--kampyn-color-secondary, #4ea199), var(--kampyn-color-secondary, #4ea199));
+    border-color: rgba(var(--secondary-color-rgb, 78, 161, 153), 0.3);
     color: white;
     transform: rotate(90deg) scale(1.1);
   }
@@ -708,7 +708,7 @@
   flex: 1;
   
   scrollbar-width: thin;
-  scrollbar-color: rgba(78, 161, 153, 0.3) transparent;
+  scrollbar-color: rgba(var(--secondary-color-rgb, 78, 161, 153), 0.3) transparent;
   
   &::-webkit-scrollbar {
     width: 6px;
@@ -719,11 +719,11 @@
   }
   
   &::-webkit-scrollbar-thumb {
-    background: rgba(78, 161, 153, 0.3);
+    background: rgba(var(--secondary-color-rgb, 78, 161, 153), 0.3);
     border-radius: 3px;
     
     &:hover {
-      background: rgba(78, 161, 153, 0.5);
+      background: rgba(var(--secondary-color-rgb, 78, 161, 153), 0.5);
     }
   }
 }
@@ -750,11 +750,11 @@
   }
 
   &Selected {
-    border-color: #4ea199;
-    background: rgba(78, 161, 153, 0.08);
+    border-color: var(--kampyn-color-secondary, #4ea199);
+    background: rgba(var(--secondary-color-rgb, 78, 161, 153), 0.08);
     box-shadow: 
-      0 0 0 4px rgba(78, 161, 153, 0.15),
-      0 10px 15px -3px rgba(78, 161, 153, 0.2);
+      0 0 0 4px rgba(var(--secondary-color-rgb, 78, 161, 153), 0.15),
+      0 10px 15px -3px rgba(var(--secondary-color-rgb, 78, 161, 153), 0.2);
     transform: scale(1.02);
 
     &:hover {
@@ -796,8 +796,8 @@
   }
 
   .vendorCardSelected & {
-    background: linear-gradient(135deg, #4ea199, #6fc3bd);
-    border-color: rgba(78, 161, 153, 0.5);
+    background: linear-gradient(135deg, var(--kampyn-color-secondary, #4ea199), var(--kampyn-color-secondary, #4ea199));
+    border-color: rgba(var(--secondary-color-rgb, 78, 161, 153), 0.5);
   }
 }
 
@@ -838,7 +838,7 @@
 .vendorCardPrice {
   font-size: 1.125rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #4ea199, #6fc3bd);
+  background: linear-gradient(135deg, var(--kampyn-color-secondary, #4ea199), var(--kampyn-color-secondary, #4ea199));
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -846,10 +846,10 @@
 }
 
 .vendorCardCheck {
-  color: #4ea199;
+  color: var(--kampyn-color-secondary, #4ea199);
   flex-shrink: 0;
   animation: scaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  filter: drop-shadow(0 2px 4px rgba(78, 161, 153, 0.2));
+  filter: drop-shadow(0 2px 4px rgba(var(--secondary-color-rgb, 78, 161, 153), 0.2));
 }
 
 @keyframes scaleIn {
@@ -921,18 +921,18 @@
 }
 
 .confirmButton {
-  background: linear-gradient(135deg, #4ea199 0%, #6fc3bd 50%, #01796f 100%);
+  background: linear-gradient(135deg, var(--kampyn-color-secondary, #4ea199) 0%, var(--kampyn-color-secondary, #4ea199) 50%, var(--kampyn-color-primary, #01796f) 100%);
   border: none;
   color: white;
   box-shadow: 
-    0 4px 6px -1px rgba(78, 161, 153, 0.3),
+    0 4px 6px -1px rgba(var(--secondary-color-rgb, 78, 161, 153), 0.3),
     0 2px 4px -1px rgba(0, 0, 0, 0.1);
 
   &:hover:not(:disabled) {
-    background: linear-gradient(135deg, #01796f 0%, #4ea199 50%, #6fc3bd 100%);
+    background: linear-gradient(135deg, var(--kampyn-color-primary, #01796f) 0%, var(--kampyn-color-secondary, #4ea199) 50%, var(--kampyn-color-secondary, #4ea199) 100%);
     transform: translateY(-2px);
     box-shadow: 
-      0 8px 12px -2px rgba(78, 161, 153, 0.4),
+      0 8px 12px -2px rgba(var(--secondary-color-rgb, 78, 161, 153), 0.4),
       0 4px 6px -1px rgba(0, 0, 0, 0.1);
   }
 
@@ -974,7 +974,7 @@
 .checkMenuButton {
   margin-top: 0.75rem;
   padding: 0.5rem 1.5rem;
-  background: linear-gradient(90deg, #4ea199 0%, #2b7a78 100%);
+  background: linear-gradient(90deg, var(--kampyn-color-secondary, #4ea199) 0%, #2b7a78 100%);
   color: #fff;
   border: none;
   border-radius: 0.375rem;
@@ -987,7 +987,7 @@
 }
 
 .checkMenuButton:hover, .checkMenuButton:focus {
-  background: linear-gradient(90deg, #2b7a78 0%, #4ea199 100%);
+  background: linear-gradient(90deg, #2b7a78 0%, var(--kampyn-color-secondary, #4ea199) 100%);
   transform: translateY(-2px) scale(1.03);
 }
 

@@ -10,6 +10,7 @@ import { FaChevronDown } from "react-icons/fa";
 import DishListItem from "@/app/components/food/DishListItem/DishListItemV2";
 import { FoodItem as HomeFoodItem } from "@/app/food/[slug]/types";
 import axios from "axios";
+import { notifyCartCountChanged, sumCartQuantities } from "@/app/hooks/useCartCount";
 
 interface FoodItem {
   _id: string;
@@ -419,6 +420,10 @@ const FavouriteFoodPageContent: React.FC = () => {
         setCurrentVendorId(foodItem.vendorId);
       }
 
+      notifyCartCountChanged({
+        count: sumCartQuantities(formattedCartItems),
+        userId: user._id,
+      });
       toast.success(`${foodItem.name} added to cart!`);
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 400) {
@@ -467,6 +472,10 @@ const FavouriteFoodPageContent: React.FC = () => {
       }));
 
       setCartItems(formattedCartItems);
+      notifyCartCountChanged({
+        count: sumCartQuantities(formattedCartItems),
+        userId: user._id,
+      });
       toast.success(`Increased quantity of ${foodItem.name}`);
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 400) {
@@ -514,6 +523,10 @@ const FavouriteFoodPageContent: React.FC = () => {
         setCurrentVendorId(null);
       }
 
+      notifyCartCountChanged({
+        count: sumCartQuantities(formattedCartItems),
+        userId: user._id,
+      });
       toast.info(`Decreased quantity of ${foodItem.name}`);
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 400) {

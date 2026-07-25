@@ -17,8 +17,8 @@
 
   &:hover {
     transform: translateY(-2px); // Subtle lift
-    box-shadow: 0 8px 12px -3px rgba(78, 161, 153, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    border-color: rgba(78, 161, 153, 0.3);
+    box-shadow: 0 8px 12px -3px rgba(var(--secondary-color-rgb, 78, 161, 153), 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    border-color: rgba(var(--secondary-color-rgb, 78, 161, 153), 0.3);
   }
 
   @media (max-width: 768px) {
@@ -134,13 +134,13 @@
   font-weight: 700;
   padding: 0.15rem 0.6rem;
   border-radius: 999px;
-  background: linear-gradient(90deg, #4ea199, #6fc3bd);
+  background: linear-gradient(90deg, var(--kampyn-color-secondary, #4ea199), var(--kampyn-color-secondary, #4ea199));
   color: white;
   white-space: nowrap;
   margin-top: 0.5rem;
   text-align: center;
   width: fit-content;
-  box-shadow: 0 2px 4px rgba(78, 161, 153, 0.2);
+  box-shadow: 0 2px 4px rgba(var(--secondary-color-rgb, 78, 161, 153), 0.2);
 }
 
 .favoriteBtn {
@@ -164,7 +164,7 @@
 
 .heartIcon {
   font-size: 1.2rem;
-  color: #4ea199;
+  color: var(--kampyn-color-secondary, #4ea199);
 
   @media (max-width: 480px) {
     font-size: 1rem;
@@ -208,7 +208,7 @@
   background: none;
   border: none;
   padding: 0;
-  color: #4ea199;
+  color: var(--kampyn-color-secondary, #4ea199);
   font-size: 0.75rem;
   font-weight: 600;
   cursor: pointer;
@@ -242,7 +242,7 @@
 .price {
   font-size: 1.5rem; // Increased font size
   font-weight: 700;
-  color: #4ea199; 
+  color: var(--kampyn-color-secondary, #4ea199); 
   margin: 0;
 }
 
@@ -282,8 +282,8 @@
   }
 
   &.increase {
-    background: linear-gradient(135deg, #4ea199, #6fc3bd);
-    &:hover { background: linear-gradient(135deg, #01796f, #4ea199); }
+    background: linear-gradient(135deg, var(--kampyn-color-secondary, #4ea199), var(--kampyn-color-secondary, #4ea199));
+    &:hover { background: linear-gradient(135deg, var(--kampyn-color-primary, #01796f), var(--kampyn-color-secondary, #4ea199)); }
   }
 }
 
@@ -296,22 +296,37 @@
 }
 
 .addBtn {
-  background: linear-gradient(135deg, #4ea199, #6fc3bd);
-  color: white;
+  background: var(
+    --kampyn-component-button-addToCart-background,
+    linear-gradient(
+      135deg,
+      var(--kampyn-color-primary, #01796f),
+      var(--kampyn-color-secondary, #4ea199)
+    )
+  );
+  color: var(--kampyn-component-button-addToCart-text, white);
   border: none;
   padding: 0.35rem 1.25rem; // Smaller button
-  border-radius: 10px;
+  border-radius: var(--kampyn-component-button-addToCart-radius, 10px);
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 4px 6px -1px rgba(78, 161, 153, 0.3);
+  box-shadow: 0 4px 6px -1px rgba(var(--primary-color-rgb, 1, 121, 111), 0.3);
   transition: all 0.2s;
   min-width: 80px;
   text-align: center;
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 12px -2px rgba(78, 161, 153, 0.4);
+    box-shadow: 0 8px 12px -2px rgba(var(--primary-color-rgb, 1, 121, 111), 0.4);
+    background: var(
+      --kampyn-component-button-addToCart-hover,
+      linear-gradient(
+        135deg,
+        var(--kampyn-color-primary, #01796f),
+        var(--kampyn-color-secondary, #4ea199)
+      )
+    );
   }
   
   &:active {

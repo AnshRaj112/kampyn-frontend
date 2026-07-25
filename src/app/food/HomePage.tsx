@@ -95,6 +95,7 @@ const HomePage = () => {
               <div
                 key={college._id}
                 className={styles.collegeCard}
+                data-theme-component="card.restaurant"
                 onClick={() => handleCollegeClick(college)}
                 style={{ animationDelay: `${index * 0.1}s` }}
               >

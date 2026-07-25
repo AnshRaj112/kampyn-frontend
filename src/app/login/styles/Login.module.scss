@@ -25,7 +25,7 @@
   }
 
   .box {
-    background: linear-gradient(145deg, #01796f, #4ea199);
+    background: linear-gradient(145deg, var(--kampyn-color-primary, #01796f), var(--kampyn-color-secondary, #4ea199));
     padding: 1.75rem;
     border-radius: 18px;
     position: relative;
@@ -116,11 +116,11 @@
           bottom: 0.75rem;
           cursor: pointer;
           font-size: 1.2em;
-          color: #4ea199;
+          color: var(--kampyn-color-secondary, #4ea199);
         }
 
         .eyeIcon:hover {
-          color: #01796f;
+          color: var(--kampyn-color-primary, #01796f);
         }
       }
 
@@ -187,7 +187,7 @@
     }
 
     .googleLogin {
-      background-color: #4ea199;
+      background-color: var(--kampyn-color-secondary, #4ea199);
       color: black;
       padding: 12px;
       border-radius: 8px;
@@ -307,7 +307,7 @@
   }
 
   .highlight {
-    color: #01796f;
+    color: var(--kampyn-color-primary, #01796f);
   }
 
   .subtext {
@@ -367,7 +367,7 @@
       font-size: 1.25rem;
       text-align: center;
       font-weight: 600;
-      color: #01796f;
+      color: var(--kampyn-color-primary, #01796f);
       margin-bottom: 0.5rem;
     }
   }

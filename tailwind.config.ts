@@ -64,13 +64,27 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
-        // KAMPYN Custom Colors
+        // KAMPYN brand colors — driven by tenant CSS variables
         bitesbay: {
-          background: "#54a6a1",
-          text: "#4ea199",
-          accent: "#01796f",
-          light: "#a5d6d3",
-          dark: "#025e57",
+          background: "var(--kampyn-color-secondary, #54a6a1)",
+          text: "var(--kampyn-color-secondary, #4ea199)",
+          accent: "var(--kampyn-color-primary, #01796f)",
+          light: "var(--kampyn-color-secondary, #a5d6d3)",
+          dark: "var(--kampyn-color-primary, #025e57)",
+        },
+        kampyn: {
+          primary: "var(--kampyn-color-primary, #01796f)",
+          secondary: "var(--kampyn-color-secondary, #4ea199)",
+          accent: "var(--kampyn-color-accent, #01796f)",
+          background: "var(--kampyn-color-background, #D6E6F3)",
+          surface: "var(--kampyn-color-surface, #ffffff)",
+          border: "var(--kampyn-color-border, #e2e8f0)",
+          text: "var(--kampyn-color-text, #0f172a)",
+          muted: "var(--kampyn-color-textMuted, #64748b)",
+          success: "var(--kampyn-color-success, #16a34a)",
+          warning: "var(--kampyn-color-warning, #d97706)",
+          error: "var(--kampyn-color-error, #dc2626)",
+          info: "var(--kampyn-color-info, #0284c7)",
         },
       },
       fontFamily: {

@@ -4,6 +4,33 @@
 
 @layer base {
   :root {
+    /* KAMPYN theme defaults (overridden at runtime by TenantProvider) */
+    --kampyn-color-primary: #01796f;
+    --kampyn-color-secondary: #4ea199;
+    --kampyn-color-accent: #01796f;
+    --kampyn-color-background: #D6E6F3;
+    --kampyn-color-surface: #ffffff;
+    --kampyn-color-surfaceElevated: #ffffff;
+    --kampyn-color-border: #e2e8f0;
+    --kampyn-color-text: #0f172a;
+    --kampyn-color-textMuted: #64748b;
+    --kampyn-color-textInverse: #ffffff;
+    --kampyn-color-success: #16a34a;
+    --kampyn-color-warning: #d97706;
+    --kampyn-color-error: #dc2626;
+    --kampyn-color-info: #0284c7;
+    --kampyn-typography-fontFamily: Poppins;
+    --kampyn-shape-radiusSm: 0.25rem;
+    --kampyn-shape-radiusMd: 0.5rem;
+    --kampyn-shape-radiusLg: 0.75rem;
+    --kampyn-shape-radiusFull: 9999px;
+    --kampyn-elevation-shadowSm: 0 1px 2px rgba(15, 23, 42, 0.06);
+    --kampyn-elevation-shadowMd: 0 4px 12px rgba(15, 23, 42, 0.08);
+    --kampyn-elevation-shadowLg: 0 12px 32px rgba(15, 23, 42, 0.12);
+    --primary-color: #01796f;
+    --secondary-color: #4ea199;
+    --background-color: #D6E6F3;
+
     --background: 167 56% 88%;
     --foreground: 222.2 84% 4.9%;
 
@@ -167,10 +194,38 @@
 
   /* Gradient text */
   .gradient-text {
-    background: linear-gradient(135deg, var(--primary-color, #01796f) 0%, var(--secondary-color, #4ea199) 50%, #54a6a1 100%);
+    background: linear-gradient(135deg, var(--kampyn-color-primary, var(--primary-color, #01796f)) 0%, var(--kampyn-color-secondary, var(--secondary-color, #4ea199)) 50%, var(--kampyn-color-secondary, #54a6a1) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+  }
+
+  [data-theme-component^="button."] {
+    border-radius: var(--kampyn-shape-radiusMd);
+  }
+
+  main[data-page] {
+    background-color: var(--kampyn-page-background, var(--kampyn-color-background, transparent));
+  }
+
+  main[data-page="cart"] {
+    --kampyn-page-background: var(--kampyn-page-cart-background, var(--kampyn-color-background));
+  }
+  main[data-page="home"] {
+    --kampyn-page-background: var(--kampyn-page-home-background, var(--kampyn-color-background));
+  }
+  main[data-page="restaurant"] {
+    --kampyn-page-background: var(--kampyn-page-restaurant-background, var(--kampyn-color-background));
+  }
+  main[data-page="menu"] {
+    --kampyn-page-background: var(--kampyn-page-menu-background, var(--kampyn-color-background));
+  }
+  main[data-page="checkout"] {
+    --kampyn-page-background: var(--kampyn-page-checkout-background, var(--kampyn-color-background));
+  }
+  main[data-page="login"],
+  main[data-page="signup"] {
+    --kampyn-page-background: var(--kampyn-page-login-background, var(--kampyn-color-background));
   }
 
   /* Section dividers */

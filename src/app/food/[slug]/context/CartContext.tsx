@@ -7,7 +7,7 @@ import { FoodItem, CartItem, Vendor } from '../types';
 // Direct fetch was used previously, now I'm using api which has base URL.
 import { addToCart, increaseQuantity, decreaseQuantity } from '../utils/cartUtils';
 import { SearchResult } from '@/app/components/search/SearchBar/SearchBar';
-import { CART_COUNT_UPDATE_EVENT } from '@/app/hooks/useCartCount';
+import { notifyCartCountChanged, sumCartQuantities } from '@/app/hooks/useCartCount';
 
 
 interface CartContextType {
@@ -82,8 +82,11 @@ export const CartProvider = ({ children, userId }: CartProviderProps) => {
 
       console.log('Transformed cart items:', transformedItems);
       setCartItems(transformedItems);
-      // Dispatch event to update cart count in navbar
-      window.dispatchEvent(new Event(CART_COUNT_UPDATE_EVENT));
+      // Local badge update from already-fetched cart — no second GET
+      notifyCartCountChanged({
+        count: sumCartQuantities(transformedItems),
+        userId,
+      });
     } catch (error) {
       console.error('Error refreshing cart:', error);
       toast.error('Failed to refresh cart');

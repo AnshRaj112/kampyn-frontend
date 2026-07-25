@@ -44,9 +44,18 @@ export interface ButtonProps
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild = false, ...props }, ref) => {
     const Comp = asChild ? Slot : "button"
+    const themeComponent =
+      variant === "destructive"
+        ? "button.destructive"
+        : variant === "secondary"
+          ? "button.secondary"
+          : variant === "ghost" || variant === "link" || variant === "outline"
+            ? "button.ghost"
+            : "button.primary"
     return (
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}
+        data-theme-component={themeComponent}
         ref={ref}
         {...props}
       />

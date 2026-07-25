@@ -63,21 +63,33 @@ const VendorPage = () => {
   const { id } = useParams();
 
   // Helper to map VendorItem to FoodItem for DishListItemV2
-  const mapToFoodItem = (item: VendorItem) => ({
-    id: item.itemId,
-    title: item.name,
-    description: item.description,
-    image: item.image || '/images/placeholder_food.jpg',
-    category: item.category || 'retail',
-    type: item.type || 'retail',
-    subtype: item.subtype,
-    isSpecial: 'N', // Default
-    price: item.price,
-    vendorId: item.vendorId || (id as string),
-    quantity: item.quantity,
-    isAvailable: item.isAvailable,
-    isVeg: item.isVeg
-  });
+  const mapToFoodItem = (item: VendorItem) => {
+    // Inventory kind lives on category (retail/produce). `item.type` is menu group (Beverage, etc.).
+    const inventoryCategory =
+      item.category === "produce" || item.category === "retail"
+        ? item.category
+        : item.type === "produce" || item.type === "Produce"
+          ? "produce"
+          : item.type === "retail" || item.type === "Retail"
+            ? "retail"
+            : "retail";
+
+    return {
+      id: item.itemId,
+      title: item.name,
+      description: item.description,
+      image: item.image || '/images/placeholder_food.jpg',
+      category: inventoryCategory,
+      type: inventoryCategory === item.type ? inventoryCategory : (item.type || inventoryCategory),
+      subtype: item.subtype,
+      isSpecial: 'N', // Default
+      price: item.price,
+      vendorId: item.vendorId || (id as string),
+      quantity: item.quantity,
+      isAvailable: item.isAvailable,
+      isVeg: item.isVeg
+    };
+  };
   console.log('[DEBUG] useParams id:', id, 'type:', typeof id);
   const [vendorData, setVendorData] = useState<VendorData | null>(null);
   const [universityId, setUniversityId] = useState<string>("");
@@ -225,13 +237,17 @@ const VendorPage = () => {
           });
         }
 
-        // Fetch user data
+        // Fetch user data (student cart requires /api/user/auth/user — university/tenant tokens won't work)
         const token = localStorage.getItem("token");
         if (token) {
-          const userResponse = await api.get("/api/user/auth/user");
-          if (userResponse.status === 200) {
-            const userData = userResponse.data;
-            setUserData(userData);
+          try {
+            const userResponse = await api.get("/api/user/auth/user");
+            if (userResponse.status === 200 && userResponse.data?._id) {
+              setUserData(userResponse.data);
+            }
+          } catch (userErr) {
+            console.warn("Student session not available for cart (login as a student user):", userErr);
+            setUserData(null);
           }
         }
       } catch (error) {
@@ -508,12 +524,25 @@ const VendorPage = () => {
 
   const handleAddToCart = async (item: VendorItem | FoodItem) => {
     if (!userData) {
-      toast.error("Please login to add items to cart");
+      toast.error("Please login as a student to add items to cart");
       return;
     }
 
     const itemId = "itemId" in item ? item.itemId : item.id;
-    const itemCategory = item.category || 'retail';
+    // Prefer inventory category (retail/produce), not menu cuisine type
+    const itemCategory =
+      ("category" in item && (item.category === "retail" || item.category === "produce")
+        ? item.category
+        : item.category === "Retail"
+          ? "retail"
+          : item.category === "Produce"
+            ? "produce"
+            : null) ||
+      (item.type === "retail" || item.type === "Retail"
+        ? "retail"
+        : item.type === "produce" || item.type === "Produce"
+          ? "produce"
+          : "retail");
 
     console.log('DEBUG: Adding item to cart:', {
       itemId: itemId,
@@ -522,37 +551,68 @@ const VendorPage = () => {
       vendorId: id
     });
 
+    if (!itemId) {
+      toast.error("Invalid item — missing item id");
+      return;
+    }
+
     const quantity = getItemQuantity(itemId, itemCategory);
 
-    if (loadingItemId) return;
+    if (loadingItemId) {
+      // Don't soft-lock forever if a prior request hung — allow retry after warn
+      console.warn("Add to cart ignored: another item is still loading", loadingItemId);
+      toast.info("Still adding the previous item… try again in a moment");
+      return;
+    }
+
+    const loadingTimeout = window.setTimeout(() => {
+      setLoadingItemId((current) => {
+        if (current === itemId) {
+          console.warn("Clearing stuck cart loading state for", itemId);
+          toast.error("Cart request timed out. Please try again.");
+          return null;
+        }
+        return current;
+      });
+    }, 15000);
 
     try {
       setLoadingItemId(itemId);
-      // Create a normalized item for cart utils
       const normalizedItem = {
         ...item,
         itemId: itemId,
         category: itemCategory,
+        type: itemCategory, // cartUtils kind resolution
         name: ("name" in item ? item.name : item.title)
       };
 
-      if (quantity === 0) {
-        await addToCart(userData._id, normalizedItem as unknown as VendorItem, id as string);
-      } else {
-        await increaseQuantity(userData._id, normalizedItem as unknown as VendorItem, id as string);
+      const ok =
+        quantity === 0
+          ? await addToCart(userData._id, normalizedItem as unknown as VendorItem, id as string)
+          : await increaseQuantity(userData._id, normalizedItem as unknown as VendorItem, id as string);
+
+      if (!ok) {
+        // cartUtils already toasted the error
+        return;
       }
     } catch (error) {
       console.error("Error updating cart:", error);
+      toast.error("Failed to update cart");
     } finally {
+      window.clearTimeout(loadingTimeout);
       setLoadingItemId(null);
     }
 
     // Refresh user data to update cart
     const token = localStorage.getItem("token");
     if (token) {
-      const userResponse = await api.get("/api/user/auth/user");
-      if (userResponse.status === 200) {
-        setUserData(userResponse.data);
+      try {
+        const userResponse = await api.get("/api/user/auth/user");
+        if (userResponse.status === 200 && userResponse.data?._id) {
+          setUserData(userResponse.data);
+        }
+      } catch (err) {
+        console.warn("Could not refresh student user after cart update", err);
       }
     }
   };

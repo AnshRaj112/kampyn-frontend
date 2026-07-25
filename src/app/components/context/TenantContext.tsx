@@ -1,9 +1,15 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import { api, getTenantSlugFromHostname } from '../../../utils/apiUtils';
 import TenantNotOnboarded from '../TenantNotOnboarded';
+import {
+  applyThemeDocument,
+  clearThemeVars,
+  pathnameToPageId,
+  type ThemeDocument,
+} from '@/theme';
 
 interface TenantBranding {
   logo?: string;
@@ -26,6 +32,8 @@ interface TenantConfig {
   name: string;
   slug: string;
   branding: TenantBranding;
+  theme?: ThemeDocument | null;
+  themeVersion?: number;
   enabledModules: string[];
   navigation: TenantNavigationItem[];
   widgets?: string[];
@@ -45,26 +53,24 @@ interface TenantContextProps {
 
 const TenantContext = createContext<TenantContextProps | undefined>(undefined);
 
+const isPlatformAdminRoute = (path: string) => {
+  const p = path.toLowerCase();
+  return p.includes('/admin-dashboard') || p.includes('/admin-login');
+};
+
 export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const pathname = usePathname();
   const [tenant, setTenant] = useState<TenantConfig | null>(null);
   const [loading, setLoading] = useState(true);
   const [tenantNotFound, setTenantNotFound] = useState(false);
   const [tenantSlug, setTenantSlug] = useState('');
+  const fetchedSlugRef = useRef<string | null>(null);
+  const tenantRef = useRef<TenantConfig | null>(null);
 
   const clearBranding = useCallback(() => {
     if (typeof window === 'undefined') return;
 
-    const root = document.documentElement;
-
-    root.style.removeProperty('--primary-color');
-    root.style.removeProperty('--primary-color-rgb');
-    root.style.removeProperty('--secondary-color');
-    root.style.removeProperty('--secondary-color-rgb');
-    root.style.removeProperty('--background-color');
-    root.style.removeProperty('--background-color-rgb');
-    root.style.removeProperty('--font-family');
-    
+    clearThemeVars();
     document.body.style.backgroundColor = '';
     document.body.style.fontFamily = '';
 
@@ -86,13 +92,61 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     document.title = document.title.replace(/\s*-\s*KAMPYN\s*-\s*.+$/, 'KAMPYN').replace(/KAMPYN\s*-\s*.+$/, 'KAMPYN');
   }, []);
 
-  const fetchTenantConfig = useCallback(async () => {
+  const applyBranding = useCallback((config: TenantConfig) => {
+    if (typeof window === 'undefined') return;
+
+    const { resolved } = applyThemeDocument(config.theme, config.branding);
+    const color = resolved.tokens?.color;
+    const typography = resolved.tokens?.typography;
+    const assets = resolved.tokens?.assets;
+
+    if (color?.background) {
+      document.body.style.backgroundColor = color.background;
+    }
+
+    if (typography?.fontFamily) {
+      const fontId = 'tenant-google-font';
+      let fontLink = document.getElementById(fontId) as HTMLLinkElement;
+      if (!fontLink) {
+        fontLink = document.createElement('link');
+        fontLink.id = fontId;
+        fontLink.rel = 'stylesheet';
+        document.head.appendChild(fontLink);
+      }
+      fontLink.href = `https://fonts.googleapis.com/css2?family=${typography.fontFamily.replace(/\s+/g, '+')}:wght@300;400;500;600;700&display=swap`;
+      document.body.style.fontFamily = `"${typography.fontFamily}", sans-serif`;
+    }
+
+    const favicon = assets?.favicon || config.branding?.favicon;
+    if (favicon) {
+      const favicons = ['link[rel="icon"]', 'link[rel="shortcut icon"]', 'link[rel="apple-touch-icon"]'];
+      favicons.forEach(selector => {
+        const favEl = document.querySelector(selector) as HTMLLinkElement;
+        if (favEl) {
+          favEl.href = favicon;
+        } else if (selector.includes('shortcut')) {
+          const newFav = document.createElement('link');
+          newFav.rel = 'shortcut icon';
+          newFav.href = favicon;
+          document.head.appendChild(newFav);
+        }
+      });
+    }
+
+    if (config.name) {
+      document.title = document.title.replace(/KAMPYN.*/, `KAMPYN - ${config.name}`);
+    }
+  }, []);
+
+  const fetchTenantConfig = useCallback(async (force = false) => {
     const slug = getTenantSlugFromHostname();
     const token = typeof window !== 'undefined' ? localStorage.getItem("token") : null;
 
     if (!slug && !token) {
       setTenantSlug('');
       setTenant(null);
+      tenantRef.current = null;
+      fetchedSlugRef.current = null;
       clearBranding();
       setTenantNotFound(false);
       setLoading(false);
@@ -103,11 +157,20 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       setTenantSlug(slug);
     }
 
+    // Avoid refetch on every navigation when we already have this tenant loaded
+    const cacheKey = slug || (token ? `token:${token.slice(0, 12)}` : '');
+    if (!force && fetchedSlugRef.current === cacheKey && tenantRef.current) {
+      setLoading(false);
+      return;
+    }
+
     try {
       const response = await api.get('/api/tenant/config');
       if (response.data?.success && response.data?.data) {
-        const tenantData = response.data.data;
+        const tenantData = response.data.data as TenantConfig;
         setTenant(tenantData);
+        tenantRef.current = tenantData;
+        fetchedSlugRef.current = cacheKey;
 
         if (tenantData.slug) {
           setTenantSlug(tenantData.slug);
@@ -116,12 +179,8 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           }
         }
 
-        // Skip applying branding styles to administrative/management routes and static platform pages
         const path = window.location.pathname.toLowerCase();
-        const isAdminRoute = path.includes('/admin-dashboard') || 
-                             path.includes('/admin-login')
-
-        if (isAdminRoute) {
+        if (isPlatformAdminRoute(path)) {
           clearBranding();
         } else {
           applyBranding(tenantData);
@@ -136,101 +195,66 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     } finally {
       setLoading(false);
     }
-  }, [clearBranding]);
+  }, [clearBranding, applyBranding]);
 
+  // Initial load + soft revalidate on tab focus
   useEffect(() => {
     fetchTenantConfig();
+
+    const onFocus = () => {
+      fetchTenantConfig(true);
+    };
+    window.addEventListener('focus', onFocus);
+    return () => window.removeEventListener('focus', onFocus);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname]);
+  }, []);
 
-  const applyBranding = (config: TenantConfig) => {
-    if (typeof window === 'undefined') return;
+  // Page-scoped data attribute + admin route theme clear without full refetch
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
 
-    const branding = config.branding;
-    const root = document.documentElement;
+    const main = document.querySelector('main');
+    const pageId = pathnameToPageId(pathname || '/');
 
-    // Apply primary & secondary colors to CSS variables
-    if (branding.primaryColor) {
-      root.style.setProperty('--primary-color', branding.primaryColor);
-      // For Tailwind border & text color mappings if they use custom class mappings or fallback to custom inline colors
-      root.style.setProperty('--primary-color-rgb', hexToRgb(branding.primaryColor));
-    }
-    if (branding.secondaryColor) {
-      root.style.setProperty('--secondary-color', branding.secondaryColor);
-      root.style.setProperty('--secondary-color-rgb', hexToRgb(branding.secondaryColor));
-    }
-    if (branding.backgroundColor) {
-      root.style.setProperty('--background-color', branding.backgroundColor);
-      root.style.setProperty('--background-color-rgb', hexToRgb(branding.backgroundColor));
-      document.body.style.backgroundColor = branding.backgroundColor;
+    if (isPlatformAdminRoute(pathname || '')) {
+      clearBranding();
+      if (main) main.removeAttribute('data-page');
+      return;
     }
 
-    // Apply custom font dynamic styling
-    if (branding.font) {
-      root.style.setProperty('--font-family', branding.font);
-      
-      const fontId = 'tenant-google-font';
-      let fontLink = document.getElementById(fontId) as HTMLLinkElement;
-      if (!fontLink) {
-        fontLink = document.createElement('link');
-        fontLink.id = fontId;
-        fontLink.rel = 'stylesheet';
-        document.head.appendChild(fontLink);
+    if (tenantRef.current) {
+      applyBranding(tenantRef.current);
+    }
+
+    if (main) {
+      if (pageId) {
+        main.setAttribute('data-page', pageId);
+      } else {
+        main.removeAttribute('data-page');
       }
-      fontLink.href = `https://fonts.googleapis.com/css2?family=${branding.font.replace(/\s+/g, '+')}:wght@300;400;500;600;700&display=swap`;
-      document.body.style.fontFamily = `"${branding.font}", sans-serif`;
     }
-
-    // Apply custom favicon
-    if (branding.favicon) {
-      const favicons = ['link[rel="icon"]', 'link[rel="shortcut icon"]', 'link[rel="apple-touch-icon"]'];
-      favicons.forEach(selector => {
-        const favEl = document.querySelector(selector) as HTMLLinkElement;
-        if (favEl) {
-          favEl.href = branding.favicon!;
-        } else if (selector.includes('shortcut')) {
-          const newFav = document.createElement('link');
-          newFav.rel = 'shortcut icon';
-          newFav.href = branding.favicon!;
-          document.head.appendChild(newFav);
-        }
-      });
-    }
-
-    // Apply tab document title suffix
-    if (config.name) {
-      document.title = document.title.replace(/KAMPYN.*/, `KAMPYN - ${config.name}`);
-    }
-  };
-
-  const hexToRgb = (hex: string): string => {
-    let cleanHex = hex.replace('#', '');
-    if (cleanHex.length === 3) {
-      cleanHex = cleanHex.split('').map(char => char + char).join('');
-    }
-    const num = parseInt(cleanHex, 16);
-    const r = (num >> 16) & 255;
-    const g = (num >> 8) & 255;
-    const b = num & 255;
-    return `${r}, ${g}, ${b}`;
-  };
+  }, [pathname, clearBranding, applyBranding]);
 
   const isModuleEnabled = useCallback((moduleName: string): boolean => {
     if (!tenant) return false;
     return tenant.enabledModules.includes(moduleName);
   }, [tenant]);
 
+  const refetchTenant = useCallback(async () => {
+    await fetchTenantConfig(true);
+  }, [fetchTenantConfig]);
+
   const contextValue = useMemo(() => ({
     tenant,
     loading,
     isModuleEnabled,
-    refetchTenant: fetchTenantConfig
-  }), [tenant, loading, isModuleEnabled, fetchTenantConfig]);
+    refetchTenant
+  }), [tenant, loading, isModuleEnabled, refetchTenant]);
 
   if (loading) {
     return (
       <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white dark:bg-zinc-950">
-        <div className="h-12 w-12 animate-spin rounded-full border-4 border-solid border-[#01796f] border-t-transparent"></div>
+        <div className="h-12 w-12 animate-spin rounded-full border-4 border-solid border-[var(--kampyn-color-primary,#01796f)] border-t-transparent"></div>
         <p className="mt-4 text-sm font-medium text-zinc-500 animate-pulse">Loading experience...</p>
       </div>
     );

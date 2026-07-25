@@ -32,6 +32,7 @@ const RestaurantCard: React.FC<Props> = ({
           ? styles.landing
           : styles.default
       }`}
+      data-theme-component="card.restaurant"
     >
       <div className={styles.imageWrapper}>
         <img src={restaurantImage} alt={restaurantName} className={styles.image} />

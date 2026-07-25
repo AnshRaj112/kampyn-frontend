@@ -123,7 +123,7 @@
 }
 
 .homeButton {
-  background: linear-gradient(90deg, var(--secondary-color, #4ea199), #6fc3bd);
+  background: linear-gradient(90deg, var(--secondary-color, var(--kampyn-color-secondary, #4ea199)), #6fc3bd);
   color: white;
   border: none;
   padding: 0.75rem 1.5rem;
@@ -185,7 +185,7 @@
     margin-bottom: 1rem;
     font-size: 1.25rem;
     font-weight: 600;
-    color: var(--primary-color, #01796f);
+    color: var(--primary-color, var(--kampyn-color-primary, #01796f));
   }
 
   @media (max-width: 768px) {
@@ -228,7 +228,7 @@
 }
 
 .scrollArrow {
-  background: linear-gradient(90deg, var(--secondary-color, #4ea199), #6fc3bd);
+  background: linear-gradient(90deg, var(--secondary-color, var(--kampyn-color-secondary, #4ea199)), #6fc3bd);
   color: white;
   border: none;
   border-radius: 50%;
@@ -244,7 +244,7 @@
   box-shadow: 0 2px 8px rgba(var(--secondary-color-rgb, 78, 161, 153), 0.3);
 
   &:hover {
-    background: linear-gradient(90deg, var(--primary-color, #01796f), var(--secondary-color, #4ea199));
+    background: linear-gradient(90deg, var(--primary-color, var(--kampyn-color-primary, #01796f)), var(--secondary-color, var(--kampyn-color-secondary, #4ea199)));
     transform: scale(1.1);
     box-shadow: 0 4px 12px rgba(var(--secondary-color-rgb, 78, 161, 153), 0.4);
   }
@@ -254,7 +254,7 @@
   }
 
   &:focus {
-    outline: 2px solid var(--secondary-color, #4ea199);
+    outline: 2px solid var(--secondary-color, var(--kampyn-color-secondary, #4ea199));
     outline-offset: 2px;
   }
 
@@ -297,7 +297,7 @@
   border-bottom: 1px solid #e5e7eb;
 
   h3 {
-    color: var(--secondary-color, #4ea199);
+    color: var(--secondary-color, var(--kampyn-color-secondary, #4ea199));
     font-size: 1.25rem;
     font-weight: 600;
     margin: 0;

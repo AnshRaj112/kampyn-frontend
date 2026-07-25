@@ -4,8 +4,9 @@ import React, { useState, useEffect } from 'react';
 import { useTenant } from '../components/context/TenantContext';
 import api from '@/utils/apiUtils';
 import { motion } from 'framer-motion';
-import { IoColorPaletteOutline, IoNavigateOutline, IoBuildOutline, IoGitNetworkOutline, IoCloudUploadOutline, IoLogOutOutline, IoCheckmarkCircleOutline, IoAlertCircleOutline, IoSaveOutline } from 'react-icons/io5';
+import { IoColorPaletteOutline, IoNavigateOutline, IoBuildOutline, IoGitNetworkOutline, IoCloudUploadOutline, IoLogOutOutline, IoCheckmarkCircleOutline, IoAlertCircleOutline, IoSaveOutline, IoBrushOutline } from 'react-icons/io5';
 import { useRouter } from 'next/navigation';
+import ThemeStudioPanel from './ThemeStudioPanel';
 
 const isValidHexColor = (color: string): boolean => {
   return /^#([A-Fa-f0-9]{3}|[A-Fa-f0-9]{6})$/.test(color);
@@ -39,7 +40,7 @@ const getSafeImageUrl = (url: string | undefined | null): string | undefined => 
 export default function TenantStudio() {
   const { tenant, refetchTenant } = useTenant();
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<'branding' | 'navigation' | 'pages' | 'workflows' | 'promotion'>('branding');
+  const [activeTab, setActiveTab] = useState<'theme' | 'branding' | 'navigation' | 'pages' | 'workflows' | 'promotion'>('theme');
   
   // Branding states
   const [primaryColor, setPrimaryColor] = useState('#01796f');
@@ -350,18 +351,27 @@ export default function TenantStudio() {
         {/* Navigation Sidebar */}
         <aside className="col-span-12 md:col-span-3 flex flex-col space-y-2">
           <button
+            onClick={() => setActiveTab('theme')}
+            className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all ${
+              activeTab === 'theme' ? 'bg-[var(--kampyn-color-primary,#01796f)] text-white shadow-lg' : 'bg-zinc-900 text-zinc-400 hover:text-zinc-200'
+            }`}
+          >
+            <IoBrushOutline size={18} />
+            <span>Theme Studio</span>
+          </button>
+          <button
             onClick={() => setActiveTab('branding')}
             className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all ${
-              activeTab === 'branding' ? 'bg-[#01796f] text-white shadow-lg' : 'bg-zinc-900 text-zinc-400 hover:text-zinc-200'
+              activeTab === 'branding' ? 'bg-[var(--kampyn-color-primary,#01796f)] text-white shadow-lg' : 'bg-zinc-900 text-zinc-400 hover:text-zinc-200'
             }`}
           >
             <IoColorPaletteOutline size={18} />
-            <span>Theme & Branding</span>
+            <span>Quick Branding</span>
           </button>
           <button
             onClick={() => setActiveTab('navigation')}
             className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all ${
-              activeTab === 'navigation' ? 'bg-[#01796f] text-white shadow-lg' : 'bg-zinc-900 text-zinc-400 hover:text-zinc-200'
+              activeTab === 'navigation' ? 'bg-[var(--kampyn-color-primary,#01796f)] text-white shadow-lg' : 'bg-zinc-900 text-zinc-400 hover:text-zinc-200'
             }`}
           >
             <IoNavigateOutline size={18} />
@@ -370,7 +380,7 @@ export default function TenantStudio() {
           <button
             onClick={() => setActiveTab('pages')}
             className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all ${
-              activeTab === 'pages' ? 'bg-[#01796f] text-white shadow-lg' : 'bg-zinc-900 text-zinc-400 hover:text-zinc-200'
+              activeTab === 'pages' ? 'bg-[var(--kampyn-color-primary,#01796f)] text-white shadow-lg' : 'bg-zinc-900 text-zinc-400 hover:text-zinc-200'
             }`}
           >
             <IoBuildOutline size={18} />
@@ -379,7 +389,7 @@ export default function TenantStudio() {
           <button
             onClick={() => setActiveTab('workflows')}
             className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all ${
-              activeTab === 'workflows' ? 'bg-[#01796f] text-white shadow-lg' : 'bg-zinc-900 text-zinc-400 hover:text-zinc-200'
+              activeTab === 'workflows' ? 'bg-[var(--kampyn-color-primary,#01796f)] text-white shadow-lg' : 'bg-zinc-900 text-zinc-400 hover:text-zinc-200'
             }`}
           >
             <IoGitNetworkOutline size={18} />
@@ -388,7 +398,7 @@ export default function TenantStudio() {
           <button
             onClick={() => setActiveTab('promotion')}
             className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all ${
-              activeTab === 'promotion' ? 'bg-[#01796f] text-white shadow-lg' : 'bg-zinc-900 text-zinc-400 hover:text-zinc-200'
+              activeTab === 'promotion' ? 'bg-[var(--kampyn-color-primary,#01796f)] text-white shadow-lg' : 'bg-zinc-900 text-zinc-400 hover:text-zinc-200'
             }`}
           >
             <IoCloudUploadOutline size={18} />
@@ -408,6 +418,20 @@ export default function TenantStudio() {
 
         {/* Content Box */}
         <main className="col-span-12 md:col-span-9 bg-zinc-900 border border-zinc-800 p-6 rounded-xl shadow-md min-h-[450px]">
+          {activeTab === 'theme' && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
+              <div>
+                <h2 className="text-xl font-bold text-white mb-1">Theme Studio</h2>
+                <p className="text-sm text-zinc-400">
+                  Draft, preview, and publish a full tenant theme. Unpublished drafts never affect live users.
+                </p>
+              </div>
+              <div className="rounded-xl bg-zinc-50 text-zinc-900 p-4 overflow-auto max-h-[75vh]">
+                <ThemeStudioPanel triggerToast={triggerToast} onPublished={refetchTenant} />
+              </div>
+            </motion.div>
+          )}
+
           {activeTab === 'branding' && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
               <h2 className="text-xl font-bold text-white mb-2">Campus Branding & Theme Overrides</h2>

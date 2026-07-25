@@ -18,9 +18,9 @@
   right: 0;
   bottom: 0;
   background: 
-    radial-gradient(circle at 20% 50%, rgba(78, 161, 153, 0.08) 0%, transparent 50%),
-    radial-gradient(circle at 80% 80%, rgba(111, 195, 189, 0.06) 0%, transparent 50%),
-    radial-gradient(circle at 40% 20%, rgba(1, 121, 111, 0.05) 0%, transparent 50%);
+    radial-gradient(circle at 20% 50%, rgba(var(--secondary-color-rgb, 78, 161, 153), 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(var(--secondary-color-rgb, 78, 161, 153), 0.06) 0%, transparent 50%),
+    radial-gradient(circle at 40% 20%, rgba(var(--primary-color-rgb, 1, 121, 111), 0.05) 0%, transparent 50%);
   pointer-events: none;
   z-index: 0;
 }
@@ -48,11 +48,11 @@
   justify-content: center;
   width: 80px;
   height: 80px;
-  background: linear-gradient(135deg, rgba(78, 161, 153, 0.1), rgba(111, 195, 189, 0.1));
+  background: linear-gradient(135deg, rgba(var(--secondary-color-rgb, 78, 161, 153), 0.1), rgba(var(--secondary-color-rgb, 78, 161, 153), 0.1));
   border-radius: 20px;
   margin-bottom: 1.5rem;
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(78, 161, 153, 0.2);
+  border: 1px solid rgba(var(--secondary-color-rgb, 78, 161, 153), 0.2);
   
   @media (max-width: 768px) {
     width: 64px;
@@ -62,7 +62,7 @@
 }
 
 .headerIcon {
-  color: #4ea199;
+  color: var(--kampyn-color-secondary, #4ea199);
   animation: float 3s ease-in-out infinite;
 }
 
@@ -80,7 +80,7 @@
   font-weight: 800;
   text-align: center;
   margin-bottom: 1rem;
-  background: linear-gradient(135deg, #4ea199 0%, #6fc3bd 50%, #01796f 100%);
+  background: linear-gradient(135deg, var(--kampyn-color-secondary, #4ea199) 0%, var(--kampyn-color-secondary, #4ea199) 50%, var(--kampyn-color-primary, #01796f) 100%);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -159,7 +159,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, rgba(78, 161, 153, 0.05), rgba(111, 195, 189, 0.05));
+    background: linear-gradient(135deg, rgba(var(--secondary-color-rgb, 78, 161, 153), 0.05), rgba(var(--secondary-color-rgb, 78, 161, 153), 0.05));
     opacity: 0;
     transition: opacity 0.4s ease;
     border-radius: 20px;
@@ -168,9 +168,9 @@
   &:hover {
     transform: translateY(-8px) scale(1.02);
     box-shadow: 
-      0 25px 50px -12px rgba(78, 161, 153, 0.25),
-      0 0 0 1px rgba(78, 161, 153, 0.1);
-    border-color: rgba(78, 161, 153, 0.3);
+      0 25px 50px -12px rgba(var(--secondary-color-rgb, 78, 161, 153), 0.25),
+      0 0 0 1px rgba(var(--secondary-color-rgb, 78, 161, 153), 0.1);
+    border-color: rgba(var(--secondary-color-rgb, 78, 161, 153), 0.3);
     background: rgba(255, 255, 255, 0.95);
     
     &::before {
@@ -188,7 +188,7 @@
     
     .collegeIcon {
       transform: scale(1.1) rotate(5deg);
-      color: #4ea199;
+      color: var(--kampyn-color-secondary, #4ea199);
     }
     
     .cardHoverEffect {
@@ -207,7 +207,7 @@
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(90deg, #4ea199, #6fc3bd, #01796f);
+  background: linear-gradient(90deg, var(--kampyn-color-secondary, #4ea199), var(--kampyn-color-secondary, #4ea199), var(--kampyn-color-primary, #01796f));
   opacity: 0;
   transition: opacity 0.4s ease;
 }
@@ -219,7 +219,7 @@
   width: 0;
   height: 0;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(78, 161, 153, 0.1), transparent);
+  background: radial-gradient(circle, rgba(var(--secondary-color-rgb, 78, 161, 153), 0.1), transparent);
   transform: translate(-50%, -50%);
   transition: width 0.6s ease, height 0.6s ease, opacity 0.4s ease;
   opacity: 0;
@@ -247,7 +247,7 @@
   justify-content: center;
   width: 48px;
   height: 48px;
-  background: linear-gradient(135deg, rgba(78, 161, 153, 0.1), rgba(111, 195, 189, 0.1));
+  background: linear-gradient(135deg, rgba(var(--secondary-color-rgb, 78, 161, 153), 0.1), rgba(var(--secondary-color-rgb, 78, 161, 153), 0.1));
   border-radius: 12px;
   color: #64748b;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -277,19 +277,19 @@
   justify-content: center;
   width: 40px;
   height: 40px;
-  background: linear-gradient(135deg, rgba(78, 161, 153, 0.1), rgba(111, 195, 189, 0.1));
+  background: linear-gradient(135deg, rgba(var(--secondary-color-rgb, 78, 161, 153), 0.1), rgba(var(--secondary-color-rgb, 78, 161, 153), 0.1));
   border-radius: 10px;
   flex-shrink: 0;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .collegeCard:hover .chevronWrapper {
-  background: linear-gradient(135deg, #4ea199, #6fc3bd);
+  background: linear-gradient(135deg, var(--kampyn-color-secondary, #4ea199), var(--kampyn-color-secondary, #4ea199));
   transform: scale(1.1);
 }
 
 .chevronIcon {
-  color: #4ea199;
+  color: var(--kampyn-color-secondary, #4ea199);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   opacity: 0.8;
 }
@@ -380,7 +380,7 @@
   align-items: center;
   justify-content: center;
   padding: 0.875rem 2rem;
-  background: linear-gradient(135deg, #4ea199, #6fc3bd);
+  background: linear-gradient(135deg, var(--kampyn-color-secondary, #4ea199), var(--kampyn-color-secondary, #4ea199));
   color: white;
   border: none;
   border-radius: 12px;
@@ -388,12 +388,12 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 6px -1px rgba(78, 161, 153, 0.3);
+  box-shadow: 0 4px 6px -1px rgba(var(--secondary-color-rgb, 78, 161, 153), 0.3);
   
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 12px -2px rgba(78, 161, 153, 0.4);
-    background: linear-gradient(135deg, #01796f, #4ea199);
+    box-shadow: 0 8px 12px -2px rgba(var(--secondary-color-rgb, 78, 161, 153), 0.4);
+    background: linear-gradient(135deg, var(--kampyn-color-primary, #01796f), var(--kampyn-color-secondary, #4ea199));
   }
   
   &:active {

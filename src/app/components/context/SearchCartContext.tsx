@@ -3,7 +3,7 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { toast } from 'react-toastify';
 import { SearchResult } from '../search/SearchBar/SearchBar';
-import { CART_COUNT_UPDATE_EVENT } from '@/app/hooks/useCartCount';
+import { notifyCartCountChanged, sumCartQuantities } from '@/app/hooks/useCartCount';
 import api from '@/utils/apiUtils';
 
 interface CartItemResponse {
@@ -143,8 +143,11 @@ export const SearchCartProvider = ({ children }: SearchCartProviderProps) => {
         quantity: item.quantity
       }));
       setSearchCartItems(transformedItems);
-      // Dispatch event to update cart count in navbar
-      window.dispatchEvent(new Event(CART_COUNT_UPDATE_EVENT));
+      // Local badge update from already-fetched cart — no second GET
+      notifyCartCountChanged({
+        count: sumCartQuantities(transformedItems),
+        userId: currentUserId,
+      });
     } catch (error) {
       console.error('Error refreshing search cart:', error);
       // Don't show toast for expected errors like no user ID
@@ -221,6 +224,7 @@ export const SearchCartProvider = ({ children }: SearchCartProviderProps) => {
         throw new Error(errorData?.message || 'Failed to add item to cart');
       }
 
+      notifyCartCountChanged({ delta: 1, userId: currentUserId });
       await refreshSearchCart();
       toast.success(`${item.name || item.title || 'Item'} added to cart!`);
     } catch (error) {
@@ -258,6 +262,7 @@ export const SearchCartProvider = ({ children }: SearchCartProviderProps) => {
         throw new Error(errorData.message || 'Failed to increase quantity');
       }
 
+      notifyCartCountChanged({ delta: 1, userId: currentUserId });
       await refreshSearchCart();
       toast.success('Quantity increased');
     } catch (error) {
@@ -294,6 +299,7 @@ export const SearchCartProvider = ({ children }: SearchCartProviderProps) => {
         throw new Error(errorData.message || 'Failed to decrease quantity');
       }
 
+      notifyCartCountChanged({ delta: -1, userId: currentUserId });
       await refreshSearchCart();
       toast.info('Quantity decreased');
     } catch (error) {
