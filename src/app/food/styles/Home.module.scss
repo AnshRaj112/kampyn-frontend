@@ -136,21 +136,24 @@
 
 .collegeCard {
   position: relative;
-  background: rgba(255, 255, 255, 0.8);
+  background: var(--kampyn-component-card-college-background, rgba(255, 255, 255, 0.8));
   backdrop-filter: blur(20px);
-  border-radius: 20px;
+  border-radius: var(--kampyn-component-card-college-radius, 20px);
   padding: 2rem;
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 1px solid rgba(226, 232, 240, 0.8);
+  border: 1px solid var(--kampyn-component-card-college-border, rgba(226, 232, 240, 0.8));
   min-height: 140px;
   display: flex;
   align-items: center;
   overflow: hidden;
-  box-shadow: 
+  box-shadow: var(
+    --kampyn-component-card-college-shadow,
     0 4px 6px -1px rgba(0, 0, 0, 0.05),
-    0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    0 2px 4px -1px rgba(0, 0, 0, 0.03)
+  );
   animation: fadeInUp 0.6s ease-out backwards;
+  color: var(--kampyn-component-card-college-title, var(--kampyn-color-text, #1e293b));
   
   &::before {
     content: '';
@@ -162,16 +165,18 @@
     background: linear-gradient(135deg, rgba(var(--secondary-color-rgb, 78, 161, 153), 0.05), rgba(var(--secondary-color-rgb, 78, 161, 153), 0.05));
     opacity: 0;
     transition: opacity 0.4s ease;
-    border-radius: 20px;
+    border-radius: var(--kampyn-component-card-college-radius, 20px);
   }
   
   &:hover {
     transform: translateY(-8px) scale(1.02);
-    box-shadow: 
+    box-shadow: var(
+      --kampyn-component-card-college-hoverShadow,
       0 25px 50px -12px rgba(var(--secondary-color-rgb, 78, 161, 153), 0.25),
-      0 0 0 1px rgba(var(--secondary-color-rgb, 78, 161, 153), 0.1);
-    border-color: rgba(var(--secondary-color-rgb, 78, 161, 153), 0.3);
-    background: rgba(255, 255, 255, 0.95);
+      0 0 0 1px rgba(var(--secondary-color-rgb, 78, 161, 153), 0.1)
+    );
+    border-color: var(--kampyn-component-card-college-border, rgba(var(--secondary-color-rgb, 78, 161, 153), 0.3));
+    background: var(--kampyn-component-card-college-hoverBackground, rgba(255, 255, 255, 0.95));
     
     &::before {
       opacity: 1;

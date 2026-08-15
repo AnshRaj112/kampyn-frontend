@@ -396,24 +396,27 @@
 }
 
 .foodCard {
-  background: rgba(255, 255, 255, 0.95);
+  background: var(--kampyn-component-card-dish-background, rgba(255, 255, 255, 0.95));
   backdrop-filter: blur(10px);
-  border-radius: 20px;
+  border-radius: var(--kampyn-component-card-dish-radius, 20px);
   padding: 1.25rem;
   height: 100%;
   width: 100%;
   display: flex;
   flex-direction: column;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 
+  box-shadow: var(
+    --kampyn-component-card-dish-shadow,
     0 4px 6px -1px rgba(0, 0, 0, 0.05),
     0 2px 4px -1px rgba(0, 0, 0, 0.03),
-    0 0 0 1px rgba(226, 232, 240, 0.5);
-  border: 1px solid rgba(226, 232, 240, 0.8);
+    0 0 0 1px rgba(226, 232, 240, 0.5)
+  );
+  border: 1px solid var(--kampyn-component-card-dish-border, rgba(226, 232, 240, 0.8));
   min-height: 450px;
   box-sizing: border-box;
   overflow: hidden;
   position: relative;
+  color: var(--kampyn-component-card-dish-title, var(--kampyn-color-text, #1e293b));
   
   &::before {
     content: '';
@@ -430,11 +433,17 @@
 
 .foodCard:hover {
   transform: translateY(-8px) scale(1.02);
-  box-shadow: 
+  box-shadow: var(
+    --kampyn-component-card-dish-hoverShadow,
     0 20px 40px -10px rgba(var(--secondary-color-rgb, 78, 161, 153), 0.2),
     0 8px 12px -4px rgba(0, 0, 0, 0.1),
-    0 0 0 1px rgba(var(--secondary-color-rgb, 78, 161, 153), 0.2);
-  border-color: rgba(var(--secondary-color-rgb, 78, 161, 153), 0.3);
+    0 0 0 1px rgba(var(--secondary-color-rgb, 78, 161, 153), 0.2)
+  );
+  border-color: var(--kampyn-component-card-dish-border, rgba(var(--secondary-color-rgb, 78, 161, 153), 0.3));
+  background: var(
+    --kampyn-component-card-dish-hoverBackground,
+    var(--kampyn-component-card-dish-background, rgba(255, 255, 255, 0.95))
+  );
   
   &::before {
     opacity: 1;
@@ -1069,27 +1078,36 @@
 }
 
 .vendorCard {
-  background: rgba(255, 255, 255, 0.9);
+  background: var(--kampyn-component-card-vendor-background, rgba(255, 255, 255, 0.9));
   backdrop-filter: blur(10px);
-  border-radius: 20px;
+  border-radius: var(--kampyn-component-card-vendor-radius, 20px);
   overflow: hidden;
-  box-shadow: 
+  box-shadow: var(
+    --kampyn-component-card-vendor-shadow,
     0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  border: 2px solid #e2e8f0; // Neutral border
+    0 2px 4px -1px rgba(0, 0, 0, 0.06)
+  );
+  border: 2px solid var(--kampyn-component-card-vendor-border, #e2e8f0);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
   display: flex;
   flex-direction: column;
   height: 100%;
   padding: 0;
+  color: var(--kampyn-component-card-vendor-title, var(--kampyn-color-text, #1e293b));
 
   &:hover {
     transform: translateY(-5px);
-    box-shadow: 
+    box-shadow: var(
+      --kampyn-component-card-vendor-hoverShadow,
       0 20px 25px -5px rgba(0, 0, 0, 0.1),
-      0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    border-color: #cbd5e1; // Neutral hover border
+      0 10px 10px -5px rgba(0, 0, 0, 0.04)
+    );
+    border-color: var(--kampyn-component-card-vendor-border, #cbd5e1);
+    background: var(
+      --kampyn-component-card-vendor-hoverBackground,
+      var(--kampyn-component-card-vendor-background, rgba(255, 255, 255, 0.9))
+    );
   }
 
   &Selected {

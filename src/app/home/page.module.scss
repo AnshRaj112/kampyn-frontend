@@ -69,41 +69,46 @@
   display: block;
   width: 100%;
   text-align: left;
-  border-radius: var(--kampyn-component-card-category-radius, var(--kampyn-shape-radiusLg, 20px));
-  border: 1px solid var(--kampyn-component-card-category-border, rgba(226, 232, 240, 0.8));
-  background: var(--kampyn-component-card-category-background, rgba(255, 255, 255, 0.82));
+  border-radius: var(--kampyn-component-card-home-radius, var(--kampyn-shape-radiusLg, 20px));
+  border: 1px solid var(--kampyn-component-card-home-border, rgba(226, 232, 240, 0.8));
+  background: var(--kampyn-component-card-home-background, rgba(255, 255, 255, 0.82));
   backdrop-filter: blur(20px);
   padding: 1.75rem;
   text-decoration: none;
   min-height: 180px;
-  box-shadow:
+  box-shadow: var(
+    --kampyn-component-card-home-shadow,
     0 4px 6px -1px rgba(0, 0, 0, 0.05),
-    0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    0 2px 4px -1px rgba(0, 0, 0, 0.03)
+  );
   transition: all 0.25s ease;
   cursor: pointer;
+  color: var(--kampyn-component-card-home-title, var(--kampyn-color-text, #1e293b));
 }
 
 .optionCard:hover {
   transform: translateY(-6px);
-  border-color: rgba(var(--primary-color-rgb, 1, 121, 111), 0.3);
+  border-color: var(--kampyn-component-card-home-border, rgba(var(--primary-color-rgb, 1, 121, 111), 0.3));
   background: var(
-    --kampyn-component-card-category-hoverBackground,
+    --kampyn-component-card-home-hoverBackground,
     rgba(255, 255, 255, 0.95)
   );
-  box-shadow:
+  box-shadow: var(
+    --kampyn-component-card-home-hoverShadow,
     0 20px 40px -12px rgba(var(--primary-color-rgb, 1, 121, 111), 0.22),
-    0 0 0 1px rgba(var(--primary-color-rgb, 1, 121, 111), 0.1);
+    0 0 0 1px rgba(var(--primary-color-rgb, 1, 121, 111), 0.1)
+  );
 }
 
 .cardTitle {
   font-size: 1.35rem;
   font-weight: 700;
-  color: var(--kampyn-component-card-category-title, var(--kampyn-color-text, #1e293b));
+  color: var(--kampyn-component-card-home-title, var(--kampyn-color-text, #1e293b));
   margin-bottom: 0.65rem;
 }
 
 .cardDescription {
-  color: var(--kampyn-color-textMuted, #64748b);
+  color: var(--kampyn-component-card-home-description, var(--kampyn-color-textMuted, #64748b));
   margin-bottom: 1.1rem;
   line-height: 1.6;
 }

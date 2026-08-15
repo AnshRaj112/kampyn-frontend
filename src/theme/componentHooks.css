@@ -1,14 +1,138 @@
 /**
  * Component-level CSS hooks for the theme registry.
  * Components opt in via data-theme-component="<category>.<id>".
+ * Per-id vars (--kampyn-component-{category}-{id}-{prop}) win over module SCSS
+ * via targeted !important on shell properties.
  */
 
-[data-theme-component="card.dish"],
-[data-theme-component="card.restaurant"],
+/* ---- Cards: per-id shells ---- */
+
+[data-theme-component="card.home"] {
+  background: var(--kampyn-component-card-home-background, var(--kampyn-color-surface)) !important;
+  border-color: var(--kampyn-component-card-home-border, var(--kampyn-color-border)) !important;
+  border-radius: var(--kampyn-component-card-home-radius, var(--kampyn-shape-radiusLg)) !important;
+  box-shadow: var(--kampyn-component-card-home-shadow, var(--kampyn-elevation-shadowSm)) !important;
+  color: var(--kampyn-component-card-home-title, var(--kampyn-color-text));
+}
+
+[data-theme-component="card.home"]:hover {
+  background: var(
+    --kampyn-component-card-home-hoverBackground,
+    var(--kampyn-component-card-home-background, var(--kampyn-color-surface))
+  ) !important;
+  box-shadow: var(
+    --kampyn-component-card-home-hoverShadow,
+    var(--kampyn-component-card-home-shadow, var(--kampyn-elevation-shadowMd))
+  ) !important;
+}
+
+[data-theme-component="card.college"] {
+  background: var(--kampyn-component-card-college-background, var(--kampyn-color-surface)) !important;
+  border-color: var(--kampyn-component-card-college-border, var(--kampyn-color-border)) !important;
+  border-radius: var(--kampyn-component-card-college-radius, var(--kampyn-shape-radiusLg)) !important;
+  box-shadow: var(--kampyn-component-card-college-shadow, var(--kampyn-elevation-shadowSm)) !important;
+  color: var(--kampyn-component-card-college-title, var(--kampyn-color-text));
+}
+
+[data-theme-component="card.college"]:hover {
+  background: var(
+    --kampyn-component-card-college-hoverBackground,
+    var(--kampyn-component-card-college-background, var(--kampyn-color-surface))
+  ) !important;
+  box-shadow: var(
+    --kampyn-component-card-college-hoverShadow,
+    var(--kampyn-component-card-college-shadow, var(--kampyn-elevation-shadowMd))
+  ) !important;
+}
+
+[data-theme-component="card.vendor"] {
+  background: var(--kampyn-component-card-vendor-background, var(--kampyn-color-surface)) !important;
+  border-color: var(--kampyn-component-card-vendor-border, var(--kampyn-color-border)) !important;
+  border-radius: var(--kampyn-component-card-vendor-radius, var(--kampyn-shape-radiusMd)) !important;
+  box-shadow: var(--kampyn-component-card-vendor-shadow, var(--kampyn-elevation-shadowSm)) !important;
+  color: var(--kampyn-component-card-vendor-title, var(--kampyn-color-text));
+}
+
+[data-theme-component="card.vendor"]:hover {
+  background: var(
+    --kampyn-component-card-vendor-hoverBackground,
+    var(--kampyn-component-card-vendor-background, var(--kampyn-color-surface))
+  ) !important;
+  box-shadow: var(
+    --kampyn-component-card-vendor-hoverShadow,
+    var(--kampyn-component-card-vendor-shadow, var(--kampyn-elevation-shadowMd))
+  ) !important;
+}
+
+[data-theme-component="card.dish"] {
+  background: var(--kampyn-component-card-dish-background, var(--kampyn-color-surface)) !important;
+  border-color: var(--kampyn-component-card-dish-border, var(--kampyn-color-border)) !important;
+  border-radius: var(--kampyn-component-card-dish-radius, var(--kampyn-shape-radiusMd)) !important;
+  box-shadow: var(--kampyn-component-card-dish-shadow, var(--kampyn-elevation-shadowSm)) !important;
+  color: var(--kampyn-component-card-dish-title, var(--kampyn-color-text));
+}
+
+[data-theme-component="card.dish"]:hover {
+  background: var(
+    --kampyn-component-card-dish-hoverBackground,
+    var(--kampyn-component-card-dish-background, var(--kampyn-color-surface))
+  ) !important;
+  box-shadow: var(
+    --kampyn-component-card-dish-hoverShadow,
+    var(--kampyn-component-card-dish-shadow, var(--kampyn-elevation-shadowMd))
+  ) !important;
+}
+
+[data-theme-component="card.offer"] {
+  background: var(--kampyn-component-card-offer-background, var(--kampyn-color-surface)) !important;
+  border-color: var(--kampyn-component-card-offer-border, var(--kampyn-color-border)) !important;
+  border-radius: var(--kampyn-component-card-offer-radius, var(--kampyn-shape-radiusMd)) !important;
+  box-shadow: var(--kampyn-component-card-offer-shadow, var(--kampyn-elevation-shadowSm)) !important;
+  color: var(--kampyn-component-card-offer-title, var(--kampyn-color-text));
+}
+
+[data-theme-component="card.offer"]:hover {
+  background: var(
+    --kampyn-component-card-offer-hoverBackground,
+    var(--kampyn-component-card-offer-background, var(--kampyn-color-surface))
+  ) !important;
+  box-shadow: var(
+    --kampyn-component-card-offer-hoverShadow,
+    var(--kampyn-component-card-offer-shadow, var(--kampyn-elevation-shadowMd))
+  ) !important;
+}
+
+[data-theme-component="card.cartItem"] {
+  background: var(--kampyn-component-card-cartItem-background, var(--kampyn-color-surface)) !important;
+  border-color: var(--kampyn-component-card-cartItem-border, var(--kampyn-color-border)) !important;
+  border-radius: var(--kampyn-component-card-cartItem-radius, var(--kampyn-shape-radiusMd)) !important;
+  box-shadow: var(--kampyn-component-card-cartItem-shadow, var(--kampyn-elevation-shadowSm)) !important;
+  color: var(--kampyn-component-card-cartItem-title, var(--kampyn-color-text));
+}
+
+[data-theme-component="card.bill"] {
+  background: var(--kampyn-component-card-bill-background, var(--kampyn-color-surface)) !important;
+  border-color: var(--kampyn-component-card-bill-border, var(--kampyn-color-border)) !important;
+  border-radius: var(--kampyn-component-card-bill-radius, var(--kampyn-shape-radiusLg)) !important;
+  box-shadow: var(--kampyn-component-card-bill-shadow, var(--kampyn-elevation-shadowMd)) !important;
+  color: var(--kampyn-component-card-bill-title, var(--kampyn-color-text));
+}
+
+[data-theme-component="card.restaurant"] {
+  background: var(--kampyn-component-card-restaurant-background, var(--kampyn-color-surface)) !important;
+  border-color: var(--kampyn-component-card-restaurant-border, var(--kampyn-color-border)) !important;
+  border-radius: var(--kampyn-component-card-restaurant-radius, var(--kampyn-shape-radiusMd)) !important;
+  box-shadow: var(--kampyn-component-card-restaurant-shadow, var(--kampyn-elevation-shadowSm)) !important;
+}
+
+[data-theme-component="card.category"] {
+  background: var(--kampyn-component-card-category-background, var(--kampyn-color-surface)) !important;
+  border-color: var(--kampyn-component-card-category-border, var(--kampyn-color-border)) !important;
+  border-radius: var(--kampyn-component-card-category-radius, var(--kampyn-shape-radiusLg)) !important;
+  box-shadow: var(--kampyn-component-card-category-shadow, var(--kampyn-elevation-shadowSm)) !important;
+}
+
 [data-theme-component="card.order"],
-[data-theme-component="card.vendor"],
-[data-theme-component="card.category"],
-[data-theme-component="card.offer"],
 [data-theme-component="card.coupon"],
 [data-theme-component="card.notification"],
 [data-theme-component="card.profile"],
@@ -16,25 +140,33 @@
 [data-theme-component="card.statistics"],
 [data-theme-component="card.membership"],
 [data-theme-component="card.wallet"] {
-  background: var(--kampyn-component-card-background, var(--kampyn-color-surface));
-  border-color: var(--kampyn-component-card-border, var(--kampyn-color-border));
-  border-radius: var(--kampyn-component-card-radius, var(--kampyn-shape-radiusMd));
-  box-shadow: var(--kampyn-component-card-shadow, var(--kampyn-elevation-shadowSm));
-  color: var(--kampyn-component-card-title, var(--kampyn-color-text));
+  background: var(--kampyn-color-surface) !important;
+  border-color: var(--kampyn-color-border) !important;
+  border-radius: var(--kampyn-shape-radiusMd) !important;
+  box-shadow: var(--kampyn-elevation-shadowSm) !important;
+  color: var(--kampyn-color-text);
 }
 
-[data-theme-component="card.dish"] {
-  background: var(--kampyn-component-card-dish-background, var(--kampyn-color-surface));
-  border-color: var(--kampyn-component-card-dish-border, var(--kampyn-color-border));
-  border-radius: var(--kampyn-component-card-dish-radius, var(--kampyn-shape-radiusMd));
-  box-shadow: var(--kampyn-component-card-dish-shadow, var(--kampyn-elevation-shadowSm));
+[data-theme-component="card.order"] {
+  background: var(--kampyn-component-card-order-background, var(--kampyn-color-surface)) !important;
+  border-color: var(--kampyn-component-card-order-border, var(--kampyn-color-border)) !important;
+  border-radius: var(--kampyn-component-card-order-radius, var(--kampyn-shape-radiusMd)) !important;
 }
 
-[data-theme-component="card.restaurant"] {
-  background: var(--kampyn-component-card-restaurant-background, var(--kampyn-color-surface));
-  border-color: var(--kampyn-component-card-restaurant-border, var(--kampyn-color-border));
-  border-radius: var(--kampyn-component-card-restaurant-radius, var(--kampyn-shape-radiusMd));
+[data-theme-component="card.coupon"] {
+  background: var(--kampyn-component-card-coupon-background, var(--kampyn-color-surface)) !important;
+  border-color: var(--kampyn-component-card-coupon-border, var(--kampyn-color-border)) !important;
 }
+
+[data-theme-component="card.membership"] {
+  background: var(--kampyn-component-card-membership-background, var(--kampyn-color-surface)) !important;
+}
+
+[data-theme-component="card.wallet"] {
+  background: var(--kampyn-component-card-wallet-background, var(--kampyn-color-surface)) !important;
+}
+
+/* ---- Buttons ---- */
 
 [data-theme-component="button.primary"],
 [data-theme-component="button.addToCart"],
@@ -70,23 +202,6 @@
   );
 }
 
-[data-theme-component="card.vendor"] {
-  background: var(--kampyn-component-card-vendor-background, var(--kampyn-color-surface));
-  border-color: var(--kampyn-component-card-vendor-border, var(--kampyn-color-border));
-  border-radius: var(--kampyn-component-card-vendor-radius, var(--kampyn-shape-radiusMd));
-  box-shadow: var(--kampyn-component-card-vendor-shadow, var(--kampyn-elevation-shadowSm));
-}
-
-[data-theme-component="card.category"] {
-  border-color: var(--kampyn-component-card-category-border, var(--kampyn-color-border));
-  border-radius: var(--kampyn-component-card-category-radius, var(--kampyn-shape-radiusLg));
-}
-
-[data-theme-component="card.offer"] {
-  background: var(--kampyn-component-card-offer-background, var(--kampyn-color-surface));
-  border-color: var(--kampyn-component-card-offer-border, var(--kampyn-color-border));
-}
-
 [data-theme-component="button.checkout"] {
   background-color: var(
     --kampyn-component-button-checkout-background,
@@ -105,6 +220,8 @@
   background-color: var(--kampyn-component-button-secondary-background, var(--kampyn-color-secondary));
   color: var(--kampyn-component-button-secondary-text, var(--kampyn-color-textInverse));
 }
+
+/* ---- Nav / form / alert / badge / misc ---- */
 
 [data-theme-component="nav.navbar"],
 [data-theme-component="nav.sidebar"],

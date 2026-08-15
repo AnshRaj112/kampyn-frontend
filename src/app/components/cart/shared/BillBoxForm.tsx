@@ -99,7 +99,11 @@ const BillBoxForm: React.FC<BillBoxFormProps> = ({
   }
 
   return (
-    <form className={styles.container} onSubmit={handleSubmit}>
+    <form
+      className={styles.container}
+      onSubmit={handleSubmit}
+      data-theme-component="card.bill"
+    >
       {vendorDeliverySettings && (
         <div className={styles.preparationTime} style={{ marginBottom: "0.5rem" }}>
           <span>Estimated preparation time</span>

@@ -40,9 +40,14 @@ const DishListItem: React.FC<DishListItemProps> = ({
     const inStock = isDishInStock(item);
 
     const isBoxed = variant === 'boxed';
+    const themeComponent =
+        variant === 'cart' ? 'card.cartItem' : 'card.dish';
 
     return (
-        <div className={`${styles.dishListItem} ${isBoxed ? styles.boxed : ''}`}>
+        <div
+            className={`${styles.dishListItem} ${isBoxed ? styles.boxed : ''}`}
+            data-theme-component={themeComponent}
+        >
             <div className={styles.leftSection}>
                 <div className={styles.imageContainer}>
                     <Image
