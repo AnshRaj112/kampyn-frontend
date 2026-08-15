@@ -1,17 +1,18 @@
 // @import url("https://fonts.googleapis.com/css2?family=Shadows+Into+Light&display=swap");
 
 .container {
-  font-family: inherit; // Switch to the more premium sans-serif from the globals
-  background: white; // Clean white background for the container
-  padding: 1.5rem;   // Increased padding
-  border-radius: 1.25rem; // Smoother rounded corners
+  font-family: inherit;
+  background: var(--kampyn-component-card-bill-background, white);
+  padding: 1.5rem;
+  border-radius: var(--kampyn-component-card-bill-radius, 1.25rem);
   width: 100%;
-  max-width: 360px; // Slightly wider for breathability
+  max-width: 360px;
   display: flex;
   flex-direction: column;
-  gap: 1rem; // Increased gap between primary sections
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05); // Softer modern shadow
-  border: 1px solid rgba(226, 232, 240, 0.8);
+  gap: 1rem;
+  box-shadow: var(--kampyn-component-card-bill-shadow, 0 10px 25px rgba(0, 0, 0, 0.05));
+  border: 1px solid var(--kampyn-component-card-bill-border, rgba(226, 232, 240, 0.8));
+  color: var(--kampyn-component-card-bill-title, var(--kampyn-color-text, #1e293b));
 }
 
 .segmentedControl {
@@ -38,9 +39,9 @@
 }
 
 .active {
-  background: #01796f;
-  color: #fff;
-  box-shadow: 0 2px 4px rgba(1, 121, 111, 0.2);
+  background: var(--kampyn-color-primary, #01796f);
+  color: var(--kampyn-color-textInverse, #fff);
+  box-shadow: 0 2px 4px color-mix(in srgb, var(--kampyn-color-primary, #01796f) 20%, transparent);
 }
 
 .input,
@@ -55,8 +56,8 @@
 
   &:focus {
     outline: none;
-    border-color: #01796f;
-    box-shadow: 0 0 0 2px rgba(1, 121, 111, 0.1);
+    border-color: var(--kampyn-color-primary, #01796f);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--kampyn-color-primary, #01796f) 10%, transparent);
   }
 }
 
@@ -138,23 +139,26 @@
 }
 
 .button {
-  padding: 0.8rem; // Increased padding
-  background: #01796f;
-  color: white;
+  padding: 0.8rem;
+  background: var(--kampyn-component-button-checkout-background, var(--kampyn-color-primary, #01796f));
+  color: var(--kampyn-component-button-checkout-text, var(--kampyn-color-textInverse, white));
   font-weight: 600;
   font-size: 1rem;
   border: none;
-  border-radius: 0.6rem;
+  border-radius: var(--kampyn-component-button-checkout-radius, 0.6rem);
   cursor: pointer;
   transition: all 0.2s ease;
   margin-top: 0.5rem;
-  box-shadow: 0 4px 6px rgba(1, 121, 111, 0.2);
+  box-shadow: 0 4px 6px color-mix(in srgb, var(--kampyn-color-primary, #01796f) 20%, transparent);
 }
 
 .button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(1, 121, 111, 0.3);
-  background: #016b62; // Slightly darker hover
+  box-shadow: 0 6px 12px color-mix(in srgb, var(--kampyn-color-primary, #01796f) 30%, transparent);
+  background: var(
+    --kampyn-component-button-checkout-hover,
+    var(--kampyn-component-button-checkout-background, var(--kampyn-color-primary, #016b62))
+  );
 }
 
 .button:active {

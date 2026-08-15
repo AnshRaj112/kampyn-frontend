@@ -1,42 +1,30 @@
-import { setRazorpayCredentials, hasRazorpayCredentials } from '../config/razorpay';
+import { isRazorpayClientConfigured } from '../config/razorpay';
 import { ENV_CONFIG, validateEnvironment } from '../config/environment';
 
 /**
- * Initialize Razorpay for direct API calls
- * This should be called from your app initialization (e.g., _app.tsx or layout.tsx)
- * 
- * @param keyId - Your Razorpay Key ID (optional, will use env if not provided)
- * @param keySecret - Your Razorpay Key Secret (optional, will use env if not provided)
+ * Initialize Razorpay client configuration (checks env only)
  */
 export const initializeRazorpay = (keyId?: string, keySecret?: string) => {
   try {
     // Validate environment first
     const envStatus = validateEnvironment();
     
-    // Use provided credentials or fall back to environment
-    const finalKeyId = keyId || ENV_CONFIG.RAZORPAY.KEY_ID;
-    const finalKeySecret = keySecret || ENV_CONFIG.RAZORPAY.KEY_SECRET;
+    if (keySecret || process.env.NEXT_PUBLIC_RAZORPAY_KEY_SECRET) {
+      console.error('❌ CRITICAL SECURITY ERROR: Attempted to initialize Razorpay with a Key Secret on the client.');
+    }
     
-    if (finalKeyId && finalKeySecret) {
-      setRazorpayCredentials(finalKeyId, finalKeySecret);
-      
-      if (hasRazorpayCredentials()) {
-        console.log('✅ Razorpay initialized successfully for direct API calls');
-        console.log('🔗 API calls will now hit:', ENV_CONFIG.RAZORPAY.API_BASE);
-        console.log('🔑 Using key ID:', finalKeyId);
-        console.log('🌍 Environment:', ENV_CONFIG.APP.ENVIRONMENT);
-      } else {
-        console.warn('⚠️ Razorpay credentials not set properly');
-      }
+    const configured = isRazorpayClientConfigured();
+    
+    if (configured) {
+      console.log('✅ Razorpay client configured using public Key ID:', ENV_CONFIG.RAZORPAY.KEY_ID);
     } else {
-      console.warn('⚠️ Razorpay credentials not available - will use backend proxy');
-      console.warn('💡 Set NEXT_PUBLIC_RAZORPAY_KEY_ID and NEXT_PUBLIC_RAZORPAY_KEY_SECRET in .env.local');
+      console.warn('⚠️ Razorpay Key ID not configured in environment variables');
     }
     
     return {
-      success: hasRazorpayCredentials(),
+      success: configured,
       environment: ENV_CONFIG.APP.ENVIRONMENT,
-      apiBase: ENV_CONFIG.RAZORPAY.API_BASE,
+      apiBase: 'Backend proxy',
       warnings: envStatus.warnings,
       errors: envStatus.errors
     };
@@ -51,17 +39,16 @@ export const initializeRazorpay = (keyId?: string, keySecret?: string) => {
 
 /**
  * Auto-initialize Razorpay from environment variables
- * Call this in your app initialization for automatic setup
  */
 export const autoInitializeRazorpay = () => {
   return initializeRazorpay();
 };
 
 /**
- * Check if Razorpay is properly initialized
+ * Check if Razorpay is properly configured on the client
  */
 export const isRazorpayInitialized = () => {
-  return hasRazorpayCredentials();
+  return isRazorpayClientConfigured();
 };
 
 /**
@@ -74,12 +61,12 @@ export const getRazorpayStatus = () => {
   return {
     initialized,
     message: initialized 
-      ? 'Razorpay ready for direct API calls' 
-      : 'Razorpay not initialized - will use backend proxy',
-    apiBase: initialized ? ENV_CONFIG.RAZORPAY.API_BASE : 'Backend proxy',
-    environment: ENV_CONFIG.APP.ENVIRONMENT || 'development',
+      ? 'Razorpay ready via backend proxy' 
+      : 'Razorpay not configured',
+    apiBase: 'Backend proxy',
+    environment: (ENV_CONFIG.APP.ENVIRONMENT as "development" | "production" | "test") || 'development',
     keyId: ENV_CONFIG.RAZORPAY.KEY_ID || '',
-    hasSecret: !!ENV_CONFIG.RAZORPAY.KEY_SECRET,
+    hasSecret: false,
     warnings: envStatus.warnings,
     errors: envStatus.errors
   };
@@ -92,8 +79,8 @@ export const getEnvironmentSummary = () => {
   return {
     razorpay: {
       keyId: ENV_CONFIG.RAZORPAY.KEY_ID,
-      hasSecret: !!ENV_CONFIG.RAZORPAY.KEY_SECRET,
-      apiBase: ENV_CONFIG.RAZORPAY.API_BASE
+      hasSecret: false,
+      apiBase: 'Backend proxy'
     },
     backend: {
       url: ENV_CONFIG.BACKEND.URL
@@ -104,7 +91,7 @@ export const getEnvironmentSummary = () => {
       environment: ENV_CONFIG.APP.ENVIRONMENT
     },
     features: {
-      directRazorpayApi: ENV_CONFIG.FEATURES.DIRECT_RAZORPAY_API,
+      directRazorpayApi: false,
       razorpayFallback: ENV_CONFIG.FEATURES.RAZORPAY_FALLBACK
     }
   };

@@ -25,53 +25,11 @@ export const RAZORPAY_CONFIG = {
   }
 };
 
-// Function to set Razorpay credentials globally
-// This should be called from your app initialization
-export const setRazorpayCredentials = (keyId: string, keySecret: string) => {
+// Function to get Razorpay public key configuration status (safely, without secrets)
+export const isRazorpayClientConfigured = (): boolean => {
   if (typeof window !== 'undefined') {
-    (window as { RAZORPAY_KEY_ID?: string; RAZORPAY_KEY_SECRET?: string }).RAZORPAY_KEY_ID = keyId;
-    (window as { RAZORPAY_KEY_ID?: string; RAZORPAY_KEY_SECRET?: string }).RAZORPAY_KEY_SECRET = keySecret;
-    console.log('🔑 Razorpay credentials set for direct API calls');
+    const keyId = (window as { RAZORPAY_KEY_ID?: string }).RAZORPAY_KEY_ID;
+    if (keyId) return true;
   }
-};
-
-// Function to get Razorpay credentials
-export const getRazorpayCredentials = (): { keyId: string; keySecret: string } | null => {
-  if (typeof window !== 'undefined') {
-    const keyId = (window as { RAZORPAY_KEY_ID?: string; RAZORPAY_KEY_SECRET?: string }).RAZORPAY_KEY_ID;
-    const keySecret = (window as { RAZORPAY_KEY_ID?: string; RAZORPAY_KEY_SECRET?: string }).RAZORPAY_KEY_SECRET;
-    
-    if (keyId && keySecret) {
-      return { keyId, keySecret };
-    }
-  }
-  return null;
-};
-
-// Function to check if credentials are available
-export const hasRazorpayCredentials = (): boolean => {
-  const credentials = getRazorpayCredentials();
-  return credentials !== null;
-};
-
-// Function to get credentials from environment or config
-export const getRazorpayCredentialsFromEnv = (): { keyId: string; keySecret: string } | null => {
-  // Try to get from environment variables first
-  if (typeof process !== 'undefined' && process.env) {
-    const envKeyId = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
-    const envKeySecret = process.env.NEXT_PUBLIC_RAZORPAY_KEY_SECRET;
-    
-    if (envKeyId && envKeySecret) {
-      return { keyId: envKeyId, keySecret: envKeySecret };
-    }
-  }
-  
-  // Fallback to window variables
-  return getRazorpayCredentials();
-};
-
-// Function to check if environment credentials are available
-export const hasRazorpayEnvCredentials = () => {
-  const credentials = getRazorpayCredentialsFromEnv();
-  return credentials && credentials.keyId && credentials.keySecret;
+  return typeof process !== 'undefined' && !!process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
 };

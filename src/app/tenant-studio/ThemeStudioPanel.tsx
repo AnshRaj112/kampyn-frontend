@@ -26,6 +26,41 @@ type ThemeSection = "tokens" | "components" | "pages" | "importExport";
 
 const COLOR_TOKEN_KEYS = Object.keys(DEFAULT_TOKENS.color) as (keyof typeof DEFAULT_TOKENS.color)[];
 
+/** Human-readable labels for shopper card ids in Tenant Studio */
+const CARD_ID_LABELS: Record<string, string> = {
+  home: "Home option",
+  college: "College picker",
+  vendor: "Vendor tile",
+  dish: "Dish / product",
+  offer: "Special offer",
+  cartItem: "Cart item",
+  bill: "Bill panel",
+  restaurant: "Restaurant",
+  category: "Category",
+  membership: "Membership",
+  wallet: "Wallet",
+  analytics: "Analytics",
+  statistics: "Statistics",
+  coupon: "Coupon",
+  profile: "Profile",
+  order: "Order",
+  notification: "Notification",
+};
+
+const SHOPPER_CARD_PREVIEW_IDS = [
+  "home",
+  "college",
+  "vendor",
+  "dish",
+  "offer",
+  "cartItem",
+  "bill",
+] as const;
+
+function cardLabel(id: string): string {
+  return CARD_ID_LABELS[id] || id;
+}
+
 function setDeep(
   obj: ThemeDocument,
   path: string[],
@@ -425,7 +460,7 @@ export default function ThemeStudioPanel({ triggerToast, onPublished }: ThemeStu
                 >
                   {(COMPONENT_CATALOG[componentCategory].ids as readonly string[]).map((id) => (
                     <option key={id} value={id}>
-                      {id}
+                      {componentCategory === "card" ? cardLabel(id) : id}
                     </option>
                   ))}
                 </select>
@@ -621,31 +656,98 @@ export default function ThemeStudioPanel({ triggerToast, onPublished }: ThemeStu
           >
             Navbar · {primary}
           </div>
-          <div
-            className="rounded-lg border p-4 shadow-sm"
-            style={{
-              background: "var(--kampyn-color-surface, #fff)",
-              borderColor: "var(--kampyn-color-border, #e2e8f0)",
-              borderRadius: "var(--kampyn-shape-radiusMd, 0.5rem)",
-            }}
-            data-theme-component="card.dish"
-          >
-            <p
-              className="font-semibold"
-              style={{ color: "var(--kampyn-color-text, #0f172a)" }}
+
+          {section === "components" && componentCategory === "card" ? (
+            <div className="space-y-2">
+              <p className="text-[11px] font-semibold uppercase tracking-wide text-zinc-500">
+                Card gallery — click to edit
+              </p>
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                {SHOPPER_CARD_PREVIEW_IDS.map((id) => {
+                  const selected = componentId === id;
+                  return (
+                    <button
+                      key={id}
+                      type="button"
+                      onClick={() => setComponentId(id)}
+                      className={`rounded-lg border p-3 text-left transition ${
+                        selected
+                          ? "ring-2 ring-[var(--kampyn-color-primary,#01796f)] ring-offset-1"
+                          : "opacity-90 hover:opacity-100"
+                      }`}
+                      style={{
+                        background: `var(--kampyn-component-card-${id}-background, var(--kampyn-color-surface, #fff))`,
+                        borderColor: `var(--kampyn-component-card-${id}-border, var(--kampyn-color-border, #e2e8f0))`,
+                        borderRadius: `var(--kampyn-component-card-${id}-radius, var(--kampyn-shape-radiusMd, 0.5rem))`,
+                        boxShadow: `var(--kampyn-component-card-${id}-shadow, var(--kampyn-elevation-shadowSm, none))`,
+                        color: `var(--kampyn-component-card-${id}-title, var(--kampyn-color-text, #0f172a))`,
+                      }}
+                      data-theme-component={`card.${id}`}
+                    >
+                      <p className="text-xs font-semibold">{cardLabel(id)}</p>
+                      <p
+                        className="mt-1 text-[11px]"
+                        style={{
+                          color: `var(--kampyn-component-card-${id}-description, var(--kampyn-color-textMuted, #64748b))`,
+                        }}
+                      >
+                        {id === "bill"
+                          ? "Subtotal · fees · pay"
+                          : id === "cartItem"
+                            ? "Qty controls · remove"
+                            : id === "vendor"
+                              ? "Vendor tile preview"
+                              : id === "home"
+                                ? "Home option card"
+                                : id === "college"
+                                  ? "College picker card"
+                                  : id === "offer"
+                                    ? "Special · ₹99"
+                                    : "Dish · ₹120"}
+                      </p>
+                      {(id === "dish" || id === "offer" || id === "cartItem") && (
+                        <p
+                          className="mt-1.5 text-xs font-bold"
+                          style={{
+                            color: `var(--kampyn-component-card-${id}-price, var(--kampyn-color-primary, #01796f))`,
+                          }}
+                        >
+                          ₹{id === "offer" ? "99" : "120"}
+                        </p>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ) : (
+            <div
+              className="rounded-lg border p-4 shadow-sm"
+              style={{
+                background: "var(--kampyn-color-surface, #fff)",
+                borderColor: "var(--kampyn-color-border, #e2e8f0)",
+                borderRadius: "var(--kampyn-shape-radiusMd, 0.5rem)",
+              }}
+              data-theme-component="card.dish"
             >
-              Dish card
-            </p>
-            <p className="mt-1 text-sm" style={{ color: "var(--kampyn-color-textMuted, #64748b)" }}>
-              Description preview
-            </p>
-            <p
-              className="mt-2 text-sm font-bold"
-              style={{ color: "var(--kampyn-color-primary, #01796f)" }}
-            >
-              ₹120
-            </p>
-          </div>
+              <p
+                className="font-semibold"
+                style={{ color: "var(--kampyn-color-text, #0f172a)" }}
+              >
+                Dish card
+              </p>
+              <p className="mt-1 text-sm" style={{ color: "var(--kampyn-color-textMuted, #64748b)" }}>
+                Description preview
+              </p>
+              <p
+                className="mt-2 text-sm font-bold"
+                style={{ color: "var(--kampyn-color-primary, #01796f)" }}
+              >
+                ₹120
+              </p>
+            </div>
+          )}
+
           <div className="flex flex-wrap gap-2">
             <button
               type="button"

@@ -3,22 +3,35 @@
 
 .dishListItem {
   display: flex;
-  align-items: flex-start; // Align to top
-  background: white;
-  border-radius: 16px; // Reduced radius
-  padding: 0.75rem; // Reduced padding
-  margin-bottom: 0.5rem; // Reduced margin
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-  border: 1px solid rgba(226, 232, 240, 0.8);
+  align-items: flex-start;
+  background: var(--kampyn-component-card-dish-background, white);
+  border-radius: var(--kampyn-component-card-dish-radius, 16px);
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+  box-shadow: var(
+    --kampyn-component-card-dish-shadow,
+    0 4px 6px -1px rgba(0, 0, 0, 0.05),
+    0 2px 4px -1px rgba(0, 0, 0, 0.03)
+  );
+  border: 1px solid var(--kampyn-component-card-dish-border, rgba(226, 232, 240, 0.8));
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
-  gap: 1rem; // Reduced gap
+  gap: 1rem;
+  color: var(--kampyn-component-card-dish-title, var(--kampyn-color-text, #1e293b));
 
   &:hover {
-    transform: translateY(-2px); // Subtle lift
-    box-shadow: 0 8px 12px -3px rgba(var(--secondary-color-rgb, 78, 161, 153), 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    border-color: rgba(var(--secondary-color-rgb, 78, 161, 153), 0.3);
+    transform: translateY(-2px);
+    box-shadow: var(
+      --kampyn-component-card-dish-hoverShadow,
+      0 8px 12px -3px rgba(var(--secondary-color-rgb, 78, 161, 153), 0.1),
+      0 4px 6px -2px rgba(0, 0, 0, 0.05)
+    );
+    border-color: var(--kampyn-component-card-dish-border, rgba(var(--secondary-color-rgb, 78, 161, 153), 0.3));
+    background: var(
+      --kampyn-component-card-dish-hoverBackground,
+      var(--kampyn-component-card-dish-background, white)
+    );
   }
 
   @media (max-width: 768px) {
@@ -29,6 +42,19 @@
   @media (max-width: 480px) {
     gap: 0.5rem;
   }
+}
+
+/* Cart line items use card.cartItem theme vars (set via data-theme-component) */
+.dishListItem[data-theme-component="card.cartItem"] {
+  background: var(--kampyn-component-card-cartItem-background, white);
+  border-radius: var(--kampyn-component-card-cartItem-radius, 16px);
+  box-shadow: var(
+    --kampyn-component-card-cartItem-shadow,
+    0 4px 6px -1px rgba(0, 0, 0, 0.05),
+    0 2px 4px -1px rgba(0, 0, 0, 0.03)
+  );
+  border-color: var(--kampyn-component-card-cartItem-border, rgba(226, 232, 240, 0.8));
+  color: var(--kampyn-component-card-cartItem-title, var(--kampyn-color-text, #1e293b));
 }
 
 .leftSection {

@@ -4,8 +4,7 @@
 export const ENV_CONFIG = {
   // Razorpay Configuration
   RAZORPAY: {
-    KEY_ID: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_kR4r4rtzasoKWl',
-    KEY_SECRET: process.env.NEXT_PUBLIC_RAZORPAY_KEY_SECRET || '',
+    KEY_ID: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_rotatedId999',
     API_BASE: 'https://api.razorpay.com/v1',
   },
   
@@ -34,8 +33,8 @@ export const validateEnvironment = () => {
   const errors = [];
   
   // Check Razorpay configuration
-  if (!ENV_CONFIG.RAZORPAY.KEY_SECRET) {
-    warnings.push('RAZORPAY_KEY_SECRET not set - direct API calls will fail');
+  if (process.env.NEXT_PUBLIC_RAZORPAY_KEY_SECRET) {
+    errors.push('CRITICAL SECURITY ERROR: NEXT_PUBLIC_RAZORPAY_KEY_SECRET is exposed in client environment. Remove it immediately.');
   }
   
   if (!ENV_CONFIG.RAZORPAY.KEY_ID) {
@@ -51,7 +50,6 @@ export const validateEnvironment = () => {
   console.log('🔧 Environment Configuration:', {
     razorpay: {
       keyId: ENV_CONFIG.RAZORPAY.KEY_ID,
-      hasSecret: !!ENV_CONFIG.RAZORPAY.KEY_SECRET,
       apiBase: ENV_CONFIG.RAZORPAY.API_BASE
     },
     backend: {

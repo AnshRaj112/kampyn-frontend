@@ -86,6 +86,8 @@ export const COMPONENT_CATALOG = {
   card: {
     label: "Cards",
     ids: [
+      "home",
+      "college",
       "dish",
       "restaurant",
       "vendor",
@@ -96,6 +98,8 @@ export const COMPONENT_CATALOG = {
       "offer",
       "coupon",
       "category",
+      "cartItem",
+      "bill",
       "profile",
       "order",
       "notification",
