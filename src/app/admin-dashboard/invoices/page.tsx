@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { FileTextIcon, DownloadIcon, EyeIcon, DollarSignIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import styles from './styles/invoices.module.scss';
+import { assertInvoiceExportDateRange, exportErrorMessage, requestBulkInvoiceZip } from '@/utils/invoiceBulkExport';
 
 interface Invoice {
   _id: string;
@@ -140,41 +141,30 @@ const InvoicesPage: React.FC = () => {
   };
 
   const downloadBulkInvoices = async () => {
-    if (!filters.startDate || !filters.endDate) {
-      alert('Please select start and end dates for bulk download');
+    const rangeError = assertInvoiceExportDateRange(filters.startDate, filters.endDate);
+    if (rangeError) {
+      alert(rangeError);
       return;
     }
 
     try {
-      const response = await fetch(`${API_BASE}/api/invoices/bulk-zip-download`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          startDate: filters.startDate,
-          endDate: filters.endDate,
-          invoiceType: filters.invoiceType || undefined,
-          recipientType: filters.recipientType || undefined
-        })
+      const blob = await requestBulkInvoiceZip({
+        startDate: filters.startDate,
+        endDate: filters.endDate,
+        invoiceType: filters.invoiceType || undefined,
+        recipientType: filters.recipientType || undefined
       });
-
-      if (response.ok) {
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `invoices_${filters.startDate}_to_${filters.endDate}.zip`;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(a);
-      } else {
-        alert('Failed to download invoices');
-      }
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `invoices_${filters.startDate}_to_${filters.endDate}.zip`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
     } catch (error) {
       console.error('Error downloading bulk invoices:', error);
-      alert('Failed to download invoices');
+      alert(exportErrorMessage(error, 'Failed to download invoices'));
     }
   };
 
