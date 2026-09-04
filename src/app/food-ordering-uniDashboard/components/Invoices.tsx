@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { ENV_CONFIG } from "@/config/environment";
 import api from "@/utils/apiUtils";
+import { assertInvoiceExportDateRange, exportErrorMessage, requestBulkInvoiceZip } from "@/utils/invoiceBulkExport";
 import styles from "../styles/Invoices.module.scss";
 
 interface InvoiceRow {
@@ -111,45 +112,21 @@ export default function Invoices({ universityId }: Props) {
   };
 
   const downloadBulkInvoices = async () => {
-    if (!startDate || !endDate) {
-      alert("Please select both start and end dates for bulk download");
-      return;
-    }
-
-    // Validate date range
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-    if (start > end) {
-      alert("Start date must be before end date");
-      return;
-    }
-
-    // Check if date range is too large (more than 1 year)
-    const daysDiff = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
-    if (daysDiff > 365) {
-      alert("Date range cannot exceed 1 year. Please select a smaller range.");
+    const rangeError = assertInvoiceExportDateRange(startDate, endDate);
+    if (rangeError) {
+      alert(rangeError);
       return;
     }
 
     try {
       setBulkDownloadLoading(true);
-
-      // Create AbortController for timeout
-      const controller = new AbortController();
-      setTimeout(() => controller.abort(), 300000); // 5 minutes timeout
-
-      const response = await api.post("/api/invoices/bulk-zip-download", {
+      const blob = await requestBulkInvoiceZip({
         startDate,
         endDate,
         uniId: universityId,
         invoiceType: 'vendor',
         recipientType: 'vendor'
-      }, {
-        responseType: 'blob'
       });
-
-      // Create blob and download
-      const blob = response.data;
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -160,11 +137,7 @@ export default function Invoices({ universityId }: Props) {
       document.body.removeChild(a);
     } catch (error) {
       console.error('Bulk download error:', error);
-      if (error instanceof Error && error.name === 'AbortError') {
-        alert('Download timed out. Please try with a smaller date range or check your internet connection.');
-      } else {
-        alert(`Failed to download bulk invoices: ${error instanceof Error ? error.message : 'Unknown error'}`);
-      }
+      alert(exportErrorMessage(error, 'Failed to download bulk invoices'));
     } finally {
       setBulkDownloadLoading(false);
     }
