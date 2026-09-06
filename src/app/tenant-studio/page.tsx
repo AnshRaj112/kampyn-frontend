@@ -22,19 +22,46 @@ const normalizeHexColor = (color: string): string => {
 
 /** Only allow http(s) image URLs — blocks javascript:/data: etc. from DOM-sourced branding fields. */
 const getSafeImageUrl = (url: string | undefined | null): string | undefined => {
-  if (!url) return undefined;
+  const safeUrl = sanitizeDomText(url);
+  if (!safeUrl) return undefined;
   try {
-    const parsed = new URL(url);
+    const parsed = new URL(safeUrl);
     if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
       return parsed.href;
     }
   } catch {
     // Relative same-origin paths are safe for <img src>
-    if (url.startsWith('/') && !url.startsWith('//')) {
-      return url;
+    if (safeUrl.startsWith('/') && !safeUrl.startsWith('//')) {
+      return safeUrl;
     }
   }
   return undefined;
+};
+
+
+/**
+ * Converts untrusted values into plain text before they are displayed in the DOM.
+ * React escapes JSX text nodes by default; this additionally normalizes values
+ * originating from APIs or user-controlled inputs.
+ */
+const sanitizeDomText = (value: unknown): string => {
+  if (value === null || value === undefined) return '';
+
+  return String(value)
+    .replace(/\u0000/g, '')
+    .replace(/[\u0001-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, '')
+    .trim();
+};
+
+/** Only allow safe internal application routes for custom navigation. */
+const getSafeNavigationPath = (path: unknown): string | undefined => {
+  const sanitizedPath = sanitizeDomText(path);
+
+  if (!sanitizedPath || !sanitizedPath.startsWith('/')) return undefined;
+  if (sanitizedPath.startsWith('//')) return undefined;
+  if (/^[a-zA-Z][a-zA-Z\d+.-]*:/.test(sanitizedPath)) return undefined;
+
+  return sanitizedPath;
 };
 
 export default function TenantStudio() {
@@ -80,7 +107,7 @@ export default function TenantStudio() {
   const [toastType, setToastType] = useState<'success' | 'error' | 'info'>('success');
 
   const triggerToast = (msg: string, type: 'success' | 'error' | 'info' = 'success') => {
-    setToastMessage(msg);
+    setToastMessage(sanitizeDomText(msg));
     setToastType(type);
     setShowToast(true);
   };
@@ -229,11 +256,19 @@ export default function TenantStudio() {
   };
 
   const addNavItem = () => {
-    if (newLabel && newPath) {
-      setNavItems([...navItems, { label: newLabel, path: newPath, icon: 'book-open' }]);
+    const sanitizedLabel = sanitizeDomText(newLabel);
+    const sanitizedPath = getSafeNavigationPath(newPath);
+
+    if (sanitizedLabel && sanitizedPath) {
+      setNavItems([
+        ...navItems,
+        { label: sanitizedLabel, path: sanitizedPath, icon: 'book-open' }
+      ]);
       setNewLabel('');
       setNewPath('');
-      addLog(`Added navigation route: ${newLabel} -> ${newPath}`);
+      addLog(`Added navigation route: ${sanitizedLabel} -> ${sanitizedPath}`);
+    } else {
+      triggerToast('Please provide a menu title and a valid internal route starting with /.', 'error');
     }
   };
 
@@ -244,7 +279,8 @@ export default function TenantStudio() {
   };
 
   const addLog = (msg: string) => {
-    setLogs(prev => [`[${new Date().toLocaleTimeString()}] ${msg}`, ...prev]);
+    const safeMessage = sanitizeDomText(msg);
+    setLogs(prev => [`[${new Date().toLocaleTimeString()}] ${safeMessage}`, ...prev]);
   };
 
   const triggerPromotion = async (targetEnv: 'TEST' | 'UAT' | 'PROD') => {
@@ -289,7 +325,7 @@ export default function TenantStudio() {
           <span className="text-xs text-[#01796f] uppercase font-bold tracking-widest">Campus Control Panel</span>
           <h1 className="text-3xl font-extrabold text-white mt-1">KAMPYN Tenant Studio</h1>
           <p className="text-sm text-zinc-400 mt-1">
-            Tenant Scoped Administrator Sandbox for <span className="font-semibold text-zinc-200">{tenant?.createdByUniName || tenant?.name || 'Loading University...'}</span>
+            Tenant Scoped Administrator Sandbox for <span className="font-semibold text-zinc-200">{sanitizeDomText(tenant?.createdByUniName || tenant?.name || 'Loading University...')}</span>
           </p>
         </div>
         <div className="flex space-x-3 items-center">
@@ -316,7 +352,7 @@ export default function TenantStudio() {
           </div>
 
           <span className="px-3 py-1 bg-zinc-900 border border-zinc-700 text-zinc-300 text-xs rounded-full font-mono">
-            Tenant Slug: {tenant?.slug || 'localhost'}
+            Tenant Slug: {sanitizeDomText(tenant?.slug || 'localhost')}
           </span>
           <span className="px-3 py-1 bg-[#01796f]/15 border border-[#01796f]/40 text-[#01796f] text-xs rounded-full font-mono">
             Active Config: v{currentVersion}
@@ -590,8 +626,8 @@ export default function TenantStudio() {
                   <div key={idx} className="flex justify-between items-center bg-zinc-900 border border-zinc-800 p-2.5 rounded text-sm text-zinc-200">
                     <div className="flex items-center space-x-3">
                       <span className="text-xs text-zinc-500">#{idx+1}</span>
-                      <span className="font-bold">{item.label}</span>
-                      <span className="text-xs text-zinc-400 font-mono">({item.path})</span>
+                      <span className="font-bold">{sanitizeDomText(item.label)}</span>
+                      <span className="text-xs text-zinc-400 font-mono">({sanitizeDomText(item.path)})</span>
                     </div>
                     <button 
                       onClick={() => removeNavItem(idx)}
@@ -820,7 +856,7 @@ export default function TenantStudio() {
                   {logs.length === 0 ? (
                     <p className="text-zinc-600">No actions recorded in current session.</p>
                   ) : (
-                    logs.map((log, i) => <p key={i}>{log}</p>)
+                    logs.map((log, i) => <p key={i}>{sanitizeDomText(log)}</p>)
                   )}
                  </div>
               </div>
@@ -905,7 +941,7 @@ export default function TenantStudio() {
             <span className="text-sm font-semibold text-white">
               {toastType === 'success' ? 'Success' : toastType === 'error' ? 'Error' : 'Notification'}
             </span>
-            <span className="text-xs text-zinc-300 mt-0.5">{toastMessage}</span>
+            <span className="text-xs text-zinc-300 mt-0.5">{sanitizeDomText(toastMessage)}</span>
           </div>
         </motion.div>
       )}
