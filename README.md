@@ -69,11 +69,8 @@ Define these in **`.env.local`** (never commit secrets).
 | `NEXT_PUBLIC_BACKEND_URL` | Base URL of the KAMPYN backend (no trailing slash), e.g. `http://localhost:5001` |
 | `NEXT_PUBLIC_GOOGLE_CLIENT_ID` | Google OAuth Web client ID for Sign in with Google |
 | `NEXT_PUBLIC_RAZORPAY_KEY_ID` | Razorpay **Key ID** (publishable) |
-| `NEXT_PUBLIC_RAZORPAY_KEY_SECRET` | Used where the client config expects it (prefer backend-only secrets for production) |
 | `NEXT_PUBLIC_APP_NAME` | Display name (defaults to `KAMPYN` in code if unset) |
 | `NEXT_PUBLIC_APP_VERSION` | Optional version string for UI/config |
-| `NEXT_PUBLIC_DIRECT_RAZORPAY_API` | Set to `true` to enable direct Razorpay API behaviour where implemented |
-| `NEXT_PUBLIC_RAZORPAY_FALLBACK` | Set to `false` to disable fallback behaviour (see `src/config/environment.ts`) |
 
 ## NPM scripts
 

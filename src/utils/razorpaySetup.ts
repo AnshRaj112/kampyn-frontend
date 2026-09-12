@@ -4,14 +4,10 @@ import { ENV_CONFIG, validateEnvironment } from '../config/environment';
 /**
  * Initialize Razorpay client configuration (checks env only)
  */
-export const initializeRazorpay = (keyId?: string, keySecret?: string) => {
+export const initializeRazorpay = () => {
   try {
     // Validate environment first
     const envStatus = validateEnvironment();
-    
-    if (keySecret || process.env.NEXT_PUBLIC_RAZORPAY_KEY_SECRET) {
-      console.error('❌ CRITICAL SECURITY ERROR: Attempted to initialize Razorpay with a Key Secret on the client.');
-    }
     
     const configured = isRazorpayClientConfigured();
     
@@ -66,7 +62,6 @@ export const getRazorpayStatus = () => {
     apiBase: 'Backend proxy',
     environment: (ENV_CONFIG.APP.ENVIRONMENT as "development" | "production" | "test") || 'development',
     keyId: ENV_CONFIG.RAZORPAY.KEY_ID || '',
-    hasSecret: false,
     warnings: envStatus.warnings,
     errors: envStatus.errors
   };
@@ -79,7 +74,6 @@ export const getEnvironmentSummary = () => {
   return {
     razorpay: {
       keyId: ENV_CONFIG.RAZORPAY.KEY_ID,
-      hasSecret: false,
       apiBase: 'Backend proxy'
     },
     backend: {
@@ -89,10 +83,6 @@ export const getEnvironmentSummary = () => {
       name: ENV_CONFIG.APP.NAME,
       version: ENV_CONFIG.APP.VERSION,
       environment: ENV_CONFIG.APP.ENVIRONMENT
-    },
-    features: {
-      directRazorpayApi: false,
-      razorpayFallback: ENV_CONFIG.FEATURES.RAZORPAY_FALLBACK
     }
   };
 };
