@@ -17,7 +17,6 @@ interface RazorpayStatus {
   apiBase: string;
   environment: "development" | "production" | "test";
   keyId: string;
-  hasSecret: boolean;
   warnings: string[];
   errors: string[];
 }
@@ -25,7 +24,6 @@ interface RazorpayStatus {
 interface EnvironmentSummary {
   razorpay: {
     keyId: string;
-    hasSecret: boolean;
     apiBase: string;
   };
   backend: {
@@ -35,10 +33,6 @@ interface EnvironmentSummary {
     name: string;
     version: string;
     environment: string;
-  };
-  features: {
-    directRazorpayApi: boolean;
-    razorpayFallback: boolean;
   };
 }
 
@@ -207,7 +201,6 @@ const RazorpayInvoiceExample: React.FC = () => {
             <p><strong>App:</strong> {envSummary.app.name} v{envSummary.app.version} ({envSummary.app.environment})</p>
             <p><strong>Backend:</strong> {envSummary.backend.url}</p>
             <p><strong>Razorpay Key ID:</strong> {envSummary.razorpay.keyId}</p>
-            <p><strong>Razorpay Secret:</strong> {envSummary.razorpay.hasSecret ? '✅ Set' : '❌ Not Set'}</p>
             <p><strong>API Base:</strong> {envSummary.razorpay.apiBase}</p>
           </div>
         )}
@@ -306,16 +299,15 @@ const RazorpayInvoiceExample: React.FC = () => {
       <div className="p-4 bg-yellow-100 border border-yellow-400 rounded-md">
         <h3 className="font-semibold mb-2">💡 Check Console for API Calls</h3>
         <p className="text-sm">
-          Open your browser&apos;s developer console to see the exact Razorpay API endpoints being hit:
+          Open your browser&apos;s developer console to see the authenticated backend proxy endpoints being hit:
         </p>
         <ul className="text-sm mt-2 space-y-1">
-          <li>• <code>https://api.razorpay.com/v1/invoices/{'{inv_id}'}</code></li>
-          <li>• <code>https://api.razorpay.com/v1/invoices</code></li>
-          <li>• <code>https://api.razorpay.com/v1/invoices/{'{inv_id}'}/pdf</code></li>
+          <li>• <code>/razorpay/invoices/{'{inv_id}'}</code></li>
+          <li>• <code>/razorpay/invoices</code></li>
+          <li>• <code>/razorpay/invoices/{'{inv_id}'}/pdf</code></li>
         </ul>
         <p className="text-sm mt-2 text-blue-700">
-          <strong>Note:</strong> The system will automatically use environment variables if available, 
-          or fall back to backend proxy if not configured.
+          <strong>Note:</strong> Invoice operations always use the backend proxy.
         </p>
       </div>
     </div>
