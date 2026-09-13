@@ -85,7 +85,7 @@ const Header: React.FC<HeaderProps> = ({
       await api.post("/api/user/auth/logout");
 
       // Clear token and redirect
-      localStorage.removeItem("token");
+      void 0;
       setUserFullName(null);
       setUserEmail(null);
       window.dispatchEvent(new Event("authChanged")); // Notify header

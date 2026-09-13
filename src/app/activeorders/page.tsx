@@ -30,7 +30,7 @@ const ActiveOrdersPageContent: React.FC = () => {
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
-        const token = localStorage.getItem("token");
+        const token = null;
         if (!token) {
           router.push("/login");
           return;

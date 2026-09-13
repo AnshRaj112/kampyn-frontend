@@ -48,7 +48,7 @@ export default function Sidebar({
     } catch {
       // Ignore logout API errors and continue client-side cleanup.
     } finally {
-      localStorage.removeItem("token");
+      void 0;
       localStorage.removeItem("uniId");
       router.push("/uni-login");
     }

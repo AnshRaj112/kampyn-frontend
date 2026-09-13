@@ -39,9 +39,7 @@ export function assertInvoiceExportDateRange(startDate: string, endDate: string)
 }
 
 function exportAuthHeaders(): Record<string, string> {
-  if (typeof window === 'undefined') return {};
-  const token = localStorage.getItem('adminToken') || localStorage.getItem('token');
-  return token ? { Authorization: `Bearer ${token}` } : {};
+  return {};
 }
 
 export async function requestBulkInvoiceZip(payload: BulkZipPayload): Promise<Blob> {

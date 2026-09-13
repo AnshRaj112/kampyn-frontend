@@ -19,19 +19,9 @@ export const useOrderEvents = (
   useEffect(() => {
     if (!vendorId || typeof window === "undefined") return;
 
-    // Get the vendor token from localStorage. 
-    // Usually 'token' or 'vendorToken' based on apiUtils.ts
-    const token = localStorage.getItem("vendorToken") || localStorage.getItem("token");
-    
-    if (!token) {
-      console.warn("No vendor token found for SSE connection.");
-      return;
-    }
-
-    const encodedToken = encodeURIComponent(token);
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "";
     // Use the existing vendor notification stream URL
-    const url = `${backendUrl}/api/vendor/notifications/stream?token=${encodedToken}`;
+    const url = `${backendUrl}/api/vendor/notifications/stream`;
     
     console.log(`SSE: Connecting to ${backendUrl}/api/vendor/notifications/stream...`);
     const es = new EventSource(url, { withCredentials: true });

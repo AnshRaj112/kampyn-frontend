@@ -1,15 +1,14 @@
 import axios from 'axios';
 
-const isAdminRequest = (url: string) => {
-    const normalizedUrl = (url || '').toLowerCase();
-    return normalizedUrl.includes('/api/admin/') ||
-        normalizedUrl.includes('/api/invoices/admin') ||
-        normalizedUrl.includes('/api/invoices/stats') ||
-        normalizedUrl.includes('/api/invoices/bulk') ||
-        /(^|\/\/[^/]+)?\/admin(\/|$)/.test(normalizedUrl);
-};
-
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || '';
+let csrfToken: string | null = null;
+
+const getCsrfToken = async (): Promise<string> => {
+    if (csrfToken) return csrfToken;
+    const response = await axios.get(`${BACKEND_URL}/api/csrf/token`, { withCredentials: true });
+    csrfToken = response.data.csrfToken;
+    return csrfToken as string;
+};
 
 const isGlobalPath = (pathname: string): boolean => {
     const path = pathname.toLowerCase();
@@ -176,18 +175,17 @@ api.interceptors.request.use(
 
             const pathname = window.location.pathname;
             const forcedLogin = getForcedLoginRedirectForPath(pathname);
-            const hasToken = Boolean(localStorage.getItem("token") || localStorage.getItem("adminToken"));
-            if (forcedLogin && !hasToken && pathname !== forcedLogin) {
-                window.location.href = forcedLogin;
-                return Promise.reject(new axios.Cancel("Redirecting to role login"));
+            if (forcedLogin && pathname !== forcedLogin) {
+                // Authentication is determined by the HttpOnly session cookie;
+                // the server response controls whether this route is allowed.
             }
+        }
 
-            const url = config.url || '';
-            const isAdminRoute = isAdminRequest(url);
-            const token = isAdminRoute ? localStorage.getItem('adminToken') : localStorage.getItem('token');
-            if (token) {
-                config.headers.Authorization = `Bearer ${token}`;
-            }
+        if (!['GET', 'HEAD', 'OPTIONS'].includes((config.method || 'get').toUpperCase())) {
+            return getCsrfToken().then((token) => {
+                config.headers['X-CSRF-Token'] = token;
+                return config;
+            });
         }
 
         return config;
@@ -262,18 +260,15 @@ export const userApi = axios.create({
     },
 });
 
-userApi.interceptors.request.use((config) => {
+userApi.interceptors.request.use(async (config) => {
     if (typeof window !== 'undefined') {
         const tenantSlug = getTenantSlugFromHostname();
         if (tenantSlug) {
             config.headers['X-Tenant'] = tenantSlug;
         }
 
-        const url = config.url || '';
-        const isAdminRoute = isAdminRequest(url);
-        const token = isAdminRoute ? localStorage.getItem('adminToken') : localStorage.getItem('token');
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
+        if (!['GET', 'HEAD', 'OPTIONS'].includes((config.method || 'get').toUpperCase())) {
+            config.headers['X-CSRF-Token'] = await getCsrfToken();
         }
     }
     return config;

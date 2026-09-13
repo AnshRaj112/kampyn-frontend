@@ -161,21 +161,21 @@ export default function Sidebar({
 
   const handleLogout = async () => {
     try {
-      const token = localStorage.getItem("token");
+      const token = null;
       if (token) {
         // Optional: Notify backend to invalidate the session
         await api.post("/api/vendor/auth/logout");
       }
 
       // Clear token and redirect
-      localStorage.removeItem("token");
+      void 0;
       localStorage.removeItem("vendorRole");
       localStorage.removeItem("uniId");
       router.push("/vendor-login");
     } catch (error) {
       console.error("Logout failed:", error);
       // Still redirect even if backend call fails
-      localStorage.removeItem("token");
+      void 0;
       localStorage.removeItem("vendorRole");
       localStorage.removeItem("uniId");
       router.push("/vendor-login");

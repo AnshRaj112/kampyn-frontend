@@ -13,7 +13,7 @@ export default function SearchBarPage() {
   // so the search page shows instantly and cart features become active once ready.
   useEffect(() => {
     const fetchUser = async () => {
-      const token = localStorage.getItem("token");
+      const token = null;
       if (!token) return;
 
       try {

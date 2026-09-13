@@ -51,7 +51,7 @@ const PaymentPage = () => {
   // Get auth token
   const getAuthToken = () => {
     if (typeof window !== "undefined") {
-      return localStorage.getItem("token");
+      return null;
     }
     return null;
   };

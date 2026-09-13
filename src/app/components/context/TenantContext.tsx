@@ -140,7 +140,7 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const fetchTenantConfig = useCallback(async (force = false) => {
     const slug = getTenantSlugFromHostname();
-    const token = typeof window !== 'undefined' ? localStorage.getItem("token") : null;
+    const token = typeof window !== 'undefined' ? null : null;
 
     if (!slug && !token) {
       setTenantSlug('');
@@ -158,7 +158,7 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
 
     // Avoid refetch on every navigation when we already have this tenant loaded
-    const cacheKey = slug || (token ? `token:${token.slice(0, 12)}` : '');
+    const cacheKey = slug || '';
     if (!force && fetchedSlugRef.current === cacheKey && tenantRef.current) {
       setLoading(false);
       return;

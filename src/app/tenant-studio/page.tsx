@@ -123,7 +123,7 @@ export default function TenantStudio() {
   }, [showToast]);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = null;
     if (!token) {
       router.push("/tenant-login");
     } else {
@@ -313,7 +313,7 @@ export default function TenantStudio() {
     } catch (err) {
       console.error("Logout request failed:", err);
     }
-    localStorage.removeItem("token");
+    void 0;
     router.push("/tenant-login");
   };
 

@@ -26,9 +26,7 @@ export default function GuestHouseLoginPage() {
     setIsLoading(true);
     try {
       const response = await api.post("/api/guest-house/auth/login", formData);
-      const data = response.data;
       if (response.status === 200) {
-        if (data.token) localStorage.setItem("token", data.token);
         localStorage.setItem("guestHouseRole", "manager");
         window.dispatchEvent(new Event("authChanged"));
         toast.success("Login successful!");

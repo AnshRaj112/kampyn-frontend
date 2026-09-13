@@ -99,9 +99,6 @@ export default function RoleOtpVerificationForm({
         return;
       }
 
-      if (data.token) {
-        localStorage.setItem("token", data.token);
-      }
       window.dispatchEvent(new Event("authChanged"));
       if (saveVendorRole) {
         localStorage.setItem("vendorRole", "seller");
