@@ -65,7 +65,7 @@ export const addFavoriteToCart = async (
   categories: { retail: string[]; produce: string[] }
 ): Promise<boolean> => {
   try {
-    const token = localStorage.getItem("token");
+    const token = null;
     if (!token) {
       toast.error("Please login to add items to cart");
       return false;

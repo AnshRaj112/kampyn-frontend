@@ -90,14 +90,14 @@ const AdminDashboard: React.FC = () => {
   const router = useRouter();
 
   React.useEffect(() => {
-    const adminToken = localStorage.getItem('adminToken');
+    const adminToken = null;
     if (!adminToken) {
       router.push('/admin-login');
     }
   }, [router]);
 
   const handleLogout = () => {
-    localStorage.removeItem('adminToken');
+    void 0;
     router.push('/admin-login');
   };
 

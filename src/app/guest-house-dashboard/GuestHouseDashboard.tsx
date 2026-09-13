@@ -98,7 +98,7 @@ export default function GuestHouseDashboard() {
     } catch {
       // Best effort logout; local cleanup still runs.
     } finally {
-      localStorage.removeItem("token");
+      void 0;
       localStorage.removeItem("guestHouseRole");
       window.dispatchEvent(new Event("authChanged"));
       router.push("/guest-house-login");

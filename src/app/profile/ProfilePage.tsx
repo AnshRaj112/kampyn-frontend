@@ -89,7 +89,7 @@ const UserProfile = () => {
       const response = await api.post("/api/user/auth/logout");
 
       if (response.status === 200) {
-        localStorage.removeItem("token"); // Cleanup legacy token if present
+        void 0; // Cleanup legacy token if present
         setTimeout(() => router.push("/login"), 1000);
         setTimeout(() => {
           window.location.reload();

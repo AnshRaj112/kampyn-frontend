@@ -121,7 +121,7 @@ export default function VendorDashboardPage() {
         // Token check is implicitly handled by the API call now.
         // If the call fails with 401, init will catch it.
         /* REMOVED:
-        const token = localStorage.getItem("token");
+        const token = null;
         if (!token) {
           router.push("/vendor-login");
           return;

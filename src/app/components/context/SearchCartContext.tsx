@@ -62,7 +62,7 @@ export const SearchCartProvider = ({ children }: SearchCartProviderProps) => {
 
     const vendorRole = localStorage.getItem("vendorRole");
     const uniId = localStorage.getItem("uniId");
-    const adminToken = localStorage.getItem("adminToken");
+    const adminToken = null;
     const pathname = window.location.pathname.toLowerCase();
     const isNonShopperRoute =
       pathname.startsWith("/admin") ||
@@ -80,7 +80,7 @@ export const SearchCartProvider = ({ children }: SearchCartProviderProps) => {
       return null;
     }
 
-    const token = localStorage.getItem("token");
+    const token = null;
     if (!token) {
       return null;
     }
@@ -110,7 +110,7 @@ export const SearchCartProvider = ({ children }: SearchCartProviderProps) => {
 
     try {
       setIsRefreshing(true);
-      const token = localStorage.getItem("token");
+      const token = null;
       if (!token || isNonShopperSession()) {
         console.log('No token found, skipping cart refresh');
         return;
@@ -167,7 +167,7 @@ export const SearchCartProvider = ({ children }: SearchCartProviderProps) => {
 
   const addToSearchCart = async (item: SearchResult, vendorId: string) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = null;
       if (!token || isNonShopperSession()) {
         toast.error('Please login to add items to cart');
         return;
@@ -236,7 +236,7 @@ export const SearchCartProvider = ({ children }: SearchCartProviderProps) => {
 
   const increaseSearchCartQuantity = async (itemId: string) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = null;
       if (!token || isNonShopperSession()) return;
 
       const currentUserId = await getUserId();
@@ -273,7 +273,7 @@ export const SearchCartProvider = ({ children }: SearchCartProviderProps) => {
 
   const decreaseSearchCartQuantity = async (itemId: string) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = null;
       if (!token || isNonShopperSession()) return;
 
       const currentUserId = await getUserId();

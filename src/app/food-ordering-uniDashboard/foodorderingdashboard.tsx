@@ -101,7 +101,7 @@ export default function UniDashboardPage() {
       try {
         // Token is now in HTTP-only cookies
         /* REMOVED:
-        const token = localStorage.getItem("token");
+        const token = null;
         if (!token) {
           router.push("/uni-login");
           return;
@@ -124,7 +124,7 @@ export default function UniDashboardPage() {
           }
         } else {
           // Failure to get user info, redirect only if we truly have no session
-          const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+          const token = typeof window !== "undefined" ? null : null;
           if (!token) {
             router.push("/uni-login");
             return;
@@ -134,7 +134,7 @@ export default function UniDashboardPage() {
         console.error("Failed to init uni dashboard", e);
         // Only redirect on explicit 401 (unauthorized); for other errors, stay on page
         if (axios.isAxiosError(e) && e.response?.status === 401) {
-          const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+          const token = typeof window !== "undefined" ? null : null;
           if (!token) {
             router.push("/uni-login");
           }

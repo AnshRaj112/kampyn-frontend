@@ -115,7 +115,7 @@ export default function SignupForm() {
         console.log("✅ Session refreshed successfully");
       } else if (res.status === 401 || res.status === 403) {
         console.log("🔴 Session expired, redirecting ...");
-        localStorage.removeItem("token"); // Clear stored token (if any)
+        void 0; // Clear stored token (if any)
         router.push("/signup"); // Redirect to login page
       } else {
         console.log("⚠️ Unexpected response from server");

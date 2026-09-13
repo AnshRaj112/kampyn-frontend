@@ -162,7 +162,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
   // Check authentication status on component mount
   useEffect(() => {
     const checkAuth = () => {
-      const token = localStorage.getItem("token");
+      const token = null;
       setIsAuthenticated(!!token);
     };
     checkAuth();
@@ -462,7 +462,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
     };
 
     const fetchUser = async () => {
-      const token = localStorage.getItem("token");
+      const token = null;
       if (!token) {
         setIsAuthenticated(false);
         return;
@@ -677,7 +677,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
 
     try {
       setItemLoading(itemId, true);
-      const token = localStorage.getItem("token");
+      const token = null;
       if (!token) {
         toast.error('Please login to add items to cart');
         return;

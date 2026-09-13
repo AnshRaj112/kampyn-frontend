@@ -1087,7 +1087,7 @@ const CollegePageClient = ({ slug = "" }: { slug?: string }) => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const token = localStorage.getItem("token");
+        const token = null;
         if (!token) return;
         const response = await api.get("/api/user/auth/user");
         if (response.status === 200) {

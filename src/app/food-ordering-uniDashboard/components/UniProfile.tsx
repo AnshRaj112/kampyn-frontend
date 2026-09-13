@@ -95,7 +95,7 @@ const UniProfile = () => {
     const fetchProfile = async () => {
         try {
             const uniId = localStorage.getItem('uniId');
-            const token = localStorage.getItem('token');
+            const token = null;
 
             if (!uniId || !token) {
                 toast.error("Authentication failed. Please login again.");

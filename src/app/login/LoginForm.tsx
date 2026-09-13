@@ -84,11 +84,6 @@ export default function LoginForm() {
         return;
       }
 
-      // Store token for Authorization header (cookies may be blocked cross-origin)
-      if (data.token) {
-        localStorage.setItem("token", data.token);
-      }
-
       // Notify header to update
       window.dispatchEvent(new Event("authChanged"));
 
@@ -120,11 +115,6 @@ export default function LoginForm() {
   // Auto-refresh token on visit
   const checkSession = useCallback(async () => {
     // On login page, unauthenticated state is expected.
-    // Skip refresh checks when there is clearly no local auth token.
-    if (!localStorage.getItem("token")) {
-      return;
-    }
-
     try {
       const res = await api.get("/api/user/auth/refresh");
 
@@ -132,11 +122,11 @@ export default function LoginForm() {
         console.log("✅ Session refreshed successfully");
         // const data = res.data;
         // if (data.token) {
-        //   localStorage.setItem("token", data.token); // REMOVED
+        //   void 0; // REMOVED
         // }
       } else if (res.status === 401 || res.status === 403) {
         console.log("🔴 Session expired, redirecting to login...");
-        // localStorage.removeItem("token"); // REMOVED
+        // void 0; // REMOVED
         router.push("/login"); // Redirect to login page
       } else {
         console.log("⚠️ Unexpected response from server");

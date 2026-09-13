@@ -85,19 +85,19 @@ export default function Sidebar({
 
   const handleLogout = async () => {
     try {
-      const token = localStorage.getItem("token");
+      const token = null;
       if (token) {
         // Optional: Notify backend to invalidate the session
         await api.post("/api/uni/auth/logout");
       }
 
       // Clear token and redirect
-      localStorage.removeItem("token");
+      void 0;
       router.push("/uni-login");
     } catch (error) {
       console.error("Logout failed:", error);
       // Still redirect even if backend call fails
-      localStorage.removeItem("token");
+      void 0;
       router.push("/uni-login");
     }
   };

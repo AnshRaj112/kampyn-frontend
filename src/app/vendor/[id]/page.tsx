@@ -238,7 +238,7 @@ const VendorPage = () => {
         }
 
         // Fetch user data (student cart requires /api/user/auth/user — university/tenant tokens won't work)
-        const token = localStorage.getItem("token");
+        const token = null;
         if (token) {
           try {
             const userResponse = await api.get("/api/user/auth/user");
@@ -277,7 +277,7 @@ const VendorPage = () => {
       } else {
         toast.success(data.message || "Favourites updated.");
         // Optionally, you can refresh userData here to get updated favourites
-        const token = localStorage.getItem("token");
+        const token = null;
         if (token) {
           const userResponse = await api.get("/api/user/auth/user");
           if (userResponse.status === 200) {
@@ -604,7 +604,7 @@ const VendorPage = () => {
     }
 
     // Refresh user data to update cart
-    const token = localStorage.getItem("token");
+    const token = null;
     if (token) {
       try {
         const userResponse = await api.get("/api/user/auth/user");
@@ -640,7 +640,7 @@ const VendorPage = () => {
     }
 
     // Refresh user data to update cart
-    const token = localStorage.getItem("token");
+    const token = null;
     if (token) {
       const userResponse = await api.get("/api/user/auth/user");
       if (userResponse.status === 200) {

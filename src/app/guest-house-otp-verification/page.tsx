@@ -44,8 +44,6 @@ function GuestHouseOtpContent() {
     try {
       const response = await api.post("/api/guest-house/auth/otpverification", { email, otp: otpString });
       if (response.status === 200) {
-        const data = response.data;
-        if (data.token) localStorage.setItem("token", data.token);
         localStorage.setItem("guestHouseRole", "manager");
         window.dispatchEvent(new Event("authChanged"));
         toast.success("OTP verified successfully!");
